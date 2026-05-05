@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  createBooking,
   fetchBookings,
   fetchPlans,
   fetchProfile,
@@ -18,13 +17,6 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [bookingMessage, setBookingMessage] = useState<string | null>(null);
-  const [bookingForm, setBookingForm] = useState({
-    device: "PS1",
-    slotStart: "",
-    durationHours: "1",
-    players: "1",
-  });
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -42,13 +34,15 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         const [profileData, plansData, bookingsData] = await Promise.all([
-          fetchProfile(token),
-          fetchPlans(token),
-          fetchBookings(token),
+          fetchProfile(token!),
+          fetchPlans(token!),
+          fetchBookings(token!),
         ]);
         setProfile(profileData);
         setPlans(plansData);
         setBookings(bookingsData);
+        
+        // Pre-fill name from profile
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to load dashboard.";
         setError(errorMessage);
@@ -60,58 +54,8 @@ export default function DashboardPage() {
     loadDashboard();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-slate-100">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:px-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-orange-300">Loading</p>
-          <h1 className="font-display mt-4 text-4xl">Preparing your dashboard...</h1>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-slate-100">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:px-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-orange-300">Error</p>
-          <h1 className="font-display mt-4 text-4xl">{error}</h1>
-          <a href="/login" className="mt-6 inline-flex text-orange-200">
-            Back to login
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  async function handleBookingSubmit() {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-
-    try {
-      setBookingMessage(null);
-      const booking = await createBooking(token, {
-        device: bookingForm.device as "PS1" | "PS2" | "PS3" | "SIM1",
-        slotStart: bookingForm.slotStart,
-        durationHours: Number(bookingForm.durationHours),
-        players: Number(bookingForm.players),
-      });
-      setBookings((prev) => [booking, ...prev]);
-      setBookingMessage("Booking confirmed. Arrive 5-10 minutes early.");
-      setBookingForm({ device: "PS1", slotStart: "", durationHours: "1", players: "1" });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to create booking.";
-      setBookingMessage(errorMessage);
-    }
-  }
-
   function handleLogout() {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_role");
+    localStorage.clear();
     window.location.href = "/login";
   }
 
@@ -123,223 +67,188 @@ export default function DashboardPage() {
 
   const currentPlan = profile?.currentPlan || plans[0];
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+          <p className="font-display text-sm uppercase tracking-widest text-slate-500">Preparing Arena...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="relative">
-        <div className="absolute inset-0 opacity-80">
-          <div className="absolute -top-24 left-1/2 h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-orange-500/30 blur-[120px]" />
-          <div className="absolute right-[-120px] top-32 h-[320px] w-[320px] rounded-full bg-pink-500/20 blur-[140px]" />
+        {/* Soft Background Accents */}
+        <div className="absolute inset-0 opacity-40 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-orange-200 blur-[120px]" />
+          <div className="absolute right-[-100px] top-40 h-[300px] w-[300px] rounded-full bg-cyan-100 blur-[100px]" />
         </div>
 
-        <div className="relative z-10 flex min-h-screen flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:px-6 md:py-10">
-          <aside className="surface-panel flex w-full flex-col justify-between gap-6 rounded-3xl p-5 md:sticky md:top-8 md:h-[calc(100vh-80px)] md:w-64 md:gap-0">
-            <div className="space-y-6">
+        <div className="relative z-10 flex min-h-screen flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:px-8 md:py-10">
+          
+          {/* Sidebar */}
+          <aside className="flex w-full flex-col justify-between gap-8 rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm md:sticky md:top-10 md:h-[calc(100vh-80px)] md:w-72">
+            <div className="space-y-8">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/20 text-lg font-semibold text-orange-100">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500 text-lg font-bold text-white shadow-lg shadow-orange-200">
                   {getInitials(profile?.name)}
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Member</p>
-                  <p className="text-sm text-white">{profile?.name}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600">Active Member</p>
+                  <p className="text-sm font-bold text-slate-900 truncate max-w-[140px]">{profile?.name}</p>
                 </div>
               </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500">Menu</p>
-                <nav className="mt-3 grid grid-cols-2 gap-2 text-xs uppercase tracking-[0.3em] text-slate-300 md:block md:space-y-3">
-                <a href="#home" className="rounded-2xl px-3 py-2 transition hover:bg-slate-900/60 md:block">
-                  Home
-                </a>
-                <a href="#games" className="rounded-2xl px-3 py-2 transition hover:bg-slate-900/60 md:block">
-                  Games
-                </a>
-                <a href="#booking" className="rounded-2xl px-3 py-2 transition hover:bg-slate-900/60 md:block">
-                  Booking
-                </a>
-                <a href="#history" className="rounded-2xl px-3 py-2 transition hover:bg-slate-900/60 md:block">
-                  History
-                </a>
-                </nav>
-              </div>
+
+              <nav className="space-y-2">
+                <p className="px-3 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Navigation</p>
+                {[
+                  { name: 'Overview', href: '#home' },
+                  { name: 'Book Slot', href: '/book' },
+                  { name: 'Library', href: '#games' },
+                  { name: 'History', href: '#history' }
+                ].map(item => (
+                  <a key={item.name} href={item.href} className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-orange-50 hover:text-orange-600">
+                    {item.name}
+                  </a>
+                ))}
+              </nav>
             </div>
+
             <button
               onClick={handleLogout}
-              className="rounded-full border border-slate-700 px-4 py-2 text-xs uppercase tracking-[0.3em] text-slate-200"
+              className="flex w-full items-center justify-center rounded-xl border border-slate-200 py-3 text-xs font-bold uppercase tracking-widest text-slate-500 transition hover:bg-slate-50 hover:text-red-500"
             >
-              Logout
+              Logout Session
             </button>
           </aside>
 
-          <main className="flex-1">
-            <header id="home" className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          {/* Main Content */}
+          <main className="flex-1 space-y-10">
+            <header id="home" className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-orange-300">Dashboard</p>
-                <h1 className="font-display text-3xl text-white sm:text-4xl md:text-5xl">
-                  Welcome back{profile ? `, ${profile.name}` : ""}.
+                <p className="text-xs font-bold uppercase tracking-[0.35em] text-orange-600">Player Dashboard</p>
+                <h1 className="font-display mt-2 text-4xl text-slate-900 sm:text-5xl">
+                  Welcome back, <span className="text-orange-500">{profile?.name?.split(' ')[0]}</span>.
                 </h1>
-                <p className="mt-3 text-slate-300">
-                  Track your slots, manage your plan, and keep your squad ready.
-                </p>
               </div>
-              <div className="surface-panel rounded-3xl px-6 py-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Member</p>
-                <p className="mt-2 text-lg text-white">{profile?.email}</p>
+              <div className="rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Linked Account</p>
+                <p className="text-sm font-medium text-slate-700">{profile?.email}</p>
               </div>
             </header>
 
-          <section className="mt-10 grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
-            <div className="surface-panel rounded-3xl p-6">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Current plan</p>
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="font-display text-3xl text-white">
-                    {currentPlan ? currentPlan.name : "No plan"}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-400">
-                    {currentPlan ? `Rs ${currentPlan.priceMonthly} / month` : "Choose a plan to unlock perks."}
-                  </p>
+            {/* Plan Status */}
+            <section className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="flex items-center justify-between">
+                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Current Plan</p>
+                   <span className="rounded-full bg-orange-100 px-3 py-1 text-[10px] font-bold uppercase text-orange-700">Active</span>
                 </div>
-                <button className="rounded-full border border-slate-600 px-5 py-2 text-xs uppercase tracking-[0.2em] text-slate-200">
-                  Upgrade
-                </button>
-              </div>
-              <div className="mt-6 grid gap-2 text-sm text-slate-300">
-                {(currentPlan?.perks ?? ["No perks available"]).map((perk) => (
-                  <div key={perk} className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-orange-400" />
-                    <span>{perk}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="surface-panel rounded-3xl p-6">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Your plans</p>
-              <div className="mt-5 grid gap-4">
-                {plans.map((plan) => (
-                  <div
-                    key={plan._id}
-                    className="flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-950/60 px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm text-slate-100">{plan.name}</p>
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                        Rs {plan.priceMonthly} / month
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-slate-800 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-300">
-                      Select
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section id="booking" className="mt-10">
-            <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Bookings</p>
-            </div>
-
-            <div className="mt-6 grid gap-4">
-              <div className="surface-panel rounded-3xl p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Book a slot</p>
-                <p className="mt-3 text-sm text-slate-400">
-                  PS: Rs 60 per head/hour. Simulator: Rs 100 per head/hour. Max 5 players.
+                <h2 className="font-display mt-4 text-3xl text-slate-900">{currentPlan?.name}</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  {currentPlan ? `₹${currentPlan.priceMonthly} billed monthly` : "No active subscription"}
                 </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <select
-                    value={bookingForm.device}
-                    onChange={(event) =>
-                      setBookingForm((prev) => ({ ...prev, device: event.target.value }))
-                    }
-                    className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm"
-                  >
-                    <option value="PS1">PS1</option>
-                    <option value="PS2">PS2</option>
-                    <option value="PS3">PS3</option>
-                    <option value="SIM1">Driving Simulator</option>
-                  </select>
-                  <input
-                    type="datetime-local"
-                    value={bookingForm.slotStart}
-                    onChange={(event) =>
-                      setBookingForm((prev) => ({ ...prev, slotStart: event.target.value }))
-                    }
-                    className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm"
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    value={bookingForm.durationHours}
-                    onChange={(event) =>
-                      setBookingForm((prev) => ({ ...prev, durationHours: event.target.value }))
-                    }
-                    placeholder="Duration (hours)"
-                    className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm"
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    max={5}
-                    value={bookingForm.players}
-                    onChange={(event) =>
-                      setBookingForm((prev) => ({ ...prev, players: event.target.value }))
-                    }
-                    placeholder="Players (1-5)"
-                    className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm"
-                  />
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {currentPlan?.perks?.map((perk) => (
+                    <span key={perk} className="rounded-lg bg-slate-50 border border-slate-100 px-3 py-1.5 text-xs text-slate-600">
+                      • {perk}
+                    </span>
+                  ))}
                 </div>
-                <button
-                  onClick={handleBookingSubmit}
-                  className="mt-4 rounded-full bg-orange-500 px-5 py-2 text-xs uppercase tracking-[0.2em] text-slate-950"
-                >
-                  Confirm booking
-                </button>
-                {bookingMessage ? (
-                  <p className="mt-3 text-sm text-slate-300">{bookingMessage}</p>
-                ) : null}
               </div>
 
-              <div id="history" className="grid gap-4">
+              <div className="rounded-[32px] border border-orange-100 bg-orange-50/50 p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Quick Actions</p>
+                <h3 className="font-display mt-4 text-2xl text-slate-900">Level up your experience</h3>
+                <p className="mt-2 text-sm text-slate-600">Upgrade to VIP for private rooms and zero-wait entry.</p>
+                <button className="mt-6 rounded-full bg-orange-500 px-6 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600">
+                  View All Plans
+                </button>
+              </div>
+            </section>
+
+            {/* Booking Callout */}
+            <section className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.35em] text-orange-600">Book slot</p>
+                  <h2 className="font-display mt-2 text-3xl text-slate-900">Reserve a rig in seconds</h2>
+                  <p className="mt-3 text-sm text-slate-500">
+                    Bookings are now on a dedicated page. Add every player name and contact number
+                    before submitting the request.
+                  </p>
+                  <div className="mt-5 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Pricing</p>
+                      <p className="mt-2 font-semibold text-slate-900">PS: ₹60/hr • Simulator: ₹100/hr</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Tip</p>
+                      <p className="mt-2 font-semibold text-slate-900">Keep arrival time ready before booking.</p>
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="/book"
+                  className="inline-flex items-center justify-center rounded-full bg-orange-500 px-10 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600"
+                >
+                  Go to Booking Page
+                </a>
+              </div>
+            </section>
+
+            {/* Booking History */}
+            <section id="history" className="space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="font-display text-2xl text-slate-900">Recent Sessions</h2>
+                <a href="#" className="text-xs font-bold uppercase text-orange-600 hover:underline">View All</a>
+              </div>
+
+              <div className="grid gap-4">
                 {bookings.length === 0 ? (
-                  <div className="surface-panel rounded-3xl p-6">
-                    <p className="text-sm text-slate-300">
-                      You have no bookings yet. Reserve your first slot and start gaming.
-                    </p>
+                  <div className="rounded-[32px] border-2 border-dashed border-slate-200 p-12 text-center">
+                    <p className="text-slate-400">No sessions recorded. Start your first raid today!</p>
                   </div>
                 ) : (
                   bookings.map((booking) => (
-                    <div
-                      key={booking._id}
-                      className="surface-panel flex flex-col gap-4 rounded-3xl p-6 md:flex-row md:items-center md:justify-between"
-                    >
-                      <div>
-                        <p className="text-lg text-white">
-                          {booking.device} {booking.game ? `· ${booking.game}` : ""}
-                        </p>
-                        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
-                          {new Date(booking.slotStart).toLocaleString()}
-                        </p>
-                        <p className="mt-2 text-sm text-slate-400">
-                          {booking.players} players · {booking.durationHours} hours
-                        </p>
+                    <div key={booking._id} className="group relative flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md md:flex-row md:items-center md:justify-between">
+                      <div className="flex items-center gap-5">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                           <span className="font-bold text-xs">{booking.device}</span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900">
+                            {booking.game || "General Gaming"}
+                          </p>
+                          <p className="text-xs font-medium text-slate-500">
+                            {new Date(booking.slotStart).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} @ {new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="rounded-full bg-slate-800 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-300">
+                      <div className="flex items-center justify-between md:text-right gap-6">
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{booking.players} Players</p>
+                          <p className="text-sm font-bold text-slate-900">₹{booking.totalPrice}</p>
+                        </div>
+                        <span className={`rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                          booking.status === 'upcoming' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+                        }`}>
                           {booking.status}
                         </span>
-                        <p className="mt-3 text-sm text-slate-400">Rs {booking.totalPrice}</p>
                       </div>
                     </div>
                   ))
                 )}
               </div>
-            </div>
-          </section>
+            </section>
 
-          <div id="games">
-            <GamesSection title="Games on the floor" />
-          </div>
+            {/* Library */}
+            <div id="games" className="pt-10">
+              <GamesSection title="Games in the Vault" />
+            </div>
           </main>
         </div>
       </div>

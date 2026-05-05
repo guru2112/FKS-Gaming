@@ -33,6 +33,8 @@ export type Booking = {
   slotEnd: string;
   durationHours: number;
   players: number;
+  contactNumber?: string;
+  companions?: Array<{ name: string; phone: string }>;
   perHeadRate: number;
   totalPrice: number;
   status: "upcoming" | "completed" | "cancelled";
@@ -46,6 +48,23 @@ export type Combo = {
   durationHours: number;
   description: string;
   isActive: boolean;
+};
+
+export type MediaCategory = "Games" | "Food" | "Drinks";
+
+export type MediaItem = {
+  _id: string;
+  title: string;
+  description: string;
+  category: MediaCategory;
+  price?: string;
+  flavor?: string;
+  packSize?: string;
+  itemType?: string;
+  imageUrl: string;
+  publicId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type AdminUser = {
@@ -136,10 +155,13 @@ export async function fetchBookings(token: string) {
 export async function createBooking(
   token: string,
   payload: {
+    userName: string;
     device: "PS1" | "PS2" | "PS3" | "SIM1";
     slotStart: string;
     durationHours: number;
     players: number;
+    contactNumber: string;
+    companions: Array<{ name: string; phone: string }>;
     game?: string;
   }
 ) {
@@ -236,6 +258,8 @@ export async function createAdminBooking(
     durationHours: number;
     device: "PS1" | "PS2" | "PS3" | "SIM1";
     players: number;
+    contactNumber: string;
+    companions: Array<{ name: string; phone: string }>;
     status?: "upcoming" | "completed" | "cancelled";
   }
 ) {
@@ -346,4 +370,76 @@ export async function deleteCombo(token: string, id: string) {
   if (!response.ok) {
     throw new Error(data.message || "Failed to delete combo");
   }
+}
+
+export async function fetchAdminMedia(token: string) {
+  const response = await requestWithToken<{ items: MediaItem[] }>(
+    "/api/admin/media",
+    token
+  );
+  return response.items;
+}
+
+export async function createAdminMedia(token: string, payload: FormData) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/media`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: payload,
+  });
+
+  const data = (await response.json()) as { message?: string; item?: MediaItem };
+
+  if (!response.ok || !data.item) {
+    throw new Error(data.message || "Failed to create media item");
+  }
+
+  return data.item;
+}
+
+export async function updateAdminMedia(token: string, id: string, payload: FormData) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/media/${id}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: payload,
+  });
+
+  const data = (await response.json()) as { message?: string; item?: MediaItem };
+
+  if (!response.ok || !data.item) {
+    throw new Error(data.message || "Failed to update media item");
+  }
+
+  return data.item;
+}
+
+export async function deleteAdminMedia(token: string, id: string) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/media/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = (await response.json()) as { message?: string };
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to delete media item");
+  }
+}
+
+export async function fetchPublicMedia(category?: MediaCategory) {
+  const params = category ? `?category=${encodeURIComponent(category)}` : "";
+  const response = await fetch(`${API_BASE_URL}/api/media${params}`);
+
+  const data = (await response.json()) as { message?: string; items?: MediaItem[] };
+
+  if (!response.ok || !data.items) {
+    throw new Error(data.message || "Failed to fetch media items");
+  }
+
+  return data.items;
 }
