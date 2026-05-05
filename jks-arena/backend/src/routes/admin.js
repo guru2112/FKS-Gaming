@@ -2,7 +2,9 @@ const express = require("express");
 const User = require("../models/User");
 const Booking = require("../models/Booking");
 const Combo = require("../models/Combo");
+const MediaItem = require("../models/MediaItem");
 const { requireAdmin } = require("../middleware/auth");
+const { imageUpload, uploadImageBuffer, deleteImage } = require("../utils/cloudinary");
 
 const router = express.Router();
 
@@ -12,6 +14,19 @@ const DEVICE_RATES = {
   PS3: 60,
   SIM1: 100,
 };
+
+function normalizeCategory(value) {
+  if (!value) return null;
+  const key = String(value).trim().toLowerCase();
+  if (key === "games" || key === "game") return "Games";
+  if (key === "food" || key === "foods") return "Food";
+  if (key === "drinks" || key === "drink") return "Drinks";
+  return null;
+}
+
+function cleanText(value) {
+  return value ? String(value).trim() : "";
+}
 
 router.use(requireAdmin);
 
@@ -127,10 +142,25 @@ router.get("/bookings", async (req, res, next) => {
 
 router.post("/bookings", async (req, res, next) => {
   try {
-    const { userId, game, slotStart, durationHours, device, players, status } = req.body;
+    const {
+      userId,
+      game,
+      slotStart,
+      durationHours,
+      device,
+      players,
+      status,
+      contactNumber,
+      companions,
+    } = req.body;
 
-    if (!userId || !slotStart || !durationHours || !device || !players) {
+    if (!userId || !slotStart || !durationHours || !device || !players || !contactNumber) {
       return res.status(400).json({ message: "Missing booking fields." });
+    }
+
+    const contact = String(contactNumber).trim();
+    if (!contact) {
+      return res.status(400).json({ message: "Contact number is required." });
     }
 
     const normalizedDevice = String(device).toUpperCase();
@@ -143,6 +173,27 @@ router.post("/bookings", async (req, res, next) => {
     const playersCount = Number(players);
     if (Number.isNaN(playersCount) || playersCount < 1 || playersCount > 5) {
       return res.status(400).json({ message: "Players must be between 1 and 5." });
+    }
+
+    const companionsList = Array.isArray(companions) ? companions : [];
+    const expectedCompanions = Math.max(playersCount - 1, 0);
+
+    if (companionsList.length !== expectedCompanions) {
+      return res
+        .status(400)
+        .json({ message: "Companion details must match total players." });
+    }
+
+    const normalizedCompanions = [];
+    for (const companion of companionsList) {
+      const name = String(companion?.name || "").trim();
+      const phone = String(companion?.phone || "").trim();
+      if (!name || !phone) {
+        return res
+          .status(400)
+          .json({ message: "Companion name and phone are required." });
+      }
+      normalizedCompanions.push({ name, phone });
     }
 
     const duration = Number(durationHours);
@@ -166,6 +217,8 @@ router.post("/bookings", async (req, res, next) => {
       slotEnd,
       durationHours: duration,
       players: playersCount,
+      contactNumber: contact,
+      companions: normalizedCompanions,
       perHeadRate,
       totalPrice,
       rig: normalizedDevice,
@@ -345,6 +398,160 @@ router.delete("/combos/:id", async (req, res, next) => {
       return res.status(404).json({ message: "Combo not found." });
     }
     return res.json({ message: "Combo deleted." });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/media", async (req, res, next) => {
+  try {
+    const items = await MediaItem.find().sort({ createdAt: -1 }).lean();
+    return res.json({ items });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.post("/media", imageUpload.single("image"), async (req, res, next) => {
+  try {
+    const category = normalizeCategory(req.body.category);
+    if (!category) {
+      return res.status(400).json({ message: "Invalid category." });
+    }
+
+    const title = cleanText(req.body.title);
+    if (!title) {
+      return res.status(400).json({ message: "Title is required." });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required." });
+    }
+
+    const description = cleanText(req.body.description);
+    const price = cleanText(req.body.price);
+    const flavor = cleanText(req.body.flavor);
+    const packSize = cleanText(req.body.packSize);
+    const itemType = cleanText(req.body.itemType);
+
+    if ((category === "Food" || category === "Drinks") && !price) {
+      return res.status(400).json({ message: "Price is required for food and drinks." });
+    }
+
+    const folder = `Photos/${category}`;
+    const uploadResult = await uploadImageBuffer(req.file.buffer, { folder });
+
+    const item = await MediaItem.create({
+      title,
+      description,
+      category,
+      price,
+      flavor,
+      packSize,
+      itemType,
+      imageUrl: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      folder,
+    });
+
+    return res.status(201).json({ item });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.patch("/media/:id", imageUpload.single("image"), async (req, res, next) => {
+  try {
+    const item = await MediaItem.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ message: "Media item not found." });
+    }
+
+    const update = {};
+    let nextCategory = item.category;
+
+    if (req.body.category !== undefined) {
+      const normalizedCategory = normalizeCategory(req.body.category);
+      if (!normalizedCategory) {
+        return res.status(400).json({ message: "Invalid category." });
+      }
+      nextCategory = normalizedCategory;
+      update.category = normalizedCategory;
+    }
+
+    if (req.body.title !== undefined) {
+      const title = cleanText(req.body.title);
+      if (!title) {
+        return res.status(400).json({ message: "Title is required." });
+      }
+      update.title = title;
+    }
+
+    if (req.body.description !== undefined) {
+      update.description = cleanText(req.body.description);
+    }
+
+    if (req.body.price !== undefined) {
+      update.price = cleanText(req.body.price);
+    }
+
+    if (req.body.flavor !== undefined) {
+      update.flavor = cleanText(req.body.flavor);
+    }
+
+    if (req.body.packSize !== undefined) {
+      update.packSize = cleanText(req.body.packSize);
+    }
+
+    if (req.body.itemType !== undefined) {
+      update.itemType = cleanText(req.body.itemType);
+    }
+
+    const priceValue =
+      update.price !== undefined ? update.price : cleanText(item.price);
+    if ((nextCategory === "Food" || nextCategory === "Drinks") && !priceValue) {
+      return res.status(400).json({ message: "Price is required for food and drinks." });
+    }
+
+    let newPublicId = null;
+    if (req.file) {
+      const folder = `Photos/${nextCategory}`;
+      const uploadResult = await uploadImageBuffer(req.file.buffer, { folder });
+      update.imageUrl = uploadResult.secure_url;
+      update.publicId = uploadResult.public_id;
+      update.folder = folder;
+      newPublicId = uploadResult.public_id;
+    }
+
+    const updated = await MediaItem.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+    });
+
+    if (!updated) {
+      return res.status(404).json({ message: "Media item not found." });
+    }
+
+    if (req.file && newPublicId) {
+      await deleteImage(item.publicId);
+    }
+
+    return res.json({ item: updated });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.delete("/media/:id", async (req, res, next) => {
+  try {
+    const item = await MediaItem.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ message: "Media item not found." });
+    }
+
+    await deleteImage(item.publicId);
+    await item.deleteOne();
+
+    return res.json({ message: "Media item deleted." });
   } catch (err) {
     return next(err);
   }

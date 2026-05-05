@@ -4,6 +4,7 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const adminRoutes = require("./routes/admin");
+const mediaRoutes = require("./routes/media");
 const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
@@ -33,6 +34,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/media", mediaRoutes);
 
 app.use(errorHandler);
 

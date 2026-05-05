@@ -32,25 +32,25 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen text-slate-900">
       <div className="relative overflow-hidden px-4 py-10 sm:px-6 md:px-16">
         <div className="absolute inset-0 opacity-80">
-          <div className="absolute -top-32 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-orange-500/30 blur-[120px]" />
-          <div className="absolute left-[-120px] top-32 h-[320px] w-[320px] rounded-full bg-cyan-400/20 blur-[140px]" />
+          <div className="absolute -top-32 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-orange-300/60 blur-[140px]" />
+          <div className="absolute left-[-120px] top-32 h-[320px] w-[320px] rounded-full bg-cyan-300/45 blur-[150px]" />
         </div>
 
         <div className="relative z-10 mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div className="space-y-6">
-            <p className="text-xs uppercase tracking-[0.35em] text-orange-300">New member</p>
-            <h1 className="font-display text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl">
+            <p className="text-xs uppercase tracking-[0.35em] text-orange-600">New member</p>
+            <h1 className="font-display text-4xl leading-[0.95] text-slate-900 sm:text-5xl md:text-6xl">
               Join the arena.
             </h1>
-            <p className="text-base text-slate-300 sm:text-lg">
+            <p className="text-base text-slate-600 sm:text-lg">
               Create your squad profile and unlock prime time booking slots.
             </p>
             <a
               href="/login"
-              className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.2em] text-orange-200"
+              className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.2em] text-orange-600"
             >
               Already registered? Login
             </a>
@@ -63,7 +63,7 @@ export default function SignupPage() {
             >
               <div className="space-y-5">
                 <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  <label className="text-xs uppercase tracking-[0.2em] text-slate-500">
                     Name
                   </label>
                   <input
@@ -71,12 +71,12 @@ export default function SignupPage() {
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     required
-                    className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-orange-400"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400"
                     placeholder="Squad leader name"
                   />
                 </div>
                 <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  <label className="text-xs uppercase tracking-[0.2em] text-slate-500">
                     Email
                   </label>
                   <input
@@ -84,12 +84,12 @@ export default function SignupPage() {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     required
-                    className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-orange-400"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400"
                     placeholder="you@jksarena.gg"
                   />
                 </div>
                 <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  <label className="text-xs uppercase tracking-[0.2em] text-slate-500">
                     Password
                   </label>
                   <input
@@ -98,19 +98,19 @@ export default function SignupPage() {
                     onChange={(event) => setPassword(event.target.value)}
                     required
                     minLength={6}
-                    className="mt-2 w-full rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-orange-400"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400"
                     placeholder="Create a password"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="glow-ring w-full rounded-full bg-orange-500 px-6 py-3 text-sm uppercase tracking-[0.2em] text-slate-950 transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="glow-ring w-full rounded-full bg-orange-500 px-6 py-3 text-sm uppercase tracking-[0.2em] text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isLoading ? "Creating account..." : "Create account"}
                 </button>
                 {message ? (
-                  <p className="text-sm text-slate-300">{message}</p>
+                  <p className="text-sm text-slate-600">{message}</p>
                 ) : null}
               </div>
             </form>
