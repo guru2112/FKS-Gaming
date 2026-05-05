@@ -1,57 +1,21 @@
 const mongoose = require("mongoose");
 
-const mediaItemSchema = new mongoose.Schema(
+const mediaSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      default: "",
-      trim: true,
-    },
+    name: { type: String, required: true },
+
     category: {
       type: String,
       enum: ["Games", "Food", "Drinks"],
       required: true,
     },
-    price: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    flavor: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    packSize: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    itemType: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    imageUrl: {
-      type: String,
-      required: true,
-    },
-    publicId: {
-      type: String,
-      required: true,
-    },
-    folder: {
-      type: String,
-      default: "",
-      trim: true,
-    },
+
+    gameName: { type: String },
+
+    secure_url: { type: String, required: true },
+    public_id: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("MediaItem", mediaItemSchema, "MediaItems");
+module.exports = mongoose.model("MediaItem", mediaSchema);
