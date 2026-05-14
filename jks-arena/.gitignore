@@ -30,3 +30,6 @@ Thumbs.db
 
 # Optional: uploads/temp files
 uploads/
+
+# Firebase Admin service account (secret)
+backend/src/config/*.json

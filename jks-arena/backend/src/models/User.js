@@ -5,26 +5,74 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      trim: true,
     },
+
     passwordHash: {
       type: String,
       required: true,
     },
-    planId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Plan",
+
+    // =========================================================
+    // 🔥 PROFILE
+    // =========================================================
+
+    avatarUrl: {
+      type: String,
+      default: "",
+    },
+
+    // =========================================================
+    // 🔥 NOTIFICATION SETTINGS
+    // =========================================================
+
+    notifications: {
+
+      bookingUpdates: {
+        type: Boolean,
+        default: true,
+      },
+
+      promotions: {
+        type: Boolean,
+        default: true,
+      },
+
+      reminders: {
+        type: Boolean,
+        default: true,
+      },
+
+    },
+
+    // =========================================================
+    // 🔥 RESET PASSWORD
+    // =========================================================
+
+    resetOTP: {
+      type: String,
       default: null,
     },
+
+    resetOTPExpires: {
+      type: Date,
+      default: null,
+    },
+
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-module.exports = mongoose.model("User", userSchema, "Users");
+module.exports = mongoose.model(
+  "User",
+  userSchema,
+  "Users"
+);

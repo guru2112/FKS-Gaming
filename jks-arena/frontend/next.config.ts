@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // ✅ Allows Hot Module Replacement (HMR) to work on your mobile device IP
+  allowedDevOrigins: ["192.168.1.16", "localhost"],
+
   images: {
     remotePatterns: [
       {
@@ -10,6 +13,21 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+
+  // 🔥 ADDED: This allows the Google Login popup to communicate with your app
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+        ],
+      },
+    ];
   },
 };
 

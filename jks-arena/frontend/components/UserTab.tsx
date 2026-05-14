@@ -1,4 +1,15 @@
-export default function UsersTab({ users }: any) {
+"use client";
+
+interface UsersTabProps {
+  users: any[];
+  onRefresh?: () => void;
+}
+
+export default function UsersTab({ users, onRefresh }: UsersTabProps) {
+  if (!users || users.length === 0) {
+    return <p className="text-slate-500">No users found.</p>;
+  }
+
   return (
     <div className="grid gap-4">
       {users.map((user: any) => (
@@ -10,9 +21,8 @@ export default function UsersTab({ users }: any) {
             <p className="font-semibold text-slate-800">{user.name}</p>
             <p className="text-sm text-gray-500">{user.email}</p>
           </div>
-
-          <span className="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full">
-            USER
+          <span className="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold">
+            {user.role === 'admin' ? 'ADMIN' : 'USER'}
           </span>
         </div>
       ))}
