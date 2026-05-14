@@ -9,32 +9,27 @@ function authenticate(req, res, next) {
   }
 
   const secret = process.env.JWT_SECRET;
-
   if (!secret) {
-    return res.status(500).json({ message: "JWT_SECRET is not set in the environment." });
+    return res.status(500).json({ message: "JWT_SECRET is not set." });
   }
 
   try {
     const payload = jwt.verify(token, secret);
     req.userId = payload.sub;
     req.userRole = payload.role || "user";
-    return next();
+    next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token." });
   }
 }
 
 function requireAdmin(req, res, next) {
-  return authenticate(req, res, () => {
+  authenticate(req, res, () => {
     if (req.userRole !== "admin") {
       return res.status(403).json({ message: "Admin access required." });
     }
-
-    return next();
+    next();
   });
 }
 
-module.exports = {
-  authenticate,
-  requireAdmin,
-};
+module.exports = { authenticate, requireAdmin };
