@@ -147,7 +147,7 @@ export default function SettingsSection({
       <div className="relative h-40 bg-gradient-to-r from-[#FDF8F5] via-[#F3EFEC] to-[#ff6b35]/10 border-b border-[#1A1A1A]/10 overflow-hidden">
 
         {/* GRID */}
-        <div className="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#80808015_1px,transparent_1px),linear-gradient(to_bottom,#80808015_1px,transparent_1px)] bg-[size:28px_28px]" />
+
 
         {/* AVATAR STRIP */}
         <div className="absolute inset-x-0 top-8 flex items-center justify-center gap-4 px-6 overflow-x-auto custom-scrollbar">

@@ -19,16 +19,15 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-[#050505]/80 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.45)]"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+          ? "bg-[#0a0a12]/75 backdrop-blur-2xl border-b border-white/15 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
           : "bg-transparent"
-      }`}
+        }`}
     >
 
       {/* TOP GLOW LINE */}
 
-      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35]/60 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35]/80 to-transparent"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -65,10 +64,10 @@ export default function Navbar() {
                 item === "Home"
                   ? "#home"
                   : item === "Facilities"
-                  ? "#facilities"
-                  : item === "Games"
-                  ? "#games"
-                  : "#about";
+                    ? "#facilities"
+                    : item === "Games"
+                      ? "#games"
+                      : "#about";
 
               return (
                 <Link
@@ -151,11 +150,10 @@ export default function Navbar() {
       {/* MOBILE MENU */}
 
       <div
-        className={`md:hidden absolute top-full left-0 w-full transition-all duration-500 overflow-hidden ${
-          isMobileMenuOpen
+        className={`md:hidden absolute top-full left-0 w-full transition-all duration-500 overflow-hidden ${isMobileMenuOpen
             ? "max-h-[400px] opacity-100"
             : "max-h-0 opacity-0"
-        }`}
+          }`}
       >
 
         <div className="bg-[#050505]/95 backdrop-blur-2xl border-b border-white/10 px-5 pt-4 pb-6">
@@ -168,10 +166,10 @@ export default function Navbar() {
                 item === "Home"
                   ? "#home"
                   : item === "Facilities"
-                  ? "#facilities"
-                  : item === "Games"
-                  ? "#games"
-                  : "#about";
+                    ? "#facilities"
+                    : item === "Games"
+                      ? "#games"
+                      : "#about";
 
               return (
                 <Link

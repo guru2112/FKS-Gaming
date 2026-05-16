@@ -117,7 +117,7 @@ function FacilitySliderCard({
 
   return (
     <div
-      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] bg-black/40 backdrop-blur-lg p-5 border border-white/10 hover:border-[#ff6b35]/50 shadow-md hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
+      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] bg-black/30 backdrop-blur-lg p-5 border border-white/15 hover:border-[#ff6b35]/60 shadow-lg hover:shadow-[0_0_40px_rgba(255,107,53,0.15)] transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -292,7 +292,7 @@ export default function FacilitiesSection() {
 
   if (isLoading) {
     return (
-      <div className="py-24 flex justify-center bg-[#050505]">
+      <div className="py-24 flex justify-center bg-[#0a0a12]">
         <div className="h-12 w-12 rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35] animate-spin"></div>
       </div>
     );
@@ -301,7 +301,7 @@ export default function FacilitiesSection() {
   return (
     <section
       id="facilities"
-      className="pt-24 pb-52 relative overflow-visible bg-[#050505]/60 backdrop-blur-sm border-t border-b border-white/5"
+      className="pt-24 pb-52 relative overflow-visible bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8"
     >
       {/* TOP HEADING */}
 
@@ -437,7 +437,7 @@ export default function FacilitiesSection() {
           {rulesData.map((rule, idx) => (
             <div
               key={idx}
-              className="relative overflow-hidden flex flex-col items-center text-center bg-black/50 backdrop-blur-xl border border-red-500/10 p-10 rounded-[36px] hover:border-red-500/40 transition-all duration-500 group shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+              className="relative overflow-hidden flex flex-col items-center text-center bg-black/35 backdrop-blur-xl border border-red-500/15 p-10 rounded-[36px] hover:border-red-500/50 transition-all duration-500 group shadow-[0_0_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(239,68,68,0.15)]"
             >
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-red-500/5 to-transparent"></div>
 

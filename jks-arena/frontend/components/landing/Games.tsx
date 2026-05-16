@@ -38,7 +38,7 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
 
   return (
     <div 
-      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] bg-black/40 backdrop-blur-lg p-5 border border-white/10 hover:border-[#ff6b35]/50 shadow-md hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none"
+      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] bg-black/30 backdrop-blur-lg p-5 border border-white/15 hover:border-[#ff6b35]/60 shadow-lg hover:shadow-[0_0_40px_rgba(255,107,53,0.15)] transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -250,7 +250,7 @@ export default function Games() {
   }
 
   return (
-    <section id="games" className="py-24 relative overflow-hidden bg-[#050505]/60 backdrop-blur-sm border-t border-b border-white/5">
+    <section id="games" className="py-24 relative overflow-hidden bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8">
       
       {/* 
         CRITICAL FIX: 
