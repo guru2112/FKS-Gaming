@@ -68,9 +68,8 @@ function LoginContent() {
     setMessage(null);
 
     try {
+      // ✅ loginUser internally calls saveSession — no manual localStorage needed
       const data = await loginUser({ email, password });
-      localStorage.setItem("auth_token", data.token);
-      localStorage.setItem("auth_role", data.role);
       setMessage("Login successful.");
       router.push(data.role === "admin" ? "/admin" : "/dashboard");
     } catch (error) {

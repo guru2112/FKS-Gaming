@@ -83,10 +83,8 @@ export default function PushNotificationManager() {
         // 🔥 SAVE TOKEN TO BACKEND
         // =====================================================
 
-        await savePushToken(
-          authToken,
-          pushToken
-        );
+        // ✅ savePushToken(pushToken, authToken) - new signature
+        await savePushToken(pushToken, authToken);
 
         // =====================================================
         // 🔥 FOREGROUND PUSH HANDLER

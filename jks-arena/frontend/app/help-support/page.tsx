@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 
-import { API_BASE_URL, type Profile } from "@/lib/auth";
+import { API_BASE_URL, fetchProfile, type Profile } from "@/lib/auth";
 
 import Sidebar from "@/components/dashboard/Sidebar";
 import MobileMenu from "@/components/dashboard/MobileMenu";
@@ -29,13 +29,7 @@ export default function HelpSupportPage() {
   );
 
   const fetchFreshProfile = async (token: string) => {
-    const res = await fetch(`${API_BASE_URL}/api/user/me?t=${Date.now()}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Failed to fetch profile");
-    return await res.json();
+    return fetchProfile(token);
   };
 
   function handleLogout() {

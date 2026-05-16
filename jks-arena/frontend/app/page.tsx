@@ -83,7 +83,7 @@ export default function Home() {
               }`}
             >
               <div className="absolute inset-0 w-full h-full animate-pan">
-                <Image src={src} alt="Desktop Background" fill priority={idx === 0} className="object-cover opacity-100" />
+                <Image src={src} alt="Desktop Background" fill sizes="100vw" priority={idx === 0} className="object-cover opacity-100" />
               </div>
             </div>
           ))}
@@ -117,35 +117,35 @@ export default function Home() {
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
-    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-[#FFFFFF]/90 to-transparent shadow-[0_0_30px_rgba(255,107,53,0.45)]"></div>
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-[#FFFFFF]/90 to-transparent shadow-[0_0_30px_rgba(255,107,53,0.45)]"></div>
   </div>
 
   <FacilitiesSection />
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
-    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
   </div>
 
   <Games />
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
-    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-[#ff6b35]/80 to-transparent shadow-[0_0_30px_rgba(255,107,53,0.4)]"></div>
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-[#ff6b35]/80 to-transparent shadow-[0_0_30px_rgba(255,107,53,0.4)]"></div>
   </div>
 
   <AboutSection />
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
-    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
   </div>
 
   <LocationSection />
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
-    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-[#ff6b35]/90 to-transparent shadow-[0_0_35px_rgba(255,107,53,0.5)]"></div>
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-[#ff6b35]/90 to-transparent shadow-[0_0_35px_rgba(255,107,53,0.5)]"></div>
   </div>
 
   <Footer />
