@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 
 // 🔥 FIX: load env BEFORE anything else
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const app = require("./app");
 const { connectDb } = require("./db");
