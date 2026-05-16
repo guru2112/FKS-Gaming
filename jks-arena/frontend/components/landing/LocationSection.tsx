@@ -13,7 +13,7 @@ export default function LocationSection() {
   return (
     <section
       id="location"
-      className="py-24 relative overflow-hidden bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8"
+      className="py-24 relative overflow-hidden bg-[#151520]/40 backdrop-blur-sm border-t border-b border-white/8"
     >
 
       {/* BACKGROUND GLOWS */}

@@ -43,7 +43,7 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Gallery Area */}
-      <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-black/60 pointer-events-none">
+      <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-black/30 pointer-events-none">
         {game.images.length > 0 ? (
           <>
             <div 
@@ -60,7 +60,7 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     draggable={false}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/80 to-transparent opacity-60"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/40 to-transparent opacity-60"></div>
                 </div>
               ))}
             </div>
@@ -250,7 +250,7 @@ export default function Games() {
   }
 
   return (
-    <section id="games" className="py-24 relative overflow-hidden bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8">
+    <section id="games" className="py-24 relative overflow-hidden bg-[#151520]/40 backdrop-blur-sm border-t border-b border-white/8">
       
       {/* 
         CRITICAL FIX: 

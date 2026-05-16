@@ -55,7 +55,7 @@ export default function Home() {
   }, [desktopImages.length, mobileImages.length]);
 
   return (
-    <main className="bg-[#0a0a12] min-h-screen text-white relative selection:bg-[#ff6b35] selection:text-white">
+    <main className="bg-[#151520] min-h-screen text-white relative selection:bg-[#ff6b35] selection:text-white">
       
       {/* Slow Pan Animation CSS */}
       <style>{`

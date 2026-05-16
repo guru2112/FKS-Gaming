@@ -12,17 +12,17 @@ export default function HeroSection() {
 
       {/* CINEMATIC OVERLAYS */}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a12]/70 via-[#0a0a12]/5 to-[#0a0a12]/65 z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a12]/30 via-transparent to-[#0a0a12]/20 z-0 pointer-events-none"></div>
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.25),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.15),transparent_40%)] z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.4),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.35),transparent_50%)] z-0 pointer-events-none"></div>
 
       {/* GRID EFFECT */}
 
       {/* ORANGE GLOW */}
 
-      <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-[#ff6b35]/25 blur-[140px] rounded-full z-0 pointer-events-none"></div>
+      <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-[#ff6b35]/50 blur-[140px] rounded-full z-0 pointer-events-none"></div>
 
-      <div className="absolute bottom-[-180px] right-[-180px] w-[550px] h-[550px] bg-[#ff6b35]/20 blur-[160px] rounded-full z-0 pointer-events-none"></div>
+      <div className="absolute bottom-[-180px] right-[-180px] w-[550px] h-[550px] bg-[#ff6b35]/45 blur-[160px] rounded-full z-0 pointer-events-none"></div>
 
       {/* TOP CENTER LABEL */}
 
