@@ -1,32 +1,21 @@
 const express = require("express");
-
 const cors = require("cors");
-
 const path = require("path");
 
-// =========================================================
-// 🔥 ROUTES
-// =========================================================
+/* =========================================================
+   🔥 ROUTES
+========================================================= */
 
-const authRoutes =
-  require("./routes/auth");
-
-const dashboardRoutes =
-  require("./routes/dashboard");
-
-const adminRoutes =
-  require("./routes/admin");
-
-const mediaRoutes =
-  require("./routes/media");
+const authRoutes = require("./routes/auth");
+const dashboardRoutes = require("./routes/dashboard");
+const adminRoutes = require("./routes/admin");
+const mediaRoutes = require("./routes/media");
 
 // 🔥 NOTIFICATION ROUTES
-const notificationRoutes =
-  require("./routes/notifications");
+const notificationRoutes = require("./routes/notifications");
 
 // 🔥 PUSH ROUTES
-const pushRoutes =
-  require("./routes/push");
+const pushRoutes = require("./routes/push");
 
 const {
   errorHandler,
@@ -35,57 +24,73 @@ const {
 const app = express();
 
 /* =========================================================
-   🔥 CORS
+   🔥 CORS CONFIGURATION
 ========================================================= */
 
-const originEnv =
-  process.env.CLIENT_ORIGIN || "";
+// ✅ Allowed Frontend Origins
 
-const allowedOrigins =
-  originEnv
-    .split(",")
-    .map((origin) =>
-      origin.trim()
-    )
-    .filter(Boolean);
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://fks-gaming.vercel.app",
+];
+
+// ✅ CORS Middleware
 
 app.use(
   cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin
+      // like mobile apps or Postman
+      if (!origin) return callback(null, true);
 
-    origin:
-      allowedOrigins.length > 0
-        ? allowedOrigins
-        : true,
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(
+          new Error(
+            "CORS policy blocked this origin"
+          )
+        );
+      }
+    },
 
-    credentials:
-      true,
+    credentials: true,
 
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
+// ✅ Handle preflight requests
+app.options("*", cors());
 
 /* =========================================================
    🔥 BODY PARSER
 ========================================================= */
 
-// 🔥 IMPORTANT:
-// Increase limit for base64 uploads
+// ✅ Increase payload limit for uploads
 
 app.use(
   express.json({
-    limit:
-      "10mb",
+    limit: "10mb",
   })
 );
 
 app.use(
   express.urlencoded({
-
-    extended:
-      true,
-
-    limit:
-      "10mb",
-
+    extended: true,
+    limit: "10mb",
   })
 );
 
@@ -93,9 +98,10 @@ app.use(
    🔥 STATIC FILES
 ========================================================= */
 
+// ✅ Serve uploaded photos
+
 app.use(
   "/photos",
-
   express.static(
     path.resolve(
       __dirname,
@@ -110,87 +116,69 @@ app.use(
    🔥 HEALTH CHECK
 ========================================================= */
 
-app.get(
-  "/api/health",
-
-  (req, res) => {
-
-    res.json({
-      status:
-        "ok",
-    });
-
-  }
-);
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    status: "ok",
+    message:
+      "Backend is running successfully 🚀",
+  });
+});
 
 /* =========================================================
-   🔥 ROUTES
+   🔥 ROOT ROUTE
 ========================================================= */
 
-// =========================================================
-// 🔥 AUTH
-// =========================================================
+app.get("/", (req, res) => {
+  res.send(
+    "JKS Arena Backend is running successfully 🚀"
+  );
+});
 
-app.use(
-  "/api/auth",
-  authRoutes
-);
+/* =========================================================
+   🔥 API ROUTES
+========================================================= */
 
-// =========================================================
-// 🔥 DASHBOARD
-// =========================================================
+// 🔥 AUTH ROUTES
+app.use("/api/auth", authRoutes);
 
-app.use(
-  "/api",
-  dashboardRoutes
-);
+// 🔥 DASHBOARD ROUTES
+app.use("/api", dashboardRoutes);
 
-// =========================================================
-// 🔥 ADMIN
-// =========================================================
+// 🔥 ADMIN ROUTES
+app.use("/api/admin", adminRoutes);
 
-app.use(
-  "/api/admin",
-  adminRoutes
-);
+// 🔥 MEDIA ROUTES
+app.use("/api/media", mediaRoutes);
 
-// =========================================================
-// 🔥 MEDIA
-// =========================================================
-
-app.use(
-  "/api/media",
-  mediaRoutes
-);
-
-// =========================================================
-// 🔥 NOTIFICATIONS
-// =========================================================
-
+// 🔥 NOTIFICATION ROUTES
 app.use(
   "/api/notifications",
   notificationRoutes
 );
 
-// =========================================================
-// 🔥 PUSH NOTIFICATIONS
-// =========================================================
+// 🔥 PUSH ROUTES
+app.use("/api/push", pushRoutes);
 
-app.use(
-  "/api/push",
-  pushRoutes
-);
-
-app.get("/", (req, res) => {
-  res.send("Backend is running successfully 🚀");
-});
 /* =========================================================
-   🔥 ERROR HANDLER
+   🔥 404 HANDLER
 ========================================================= */
 
-app.use(
-  errorHandler
-);
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
 
-module.exports =
-  app;
+/* =========================================================
+   🔥 GLOBAL ERROR HANDLER
+========================================================= */
+
+app.use(errorHandler);
+
+/* =========================================================
+   🔥 EXPORT APP
+========================================================= */
+
+module.exports = app;
