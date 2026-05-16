@@ -181,6 +181,9 @@ app.use(
   pushRoutes
 );
 
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully 🚀");
+});
 /* =========================================================
    🔥 ERROR HANDLER
 ========================================================= */
