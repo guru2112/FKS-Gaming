@@ -6,7 +6,7 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="py-28 relative overflow-hidden bg-[#0a0a12]/50 backdrop-blur-md border-t border-b border-white/8"
+      className="py-28 relative overflow-hidden bg-[#151520]/50 backdrop-blur-md border-t border-b border-white/8"
     >
 
       {/* BACKGROUND EFFECTS */}

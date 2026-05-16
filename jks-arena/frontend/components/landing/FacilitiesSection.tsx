@@ -123,7 +123,7 @@ function FacilitySliderCard({
     >
       {/* IMAGE AREA */}
 
-      <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-black/60 pointer-events-none">
+      <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-black/30 pointer-events-none">
         {/* HEART ICON */}
 
         <div className="absolute top-3 right-3 z-30 bg-black/40 backdrop-blur-md p-1.5 rounded-full border border-white/10">
@@ -164,7 +164,7 @@ function FacilitySliderCard({
                     draggable={false}
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/80 to-transparent opacity-60"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/40 to-transparent opacity-60"></div>
                 </div>
               ))}
             </div>
@@ -292,7 +292,7 @@ export default function FacilitiesSection() {
 
   if (isLoading) {
     return (
-      <div className="py-24 flex justify-center bg-[#0a0a12]">
+      <div className="py-24 flex justify-center bg-[#151520]">
         <div className="h-12 w-12 rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35] animate-spin"></div>
       </div>
     );
@@ -301,7 +301,7 @@ export default function FacilitiesSection() {
   return (
     <section
       id="facilities"
-      className="pt-24 pb-52 relative overflow-visible bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8"
+      className="pt-24 pb-52 relative overflow-visible bg-[#151520]/40 backdrop-blur-sm border-t border-b border-white/8"
     >
       {/* TOP HEADING */}
 
