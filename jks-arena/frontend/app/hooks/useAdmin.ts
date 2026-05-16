@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/auth";
 
 export function useAdmin() {
   const [overview, setOverview] = useState({ users: 0, bookings: 0, combos: 0 });
@@ -26,11 +27,11 @@ export function useAdmin() {
 
       const [overviewRes, usersRes, bookingsRes, combosRes, mediaRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/admin/overview", { headers }),
-          fetch("http://localhost:5000/api/admin/users", { headers }),
-          fetch("http://localhost:5000/api/admin/bookings", { headers }),
-          fetch("http://localhost:5000/api/admin/combos", { headers }),
-          fetch("http://localhost:5000/api/admin/media", { headers }),
+          fetch(`${API_BASE_URL}/api/admin/overview`, { headers }),
+          fetch(`${API_BASE_URL}/api/admin/users`, { headers }),
+          fetch(`${API_BASE_URL}/api/admin/bookings`, { headers }),
+          fetch(`${API_BASE_URL}/api/admin/combos`, { headers }),
+          fetch(`${API_BASE_URL}/api/admin/media`, { headers }),
         ]);
 
       if (usersRes.status === 401) {
