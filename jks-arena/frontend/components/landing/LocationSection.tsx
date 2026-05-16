@@ -13,15 +13,15 @@ export default function LocationSection() {
   return (
     <section
       id="location"
-      className="py-24 relative overflow-hidden bg-[#050505]/60 backdrop-blur-sm border-t border-b border-white/5"
+      className="py-24 relative overflow-hidden bg-[#0a0a12]/40 backdrop-blur-sm border-t border-b border-white/8"
     >
 
       {/* BACKGROUND GLOWS */}
    
 
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#ff6b35]/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#ff6b35]/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#ff6b35]/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#ff6b35]/10 blur-[120px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
 
@@ -35,7 +35,7 @@ export default function LocationSection() {
 
           <h2 className="font-display text-5xl md:text-7xl font-black text-white leading-tight uppercase tracking-tighter">
             JOIN THE{" "}
-            <span className="text-[#ff6b35] drop-shadow-[0_0_30px_rgba(255,107,53,0.3)]">
+            <span className="text-[#ff6b35] drop-shadow-[0_0_40px_rgba(255,107,53,0.5)]">
               BATTLEFIELD
             </span>
           </h2>
@@ -55,7 +55,7 @@ export default function LocationSection() {
             className="flex h-full w-full"
           >
 
-            <div className="relative w-full p-8 md:p-12 rounded-[42px] border border-white/10 bg-black/35 backdrop-blur-3xl hover:border-[#ff6b35]/40 transition-all duration-500 flex flex-col justify-between overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)] group">
+            <div className="relative w-full p-8 md:p-12 rounded-[42px] border border-white/15 bg-black/25 backdrop-blur-3xl hover:border-[#ff6b35]/50 transition-all duration-500 flex flex-col justify-between overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)] group">
 
               {/* FACILITIES STYLE BACKGROUND */}
 
@@ -69,11 +69,9 @@ export default function LocationSection() {
 
               {/* ORANGE GLOW */}
 
-              <div className="absolute -top-24 -right-24 w-56 h-56 bg-[#ff6b35]/10 blur-[90px] rounded-full pointer-events-none"></div>
+              <div className="absolute -top-24 -right-24 w-56 h-56 bg-[#ff6b35]/18 blur-[90px] rounded-full pointer-events-none"></div>
 
               {/* GRID PATTERN */}
-
-              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
 
               {/* CONTENT */}
 
@@ -168,7 +166,7 @@ export default function LocationSection() {
               href={mapRedirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-full min-h-[450px] rounded-[40px] overflow-hidden border border-white/10 bg-black/40 group relative shadow-2xl block cursor-pointer"
+              className="w-full h-full min-h-[450px] rounded-[40px] overflow-hidden border border-white/15 bg-black/30 group relative shadow-2xl block cursor-pointer"
             >
 
               {/* MAP */}

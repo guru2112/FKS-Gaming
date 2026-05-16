@@ -12,19 +12,17 @@ export default function HeroSection() {
 
       {/* CINEMATIC OVERLAYS */}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/90 via-[#050505]/15 to-[#050505]/85 z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a12]/70 via-[#0a0a12]/5 to-[#0a0a12]/65 z-0 pointer-events-none"></div>
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.15),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.08),transparent_35%)] z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.25),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.15),transparent_40%)] z-0 pointer-events-none"></div>
 
       {/* GRID EFFECT */}
 
-      <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:48px_48px] z-0 pointer-events-none"></div>
-
       {/* ORANGE GLOW */}
 
-      <div className="absolute top-[-150px] left-[-150px] w-[400px] h-[400px] bg-[#ff6b35]/15 blur-[140px] rounded-full z-0 pointer-events-none"></div>
+      <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-[#ff6b35]/25 blur-[140px] rounded-full z-0 pointer-events-none"></div>
 
-      <div className="absolute bottom-[-180px] right-[-180px] w-[450px] h-[450px] bg-[#ff6b35]/10 blur-[160px] rounded-full z-0 pointer-events-none"></div>
+      <div className="absolute bottom-[-180px] right-[-180px] w-[550px] h-[550px] bg-[#ff6b35]/20 blur-[160px] rounded-full z-0 pointer-events-none"></div>
 
       {/* TOP CENTER LABEL */}
 
@@ -57,12 +55,12 @@ export default function HeroSection() {
 
             {/* MAIN HEADING */}
 
-            <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[8rem] font-black text-white mb-6 md:mb-8 tracking-tight leading-[0.92] uppercase drop-shadow-[0_12px_30px_rgba(0,0,0,0.95)]">
+            <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[8rem] font-black text-white mb-6 md:mb-8 tracking-tight leading-[0.92] uppercase drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]">
 
               EAT. SLEEP.
               <br />
 
-              <span className="text-[#ff6b35] drop-shadow-[0_0_25px_rgba(255,107,53,0.75)]">
+              <span className="text-[#ff6b35] drop-shadow-[0_0_35px_rgba(255,107,53,0.85)]">
                 PLAY. REPEAT.
               </span>
 
@@ -72,7 +70,7 @@ export default function HeroSection() {
 
             <div className="max-w-3xl">
 
-              <p className="text-sm sm:text-lg md:text-2xl text-slate-200 leading-relaxed font-medium drop-shadow-[0_4px_12px_rgba(0,0,0,1)]">
+              <p className="text-sm sm:text-lg md:text-2xl text-slate-100 leading-relaxed font-medium drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
                 Enter a premium gaming experience featuring
                 high-end PS5 setups, immersive racing simulators,
                 cinematic vibes, and the perfect atmosphere for
@@ -87,7 +85,7 @@ export default function HeroSection() {
 
               <Link
                 href="/signup"
-                className="group relative inline-flex overflow-hidden px-10 md:px-12 py-4 md:py-5 rounded-2xl bg-[#ff6b35] text-[#050505] font-black uppercase tracking-[0.3em] text-xs md:text-base shadow-[0_0_40px_rgba(255,107,53,0.45)] hover:scale-105 transition-all duration-300"
+                className="group relative inline-flex overflow-hidden px-10 md:px-12 py-4 md:py-5 rounded-2xl bg-[#ff6b35] text-[#050505] font-black uppercase tracking-[0.3em] text-xs md:text-base shadow-[0_0_50px_rgba(255,107,53,0.55)] hover:shadow-[0_0_70px_rgba(255,107,53,0.7)] hover:scale-105 transition-all duration-300"
               >
 
                 <span className="relative z-10 flex items-center gap-3">

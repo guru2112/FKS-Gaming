@@ -6,20 +6,20 @@ export default function AboutSection() {
   return (
     <section
       id="about"
-      className="py-28 relative overflow-hidden bg-[#050505]/80 backdrop-blur-md border-t border-b border-white/5"
+      className="py-28 relative overflow-hidden bg-[#0a0a12]/50 backdrop-blur-md border-t border-b border-white/8"
     >
 
       {/* BACKGROUND EFFECTS */}
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
 
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.12),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.08),transparent_35%)]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.20),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(255,107,53,0.14),transparent_40%)]"></div>
 
-        <div className="absolute top-[-120px] right-[-120px] w-[320px] h-[320px] bg-[#ff6b35]/10 blur-[120px] rounded-full"></div>
+        <div className="absolute top-[-120px] right-[-120px] w-[400px] h-[400px] bg-[#ff6b35]/18 blur-[120px] rounded-full"></div>
 
-        <div className="absolute bottom-[-120px] left-[-120px] w-[320px] h-[320px] bg-[#ff6b35]/10 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-120px] left-[-120px] w-[400px] h-[400px] bg-[#ff6b35]/18 blur-[120px] rounded-full"></div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:42px_42px] opacity-[0.03]"></div>
+
 
       </div>
 
@@ -56,7 +56,7 @@ export default function AboutSection() {
               Built For
               <br />
 
-              <span className="text-[#ff6b35] drop-shadow-[0_0_25px_rgba(255,107,53,0.35)]">
+              <span className="text-[#ff6b35] drop-shadow-[0_0_35px_rgba(255,107,53,0.5)]">
                 Gamers.
               </span>
 
@@ -70,7 +70,7 @@ export default function AboutSection() {
 
             <div className="space-y-6">
 
-              <p className="text-lg md:text-xl text-slate-200 leading-relaxed font-medium">
+              <p className="text-lg md:text-xl text-slate-100 leading-relaxed font-medium">
                 Welcome to{" "}
                 <span className="text-white font-bold">
                   JKS Arena
@@ -78,7 +78,7 @@ export default function AboutSection() {
                 . More than just a gaming café, we are a premium battleground built for esports enthusiasts, casual gamers, and simulator racing fans across Mumbai.
               </p>
 
-              <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium">
+              <p className="text-lg md:text-xl text-slate-200 leading-relaxed font-medium">
                 Equipped with top-tier PS5 consoles, immersive racing simulators, ultra-fast fiber internet, and cinematic gaming ambience — we provide the ultimate setup so you can focus on one thing:
               </p>
 
@@ -86,7 +86,7 @@ export default function AboutSection() {
 
             {/* WINNING TEXT */}
 
-            <div className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-[#ff6b35]/20 bg-[#ff6b35]/10 px-6 py-4 backdrop-blur-xl shadow-[0_0_30px_rgba(255,107,53,0.12)]">
+            <div className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-[#ff6b35]/30 bg-[#ff6b35]/15 px-6 py-4 backdrop-blur-xl shadow-[0_0_40px_rgba(255,107,53,0.2)]">
 
               <div className="w-3 h-3 rounded-full bg-[#ff6b35] animate-pulse"></div>
 
@@ -130,7 +130,7 @@ export default function AboutSection() {
 
   </div>
 
-  <div className="relative rounded-[40px] border border-white/10 bg-black/35 backdrop-blur-3xl p-8 md:p-10 overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)]">
+  <div className="relative rounded-[40px] border border-white/15 bg-black/25 backdrop-blur-3xl p-8 md:p-10 overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)]">
 
     {/* GLOW */}
 
@@ -142,7 +142,7 @@ export default function AboutSection() {
 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative z-10">
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/30 transition-all duration-300">
+      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           PS5
@@ -154,7 +154,7 @@ export default function AboutSection() {
 
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/30 transition-all duration-300">
+      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           SIM
@@ -166,7 +166,7 @@ export default function AboutSection() {
 
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/30 transition-all duration-300">
+      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           VIP
