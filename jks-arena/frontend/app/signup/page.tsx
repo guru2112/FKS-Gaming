@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser, API_BASE_URL } from "@/lib/auth";
+import { registerUser, googleAuth, API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 
@@ -56,13 +56,12 @@ function SignupContent() {
     setIsLoading(true);
     setMessage(null);
     try {
+      // ✅ registerUser internally calls saveSession
       const data = await registerUser({ name, email, password });
-      localStorage.setItem("auth_token", data.token);
-      localStorage.setItem("auth_role", data.role);
       setMessage("Account created successfully.");
       router.push(data.role === "admin" ? "/admin" : "/dashboard");
-    } catch (error: any) {
-      setMessage(error.message);
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : "Sign up failed");
     } finally {
       setIsLoading(false);
     }
@@ -74,19 +73,11 @@ function SignupContent() {
       setIsLoading(true);
       setMessage(null);
       try {
-        const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: tokenResponse.access_token }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Google auth failed");
-
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("auth_role", data.role);
+        // ✅ googleAuth internally calls saveSession
+        const data = await googleAuth(tokenResponse.access_token);
         router.push(data.role === "admin" ? "/admin" : "/dashboard");
-      } catch (error: any) {
-        setMessage(error.message);
+      } catch (error: unknown) {
+        setMessage(error instanceof Error ? error.message : "Google auth failed");
       } finally {
         setIsLoading(false);
       }

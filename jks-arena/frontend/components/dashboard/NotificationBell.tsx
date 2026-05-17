@@ -88,8 +88,8 @@ export default function NotificationBell() {
     try {
 
       await markNotificationRead(
-        token,
-        id
+        id,
+        token
       );
 
       setNotifications((prev) =>
@@ -119,9 +119,7 @@ export default function NotificationBell() {
 
     try {
 
-      await markAllNotificationsRead(
-        token
-      );
+      await markAllNotificationsRead(token);
 
       setNotifications((prev) =>
         prev.map((item) => ({

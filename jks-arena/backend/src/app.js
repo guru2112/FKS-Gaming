@@ -10,118 +10,127 @@ const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/dashboard");
 const adminRoutes = require("./routes/admin");
 const mediaRoutes = require("./routes/media");
-
-// 🔥 NOTIFICATION ROUTES
 const notificationRoutes = require("./routes/notifications");
-
-// 🔥 PUSH ROUTES
 const pushRoutes = require("./routes/push");
+const userRoutes = require("./routes/user");
 
-const {
-  errorHandler,
-} = require("./middleware/errorHandler");
+const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
 
 /* =========================================================
    🔥 CORS CONFIGURATION
+   Production-grade: reads allowed origins from env
 ========================================================= */
 
-// ✅ Allowed Frontend Origins
+// ✅ Build allowed origins list from environment + hardcoded safe defaults
+const allowedOrigins = (() => {
+  const origins = new Set([
+    // Always allow local development
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    // Production Vercel frontend
+    "https://fks-gaming.vercel.app",
+  ]);
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://fks-gaming.vercel.app",
-];
+  // Support additional origins via env (comma-separated)
+  const envOrigin = process.env.CLIENT_ORIGIN || process.env.FRONTEND_URL;
+  if (envOrigin) {
+    envOrigin.split(",").forEach((o) => origins.add(o.trim()));
+  }
 
-// ✅ CORS Middleware
+  return [...origins];
+})();
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin
-      // like mobile apps or Postman
-      if (!origin) return callback(null, true);
+console.log("✅ Allowed CORS Origins:", allowedOrigins);
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(
-          new Error(
-            "CORS policy blocked this origin"
-          )
-        );
-      }
-    },
+// ✅ CORS options object (reused for main middleware + preflight)
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no Origin header
+    // (Postman, server-to-server, mobile native apps)
+    if (!origin) {
+      return callback(null, true);
+    }
 
-    credentials: true,
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  CORS blocked: ${origin}`);
+      callback(new Error(`CORS policy: origin '${origin}' is not allowed.`));
+    }
+  },
 
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "DELETE",
-      "PATCH",
-      "OPTIONS",
-    ],
+  credentials: true,
 
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-    ],
-  })
-);
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-// ✅ Handle preflight requests
-app.options("*", cors());
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+    "Cache-Control",
+    "Pragma",
+    "Expires",
+  ],
+
+  exposedHeaders: ["Content-Length", "Content-Type"],
+
+  // Cache preflight for 24 hours
+  maxAge: 86400,
+};
+
+// ✅ Apply CORS middleware globally
+app.use(cors(corsOptions));
+
+// ✅ Handle ALL OPTIONS preflight requests globally (must be before all routes)
+app.options("*", cors(corsOptions));
 
 /* =========================================================
    🔥 BODY PARSER
 ========================================================= */
 
-// ✅ Increase payload limit for uploads
-
-app.use(
-  express.json({
-    limit: "10mb",
-  })
-);
-
-app.use(
-  express.urlencoded({
-    extended: true,
-    limit: "10mb",
-  })
-);
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 /* =========================================================
    🔥 STATIC FILES
 ========================================================= */
 
-// ✅ Serve uploaded photos
-
+// Serve uploaded images
 app.use(
   "/photos",
-  express.static(
-    path.resolve(
-      __dirname,
-      "..",
-      "..",
-      "photos"
-    )
-  )
+  express.static(path.resolve(__dirname, "..", "..", "photos"))
 );
+
+// Serve upload folder
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "..", "public", "uploads"))
+);
+
+/* =========================================================
+   🔥 REQUEST LOGGER
+========================================================= */
+
+app.use((req, res, next) => {
+  console.log(`📌 ${req.method} ${req.originalUrl} — Origin: ${req.headers.origin || "none"}`);
+  next();
+});
 
 /* =========================================================
    🔥 HEALTH CHECK
 ========================================================= */
 
 app.get("/api/health", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     status: "ok",
-    message:
-      "Backend is running successfully 🚀",
+    message: "Backend is running successfully 🚀",
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV || "development",
   });
 });
 
@@ -130,35 +139,44 @@ app.get("/api/health", (req, res) => {
 ========================================================= */
 
 app.get("/", (req, res) => {
-  res.send(
-    "JKS Arena Backend is running successfully 🚀"
-  );
+  res.status(200).json({
+    success: true,
+    message: "JKS Arena Backend is running 🚀",
+  });
 });
 
 /* =========================================================
    🔥 API ROUTES
 ========================================================= */
 
-// 🔥 AUTH ROUTES
+// Auth (register, login, google, forgot-password, etc.)
 app.use("/api/auth", authRoutes);
 
-// 🔥 DASHBOARD ROUTES
+// Dashboard (bookings, notifications, etc.)
 app.use("/api", dashboardRoutes);
 
-// 🔥 ADMIN ROUTES
+// User profile
+app.use("/api/user", userRoutes);
+
+// Admin
 app.use("/api/admin", adminRoutes);
 
-// 🔥 MEDIA ROUTES
+// Media (Cloudinary)
 app.use("/api/media", mediaRoutes);
 
-// 🔥 NOTIFICATION ROUTES
-app.use(
-  "/api/notifications",
-  notificationRoutes
-);
+// Notifications
+app.use("/api/notifications", notificationRoutes);
 
-// 🔥 PUSH ROUTES
+// Push notifications
 app.use("/api/push", pushRoutes);
+
+/* =========================================================
+   🔥 TEST ROUTE (remove in production if not needed)
+========================================================= */
+
+app.get("/api/test", (req, res) => {
+  res.json({ success: true, message: "API working correctly ✅" });
+});
 
 /* =========================================================
    🔥 404 HANDLER
@@ -167,7 +185,8 @@ app.use("/api/push", pushRoutes);
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Route not found",
+    message: "Route not found ❌",
+    path: req.originalUrl,
   });
 });
 

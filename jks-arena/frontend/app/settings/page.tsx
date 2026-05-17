@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  API_BASE_URL,
+  fetchProfile,
   type Profile,
 } from "@/lib/auth";
 
@@ -31,29 +31,10 @@ export default function SettingsPage() {
   // FETCH PROFILE
   // =========================================================
 
-  const fetchFreshProfile =
-    async (token: string) => {
-
-      const res = await fetch(
-        `${API_BASE_URL}/api/user/me?t=${Date.now()}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          cache: "no-store",
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          "Failed to fetch profile"
-        );
-      }
-
-      return await res.json();
-
-    };
+  // ✅ Use shared fetchProfile from auth.ts — no hardcoded URLs
+  const fetchFreshProfile = async (token: string) => {
+    return fetchProfile(token);
+  };
 
   // =========================================================
   // LOAD PROFILE
