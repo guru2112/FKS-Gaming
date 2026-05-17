@@ -83,7 +83,7 @@ export default function DashboardPage() {
     token: string
   ) => {
     const response = await fetch(
-      `${API_BASE_URL}/api/auth/me?t=${Date.now()}`,
+      `${API_BASE_URL}/api/user/me?t=${Date.now()}`,
       {
         method: "GET",
 
