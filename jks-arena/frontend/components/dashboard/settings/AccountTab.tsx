@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import {
   updateProfile,
   fetchPublicMedia,
@@ -10,7 +11,10 @@ import {
 
 interface SettingsSectionProps {
   profile: Profile | null;
-  onProfileUpdated: (updatedUser: any) => Promise<void>;
+
+  onProfileUpdated: (
+    updatedUser: Profile
+  ) => Promise<void>;
 }
 
 export default function SettingsSection({
@@ -18,17 +22,29 @@ export default function SettingsSection({
   onProfileUpdated,
 }: SettingsSectionProps) {
 
+  /* =========================================================
+     🔥 STATES
+  ========================================================= */
+
   const [name, setName] =
-    useState(profile?.name || "");
+    useState(
+      profile?.name || ""
+    );
 
   const [email, setEmail] =
-    useState(profile?.email || "");
+    useState(
+      profile?.email || ""
+    );
 
   const [avatarUrl, setAvatarUrl] =
-    useState(profile?.avatarUrl || "");
+    useState(
+      profile?.avatarUrl || ""
+    );
 
-  const [availableAvatars, setAvailableAvatars] =
-    useState<MediaItem[]>([]);
+  const [
+    availableAvatars,
+    setAvailableAvatars,
+  ] = useState<MediaItem[]>([]);
 
   const [isLoading, setIsLoading] =
     useState(false);
@@ -36,120 +52,175 @@ export default function SettingsSection({
   const [message, setMessage] =
     useState<{
       text: string;
-      type: "success" | "error";
+
+      type:
+        | "success"
+        | "error";
     } | null>(null);
 
-  // =========================================================
-  // 🔥 SYNC PROFILE
-  // =========================================================
+  /* =========================================================
+     🔥 SYNC PROFILE
+  ========================================================= */
 
   useEffect(() => {
 
-    setName(profile?.name || "");
-    setEmail(profile?.email || "");
-    setAvatarUrl(profile?.avatarUrl || "");
+    setName(
+      profile?.name || ""
+    );
+
+    setEmail(
+      profile?.email || ""
+    );
+
+    setAvatarUrl(
+      profile?.avatarUrl || ""
+    );
 
   }, [profile]);
 
-  // =========================================================
-  // 🔥 FETCH AVATARS
-  // =========================================================
+  /* =========================================================
+     🔥 FETCH AVATARS
+  ========================================================= */
 
   useEffect(() => {
 
-    fetchPublicMedia("Profile")
-      .then((items) => {
+    async function loadAvatars() {
+
+      try {
+
+        const items =
+          await fetchPublicMedia(
+            "Profile"
+          );
+
+        const avatars =
+          items.filter(
+            (item) =>
+              item.profileImageType ===
+              "Avatar"
+          );
 
         setAvailableAvatars(
-          items.filter(
-            (i) =>
-              i.profileImageType ===
-              "Avatar"
-          )
+          avatars
         );
 
-      })
-      .catch((err) =>
+      } catch (err) {
+
         console.error(
-          "Failed to fetch avatars",
+          "Failed to fetch avatars:",
           err
-        )
-      );
+        );
+
+      }
+    }
+
+    loadAvatars();
 
   }, []);
 
-  // =========================================================
-  // 🔥 SAVE PROFILE
-  // =========================================================
+  /* =========================================================
+     🔥 SAVE PROFILE
+  ========================================================= */
 
-  const handleSave = async () => {
+  const handleSave =
+    async () => {
 
-    setIsLoading(true);
-    setMessage(null);
+      setIsLoading(true);
 
-    try {
+      setMessage(null);
 
-      const token =
-        localStorage.getItem(
-          "auth_token"
+      try {
+
+        const token =
+          localStorage.getItem(
+            "auth_token"
+          );
+
+        if (!token) {
+
+          throw new Error(
+            "No authentication token found"
+          );
+
+        }
+
+        // ✅ Correct updateProfile usage
+
+        const updatedData =
+          await updateProfile(
+            {
+              name,
+              email,
+              avatarUrl,
+            },
+            token
+          );
+
+        // ✅ Handle returned profile safely
+
+        const updatedUser =
+          (updatedData as any)?.user ||
+          updatedData;
+
+        // ✅ Update parent state
+
+        await onProfileUpdated(
+          updatedUser
         );
 
-      if (!token)
-        throw new Error(
-          "No auth token"
+        // ✅ Save latest profile locally
+
+        localStorage.setItem(
+          "profile",
+          JSON.stringify(
+            updatedUser
+          )
         );
 
-      const updatedData =
-        await updateProfile(
-          token,
-          {
-            name,
-            email,
-            avatarUrl,
-          }
-        );
+        setMessage({
+          text:
+            "Profile updated successfully!",
 
-      await onProfileUpdated?.(
-        updatedData.user
-      );
+          type: "success",
+        });
 
-      setMessage({
-        text:
-          "Profile updated successfully!",
-        type: "success",
-      });
+      } catch (err: any) {
 
-    } catch (err: any) {
+        console.error(err);
 
-      setMessage({
-        text:
-          err.message ||
-          "Failed to update profile",
-        type: "error",
-      });
+        setMessage({
+          text:
+            err?.message ||
+            "Failed to update profile",
 
-    } finally {
+          type: "error",
+        });
 
-      setIsLoading(false);
+      } finally {
 
-    }
+        setIsLoading(false);
 
-  };
+      }
+    };
+
+  /* =========================================================
+     🔥 UI
+  ========================================================= */
 
   return (
 
     <div className="bg-white border border-[#1A1A1A] rounded-[2.5rem] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
 
       {/* ========================================================= */}
-      {/* TOP BANNER */}
+      {/* 🔥 TOP BANNER */}
       {/* ========================================================= */}
 
       <div className="relative h-40 bg-gradient-to-r from-[#FDF8F5] via-[#F3EFEC] to-[#ff6b35]/10 border-b border-[#1A1A1A]/10 overflow-hidden">
 
-        {/* GRID */}
+        {/* ========================================================= */}
+        {/* 🔥 AVATAR STRIP */}
+        {/* ========================================================= */}
 
-
-        {/* AVATAR STRIP */}
         <div className="absolute inset-x-0 top-8 flex items-center justify-center gap-4 px-6 overflow-x-auto custom-scrollbar">
 
           {availableAvatars
@@ -158,11 +229,14 @@ export default function SettingsSection({
 
               <button
                 key={avatar._id}
+
                 onClick={() =>
                   setAvatarUrl(
-                    avatar.secure_url || ""
+                    avatar.secure_url ||
+                    ""
                   )
                 }
+
                 className={`relative shrink-0 rounded-full transition-all duration-300 ${
                   avatarUrl ===
                   avatar.secure_url
@@ -174,6 +248,7 @@ export default function SettingsSection({
               >
 
                 {/* ACTIVE GLOW */}
+
                 {avatarUrl ===
                   avatar.secure_url && (
 
@@ -196,7 +271,9 @@ export default function SettingsSection({
                     src={
                       avatar.secure_url
                     }
+
                     alt="Avatar"
+
                     className="w-full h-full object-cover"
                   />
 
@@ -211,21 +288,23 @@ export default function SettingsSection({
       </div>
 
       {/* ========================================================= */}
-      {/* CONTENT */}
+      {/* 🔥 CONTENT */}
       {/* ========================================================= */}
 
       <div className="px-6 md:px-10 pb-10 relative">
 
         {/* ========================================================= */}
-        {/* PROFILE HEADER */}
+        {/* 🔥 PROFILE HEADER */}
         {/* ========================================================= */}
 
         <div className="relative -mt-14 mb-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
 
-          {/* LEFT */}
+          {/* LEFT SECTION */}
+
           <div className="flex items-end gap-5">
 
             {/* MAIN AVATAR */}
+
             <div className="relative">
 
               <div className="absolute inset-0 rounded-full bg-[#ff6b35]/20 blur-2xl"></div>
@@ -236,17 +315,22 @@ export default function SettingsSection({
 
                   <img
                     key={avatarUrl}
+
                     src={avatarUrl}
+
                     alt="Avatar"
+
                     className="w-full h-full object-cover"
                   />
 
                 ) : (
 
                   <span className="text-4xl text-[#ff6b35] font-black">
+
                     {profile?.name?.charAt(
                       0
                     )}
+
                   </span>
 
                 )}
@@ -254,24 +338,31 @@ export default function SettingsSection({
               </div>
 
               {/* ONLINE DOT */}
+
               <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-green-500 border-4 border-white shadow-lg"></div>
 
             </div>
 
             {/* USER INFO */}
+
             <div className="pb-2">
 
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff6b35] mb-2">
+
                 Active Gamer Profile
+
               </p>
 
               <h2 className="text-3xl font-black uppercase tracking-tight text-[#1A1A1A]">
+
                 {name || "Player"}
+
               </h2>
 
               <p className="text-sm text-slate-500 mt-1">
-                Customize your account
-                settings & avatar
+
+                Customize your account settings & avatar
+
               </p>
 
             </div>
@@ -279,9 +370,12 @@ export default function SettingsSection({
           </div>
 
           {/* SAVE BUTTON */}
+
           <button
             onClick={handleSave}
+
             disabled={isLoading}
+
             className="w-full lg:w-auto bg-[#ff6b35] text-white px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.28em] shadow-[0_8px_25px_rgba(255,107,53,0.35)] hover:bg-[#e05a2b] transition-all duration-300 disabled:opacity-50"
           >
 
@@ -294,7 +388,7 @@ export default function SettingsSection({
         </div>
 
         {/* ========================================================= */}
-        {/* MESSAGE */}
+        {/* 🔥 MESSAGE */}
         {/* ========================================================= */}
 
         {message && (
@@ -317,12 +411,13 @@ export default function SettingsSection({
         )}
 
         {/* ========================================================= */}
-        {/* FORM */}
+        {/* 🔥 FORM */}
         {/* ========================================================= */}
 
         <div className="grid md:grid-cols-2 gap-8">
 
           {/* NAME */}
+
           <div className="space-y-3">
 
             <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1">
@@ -333,18 +428,22 @@ export default function SettingsSection({
 
             <input
               type="text"
+
               value={name}
+
               onChange={(e) =>
                 setName(
                   e.target.value
                 )
               }
+
               className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-2xl px-5 py-4 text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all shadow-sm"
             />
 
           </div>
 
           {/* EMAIL */}
+
           <div className="space-y-3">
 
             <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1">
@@ -355,12 +454,15 @@ export default function SettingsSection({
 
             <input
               type="email"
+
               value={email}
+
               onChange={(e) =>
                 setEmail(
                   e.target.value
                 )
               }
+
               className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-2xl px-5 py-4 text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all shadow-sm"
             />
 
@@ -371,7 +473,7 @@ export default function SettingsSection({
       </div>
 
       {/* ========================================================= */}
-      {/* SCROLLBAR */}
+      {/* 🔥 SCROLLBAR */}
       {/* ========================================================= */}
 
       <style jsx>{`
@@ -390,7 +492,5 @@ export default function SettingsSection({
       `}</style>
 
     </div>
-
   );
-
 }
