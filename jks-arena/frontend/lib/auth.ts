@@ -250,7 +250,7 @@ export async function googleAuth(accessToken: string) {
 // =========================================================
 
 export async function fetchProfile(token?: string): Promise<Profile> {
-  const data = await api.get<Profile & { _id?: string }>("/api/auth/me", {
+  const data = await api.get<Profile & { _id?: string }>("/api/user/me", {
     token,
   });
 
