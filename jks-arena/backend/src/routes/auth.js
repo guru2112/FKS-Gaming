@@ -213,7 +213,7 @@ router.post(
         resetOTP: otp,
 
         resetOTPExpires: {
-          $gt: Date.now(),
+          $gt: new Date(),
         },
 
       });
