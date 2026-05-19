@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -362,6 +362,7 @@ export default function DashboardPage() {
   ========================================================= */
 
   return (
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-[#FDF8F5]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff6b35]" /></div>}>
     <div className="flex h-screen w-full overflow-hidden bg-[#FDF8F5] text-[#1A1A1A] selection:bg-[#ff6b35] selection:text-white relative">
 
       <PushNotificationManager />
@@ -572,5 +573,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }
