@@ -20,6 +20,7 @@ router.put(
         name,
         email,
         avatarUrl,
+        topbarUrl,
       } = req.body;
 
       const updates = {};
@@ -66,6 +67,15 @@ router.put(
       if (avatarUrl !== undefined) {
         updates.avatarUrl =
           avatarUrl;
+      }
+
+      // =========================================================
+      // 🔥 TOPBAR
+      // =========================================================
+
+      if (topbarUrl !== undefined) {
+        updates.topbarUrl =
+          topbarUrl;
       }
 
       // =========================================================

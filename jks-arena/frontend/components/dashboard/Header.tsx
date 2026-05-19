@@ -9,6 +9,7 @@ interface HeaderProps {
   setIsMobileMenuOpen: (isOpen: boolean) => void;
   getInitials: (name?: string) => string;
   handleLogout: () => void;
+  hasTopbarBg?: boolean;
 }
 
 export default function Header({
@@ -16,6 +17,7 @@ export default function Header({
   setIsMobileMenuOpen,
   getInitials,
   handleLogout,
+  hasTopbarBg,
 }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,22 +45,22 @@ export default function Header({
       <div className="flex items-center">
         {/* DESKTOP WELCOME */}
         <div className="hidden md:block">
-          <h1 className="font-display text-3xl text-[#1A1A1A] sm:text-4xl tracking-tight">
+          <h1 className={`font-display text-3xl sm:text-4xl tracking-tight ${hasTopbarBg ? 'text-white drop-shadow-md' : 'text-[#1A1A1A]'}`}>
             Welcome back,{" "}
             <span className="text-[#ff6b35]">
               {profile?.name?.split(" ")[0] || "Player"}
             </span>{" "}
             👋
           </h1>
-          <p className="mt-2 text-xs font-bold tracking-[0.18em] uppercase text-slate-500">
+          <p className={`mt-2 text-xs font-bold tracking-[0.18em] uppercase ${hasTopbarBg ? 'text-white/60' : 'text-slate-500'}`}>
             <span className="text-[#ff6b35]">JKS Arena</span> • Ready for your next gaming session
           </p>
         </div>
 
         {/* MOBILE LOGO */}
         <div className="md:hidden">
-          <h1 className="font-display text-2xl font-black tracking-wide">
-            <span className="text-[#1A1A1A]">JKS</span>
+          <h1 className={`font-display text-2xl font-black tracking-wide ${hasTopbarBg ? 'drop-shadow-md' : ''}`}>
+            <span className={hasTopbarBg ? 'text-white' : 'text-[#1A1A1A]'}>JKS</span>
             <span className="text-[#ff6b35]"> ARENA</span>
           </h1>
         </div>
@@ -71,7 +73,7 @@ export default function Header({
         {/* MENU BUTTON */}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="flex items-center justify-center w-11 h-11 rounded-2xl border border-[#ff6b35]/20 bg-white shadow-sm text-slate-500 hover:text-[#ff6b35] hover:border-[#ff6b35]/40 transition-all duration-300"
+          className={`flex items-center justify-center w-11 h-11 rounded-2xl shadow-sm transition-all duration-300 ${hasTopbarBg ? 'border border-white/20 bg-white/10 text-white hover:bg-white/20' : 'border border-[#ff6b35]/20 bg-white text-slate-500 hover:text-[#ff6b35] hover:border-[#ff6b35]/40'}`}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -83,9 +85,9 @@ export default function Header({
 
         {/* PROFILE DROPDOWN */}
         <div className="relative" ref={dropdownRef}>
-          <button 
+          <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="group flex items-center gap-3 rounded-2xl border border-[#ff6b35]/15 bg-white px-3 py-2 shadow-[0_4px_15px_rgba(255,107,53,0.06)]"
+            className={`group flex items-center gap-3 rounded-2xl px-3 py-2 shadow-sm transition-all duration-300 ${hasTopbarBg ? 'border border-white/20 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_4px_15px_rgba(255,107,53,0.06)]'}`}
           >
             {/* AVATAR */}
             <div className="relative flex h-10 w-10 shrink-0 overflow-hidden items-center justify-center rounded-full bg-[#FDF8F5] border-2 border-[#ff6b35] text-xs font-black text-[#ff6b35]">
@@ -103,10 +105,10 @@ export default function Header({
 
             {/* USER DETAILS */}
             <div className="flex flex-col min-w-0 text-left">
-              <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#1A1A1A] leading-none truncate max-w-[90px]">
+              <p className={`text-[11px] font-black uppercase tracking-[0.08em] leading-none truncate max-w-[90px] ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
                 {profile?.name || "Player"}
               </p>
-              <p className="text-[10px] text-slate-500 mt-1 truncate max-w-[90px]">
+              <p className={`text-[10px] mt-1 truncate max-w-[90px] ${hasTopbarBg ? 'text-white/50' : 'text-slate-500'}`}>
                 {profile?.email || "player@jksarena.com"}
               </p>
             </div>
@@ -146,7 +148,7 @@ export default function Header({
         <NotificationBell />
 
         {/* PROFILE CARD */}
-        <div className="group flex items-center gap-4 rounded-3xl border border-[#ff6b35]/15 bg-white px-4 py-3 shadow-[0_8px_30px_rgba(255,107,53,0.08)] hover:border-[#ff6b35]/40 transition-all duration-300">
+        <div className={`group flex items-center gap-4 rounded-3xl px-4 py-3 hover:border-[#ff6b35]/40 transition-all duration-300 ${hasTopbarBg ? 'border border-white/15 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_8px_30px_rgba(255,107,53,0.08)]'}`}>
           {/* AVATAR */}
           <div className="relative">
             {/* GLOW */}
@@ -173,10 +175,10 @@ export default function Header({
 
           {/* USER DETAILS */}
           <div className="flex flex-col">
-            <p className="text-sm font-black uppercase tracking-[0.08em] text-[#1A1A1A] leading-none">
+            <p className={`text-sm font-black uppercase tracking-[0.08em] leading-none ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
               {profile?.name || "Player"}
             </p>
-            <p className="text-xs text-slate-500 mt-1 tracking-wide">
+            <p className={`text-xs mt-1 tracking-wide ${hasTopbarBg ? 'text-white/50' : 'text-slate-500'}`}>
               {profile?.email || "player@jksarena.com"}
             </p>
           </div>

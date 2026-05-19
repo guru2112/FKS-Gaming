@@ -34,6 +34,7 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
             <option>Completed</option>
             <option>Upcoming</option>
             <option>Cancelled</option>
+            <option>No-Show</option>
           </select>
           <select 
             value={arenaFilter}
@@ -90,8 +91,9 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
                   </td>
                   <td className="px-6 py-5">
                     <span className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-md border shadow-sm ${
-                      booking.status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border-green-200' : 
+                      booking.status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border-green-200' :
                       booking.status.toLowerCase() === 'cancelled' ? 'bg-red-50 text-red-500 border-red-200' :
+                      booking.status.toLowerCase() === 'no-show' ? 'bg-amber-50 text-amber-600 border-amber-200' :
                       booking.status.toLowerCase() === 'upcoming' ? 'bg-orange-50 text-[#ff6b35] border-[#ff6b35]/30' :
                       booking.status.toLowerCase() === 'active' ? 'bg-black text-white border-black' :
                       'bg-slate-50 text-slate-500 border-slate-200'

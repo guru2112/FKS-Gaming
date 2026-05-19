@@ -6,6 +6,7 @@ import { API_BASE_URL } from "@/lib/auth";
 const APP_OPTIONS = ["Mobile", "Desktop"];
 // 🔥 Added "Multiplayer" to the upload options
 const FACILITY_OPTIONS = ["Screen", "PS", "Seating", "Simulator", "Multiplayer"];
+const DASHBOARD_OPTIONS = ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar"];
 
 export default function MediaTab() {
   const [images, setImages] = useState<any[]>([]);
@@ -49,7 +50,8 @@ export default function MediaTab() {
             gameName: e.target.gameName?.value,
             view: e.target.view?.value, 
             profileImageType: e.target.profileImageType?.value,
-            facilityType: e.target.facilityType?.value, 
+            facilityType: e.target.facilityType?.value,
+            dashboardType: e.target.dashboardType?.value,
             file: base64,
           }),
         });
@@ -97,7 +99,7 @@ export default function MediaTab() {
   const clearFilters = () => { setFilterCategory("ALL"); setFilterGameName("ALL"); setFilterFacilityType("ALL"); setSearchQuery(""); };
   const clipPathStyle = { clipPath: "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)" };
   
-  const hasDynamicField = category === "Games" || category === "Application" || category === "Profile" || category === "Facilities";
+  const hasDynamicField = category === "Games" || category === "Application" || category === "Profile" || category === "Facilities" || category === "Dashboard";
 
   return (
     <div className="space-y-10">
@@ -128,6 +130,7 @@ export default function MediaTab() {
                 <option value="Application">Application</option>
                 <option value="Profile">Profile Defaults</option>
                 <option value="Facilities">Facilities</option>
+                <option value="Dashboard">Dashboard BG</option>
               </select>
             </div>
 
@@ -139,13 +142,19 @@ export default function MediaTab() {
               </div>
             )}
             {category === "Application" && (
-              <div className="col-span-1 md:col-span-4 animate-in fade-in">
-                <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 px-1">View</label>
-                <select name="view" required className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold uppercase text-slate-900">
-                  <option value="">Select View</option>
-                  {APP_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                </select>
-              </div>
+              <>
+                <div className="col-span-1 md:col-span-2 animate-in fade-in">
+                  <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 px-1">View</label>
+                  <select name="view" required className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold uppercase text-slate-900">
+                    <option value="">Select View</option>
+                    {APP_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+                <div className="col-span-1 md:col-span-2 animate-in fade-in">
+                  <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 px-1">Game Name</label>
+                  <input type="text" name="gameName" placeholder="e.g. Dirt 5" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:ring-1 focus:ring-[#ff6b35]" />
+                </div>
+              </>
             )}
             {category === "Profile" && (
               <div className="col-span-1 md:col-span-4 animate-in fade-in">
@@ -165,6 +174,17 @@ export default function MediaTab() {
                 <select name="facilityType" required className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold uppercase text-slate-900 focus:ring-1 focus:ring-[#ff6b35] cursor-pointer">
                   <option value="">Select Option...</option>
                   {FACILITY_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              </div>
+            )}
+
+            {/* Dashboard Type Selection */}
+            {category === "Dashboard" && (
+              <div className="col-span-1 md:col-span-4 animate-in fade-in">
+                <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5 px-1">Target Element</label>
+                <select name="dashboardType" required className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold uppercase text-slate-900 focus:ring-1 focus:ring-[#ff6b35] cursor-pointer">
+                  <option value="">Select Target...</option>
+                  {DASHBOARD_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
             )}
@@ -247,8 +267,9 @@ export default function MediaTab() {
                 {img.description && <p className="text-[10px] text-slate-600 mt-1 line-clamp-2 leading-tight">{img.description}</p>}
                 
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[#ff6b35] mt-1.5 opacity-80">
-                  {img.category === "Facilities" && img.facilityType ? `Type: ${img.facilityType}` : 
-                   img.gameName ? `Game: ${img.gameName}` : 
+                  {img.category === "Facilities" && img.facilityType ? `Type: ${img.facilityType}` :
+                   img.category === "Dashboard" && img.dashboardType ? `Target: ${img.dashboardType}` :
+                   img.gameName ? `Game: ${img.gameName}` :
                    img.profileImageType ? `Type: ${img.profileImageType}` : "Asset"}
                 </p>
               </div>

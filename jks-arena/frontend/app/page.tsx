@@ -23,12 +23,12 @@ export default function Home() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/media`);
         const data = await res.json();
-        
+
         if (data.items) {
           const desktop = data.items
             .filter((item: any) => item.category === "Application" && item.view === "Desktop")
             .map((item: any) => item.secure_url);
-            
+
           const mobile = data.items
             .filter((item: any) => item.category === "Application" && item.view === "Mobile")
             .map((item: any) => item.secure_url);

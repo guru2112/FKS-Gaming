@@ -41,9 +41,19 @@ export default function SettingsSection({
       profile?.avatarUrl || ""
     );
 
+  const [topbarUrl, setTopbarUrl] =
+    useState(
+      profile?.topbarUrl || ""
+    );
+
   const [
     availableAvatars,
     setAvailableAvatars,
+  ] = useState<MediaItem[]>([]);
+
+  const [
+    availableTopbars,
+    setAvailableTopbars,
   ] = useState<MediaItem[]>([]);
 
   const [isLoading, setIsLoading] =
@@ -74,6 +84,10 @@ export default function SettingsSection({
 
     setAvatarUrl(
       profile?.avatarUrl || ""
+    );
+
+    setTopbarUrl(
+      profile?.topbarUrl || ""
     );
 
   }, [profile]);
@@ -119,6 +133,46 @@ export default function SettingsSection({
   }, []);
 
   /* =========================================================
+     🔥 FETCH TOPBARS
+  ========================================================= */
+
+  useEffect(() => {
+
+    async function loadTopbars() {
+
+      try {
+
+        const items =
+          await fetchPublicMedia(
+            "Dashboard"
+          );
+
+        const topbars =
+          items.filter(
+            (item) =>
+              item.dashboardType ===
+              "Topbar"
+          );
+
+        setAvailableTopbars(
+          topbars
+        );
+
+      } catch (err) {
+
+        console.error(
+          "Failed to fetch topbars:",
+          err
+        );
+
+      }
+    }
+
+    loadTopbars();
+
+  }, []);
+
+  /* =========================================================
      🔥 SAVE PROFILE
   ========================================================= */
 
@@ -152,6 +206,7 @@ export default function SettingsSection({
               name,
               email,
               avatarUrl,
+              topbarUrl,
             },
             token
           );
@@ -469,6 +524,47 @@ export default function SettingsSection({
           </div>
 
         </div>
+
+        {/* ========================================================= */}
+        {/* 🔥 TOPBAR DESIGN PICKER */}
+        {/* ========================================================= */}
+
+        {availableTopbars.length > 0 && (
+          <div className="mt-10">
+
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1 mb-4">
+              Dashboard Topbar Design
+            </p>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {availableTopbars.map((tb) => (
+                <button
+                  key={tb._id}
+                  onClick={() => setTopbarUrl(tb.secure_url || "")}
+                  className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 group ${
+                    topbarUrl === tb.secure_url
+                      ? "border-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.3)]"
+                      : "border-[#1A1A1A]/10 hover:border-[#ff6b35]/40"
+                  }`}
+                >
+                  <div className="relative h-24 w-full overflow-hidden">
+                    <img src={tb.secure_url} alt="Topbar" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    {topbarUrl === tb.secure_url && (
+                      <div className="absolute top-2 right-2 bg-[#ff6b35] text-white text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-md">
+                        Selected
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 left-2 text-white text-[9px] font-bold uppercase tracking-wider">
+                      {tb.name}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+          </div>
+        )}
 
       </div>
 
