@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 import {
   fetchBookings,
+  cancelBooking,
   API_BASE_URL,
   type Booking as AuthBooking,
   type Profile,
@@ -74,6 +78,66 @@ export default function DashboardPage() {
     isMobileMenuOpen,
     setIsMobileMenuOpen,
   ] = useState(false);
+
+  const searchParams = useSearchParams();
+  const justBooked = searchParams.get("justBooked") === "true";
+
+  // Dashboard background images
+  const [dashboardBg, setDashboardBg] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    async function fetchDashboardBg() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/media`);
+        const data = await res.json();
+        if (data.items) {
+          const bgMap: Record<string, string> = {};
+          data.items
+            .filter((item: any) => item.category === "Dashboard" && item.dashboardType)
+            .forEach((item: any) => {
+              bgMap[item.dashboardType] = item.secure_url;
+            });
+          setDashboardBg(bgMap);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard backgrounds:", err);
+      }
+    }
+    fetchDashboardBg();
+  }, []);
+
+  // Clear the query param so refresh doesn't re-show the banner
+  useEffect(() => {
+    if (justBooked) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("justBooked");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [justBooked]);
+
+  /* =========================================================
+     🔥 CANCEL BOOKING HANDLER
+  ========================================================= */
+
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancelBooking = async (bookingId: string) => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    setIsCancelling(true);
+    try {
+      const res = await cancelBooking(bookingId, token);
+      toast.success(res.message || "Booking cancelled.");
+      // Refresh bookings
+      const updated = await fetchBookings(token);
+      setBookings(updated);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to cancel booking.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   /* =========================================================
      🔥 FETCH PROFILE
@@ -326,6 +390,7 @@ export default function DashboardPage() {
         getInitials={getInitials}
         handleLogout={handleLogout}
         navItems={navItems}
+        bgUrl={dashboardBg["Mobile Menu"]}
       />
 
       {/* SIDEBAR */}
@@ -336,6 +401,7 @@ export default function DashboardPage() {
           profile={profile}
           getInitials={getInitials}
           handleLogout={handleLogout}
+          bgUrl={dashboardBg["Sidebar"]}
         />
       </div>
 
@@ -345,9 +411,15 @@ export default function DashboardPage() {
 
         {/* HEADER */}
 
-        <div className="shrink-0 w-full bg-[#FDF8F5]/90 backdrop-blur-xl border-b border-[#ff6b35]/20 z-40">
+        <div className={`shrink-0 w-full backdrop-blur-xl z-40 relative overflow-hidden ${profile?.topbarUrl || dashboardBg["Topbar"] ? 'border-b border-white/10' : 'bg-[#FDF8F5]/90 border-b border-[#ff6b35]/20'}`}>
+          {(profile?.topbarUrl || dashboardBg["Topbar"]) && (
+            <div className="absolute inset-0 z-0">
+              <img src={profile?.topbarUrl || dashboardBg["Topbar"]} alt="Topbar BG" className="w-full h-full object-cover opacity-90" />
+              <div className="absolute inset-0 bg-[#FDF8F5]/40" />
+            </div>
+          )}
 
-          <div className="px-6 py-5 w-full">
+          <div className="relative z-10 px-6 py-5 w-full">
 
             <Header
               profile={profile}
@@ -360,6 +432,7 @@ export default function DashboardPage() {
               handleLogout={
                 handleLogout
               }
+              hasTopbarBg={!!(profile?.topbarUrl || dashboardBg["Topbar"])}
             />
           </div>
         </div>
@@ -412,6 +485,36 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {/* BOOKING SUCCESS BANNER */}
+              <AnimatePresence>
+                {justBooked && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="relative overflow-hidden rounded-2xl border border-green-500/30 bg-green-500/10 p-5"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 pointer-events-none" />
+                    <div className="relative flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-green-300 uppercase tracking-wider">
+                          Booking Confirmed!
+                        </p>
+                        <p className="text-xs text-green-400/70 mt-1">
+                          Your slot has been reserved. Scroll down to see your upcoming session.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* HERO SECTION */}
 
               <section className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr] items-stretch">
@@ -424,6 +527,12 @@ export default function DashboardPage() {
                   booking={
                     upcomingBooking
                   }
+                  onCancel={
+                    handleCancelBooking
+                  }
+                  isCancelling={isCancelling}
+                  timerBgUrl={dashboardBg["Timer Card"]}
+                  detailsBgUrl={dashboardBg["Details Card"]}
                 />
               </section>
 

@@ -56,6 +56,7 @@ export type Profile = {
   name: string;
   email: string;
   avatarUrl?: string;
+  topbarUrl?: string;
   headerUrl?: string;
   currentPlan?: Plan | null;
   notifications?: {
@@ -95,7 +96,7 @@ export type Booking = {
   companions?: Array<{ name: string; phone: string }>;
   perHeadRate: number;
   totalPrice: number;
-  status: "upcoming" | "completed" | "cancelled" | "active";
+  status: "upcoming" | "completed" | "cancelled" | "active" | "no-show";
   source?: "online" | "offline";
   sessionStatus?: "scheduled" | "active" | "completed" | "cancelled";
   walkInCustomer?: boolean;
@@ -130,7 +131,8 @@ export type MediaCategory =
   | "Drinks"
   | "Application"
   | "Profile"
-  | "Facilities";
+  | "Facilities"
+  | "Dashboard";
 
 export type MediaItem = {
   _id: string;
@@ -144,6 +146,7 @@ export type MediaItem = {
   itemType?: string;
   profileImageType?: "Avatar";
   facilityType?: "Screen" | "PS" | "Seating" | "Simulator" | "Multiplayer";
+  dashboardType?: "Sidebar" | "Timer Card" | "Mobile Menu" | "Details Card" | "Topbar";
   imageUrl?: string;
   secure_url?: string;
   publicId?: string;
@@ -360,6 +363,19 @@ export async function createBooking(
 }
 
 // =========================================================
+// 🔥 CANCEL BOOKING (user)
+// =========================================================
+
+export async function cancelBooking(bookingId: string, token?: string) {
+  const response = await api.patch<{ booking: Booking; message: string }>(
+    `/api/bookings/${bookingId}/cancel`,
+    {},
+    { token }
+  );
+  return response;
+}
+
+// =========================================================
 // 🔥 UPDATE PROFILE
 // =========================================================
 
@@ -368,6 +384,7 @@ export async function updateProfile(
     name?: string;
     email?: string;
     avatarUrl?: string;
+    topbarUrl?: string;
     notifications?: {
       bookingUpdates?: boolean;
       sessionReminders?: boolean;

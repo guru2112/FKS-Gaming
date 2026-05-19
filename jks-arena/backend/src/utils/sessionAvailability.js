@@ -22,7 +22,7 @@ async function assertDeviceAvailable({ device, slotStart, slotEnd, excludeBookin
 
   const query = {
     device: normalizedDevice,
-    status: { $ne: "cancelled" },
+    status: { $in: ["upcoming", "active"] },
     slotStart: { $lt: new Date(end.getTime() + BUFFER_MS) },
     slotEnd: { $gt: new Date(start.getTime() - BUFFER_MS) },
   };

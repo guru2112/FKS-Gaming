@@ -420,6 +420,7 @@ router.post("/scan", async (req, res, next) => {
 
     if (now > new Date(booking.expiryTime)) {
       booking.status = "completed";
+      booking.sessionStatus = "completed";
       await booking.save();
       return res.status(400).json({ message: "Pass Expired: Time slot has passed." });
     }
@@ -458,6 +459,7 @@ router.post("/end-session/:id", async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found." });
+    if (booking.status !== "active") return res.status(400).json({ message: "Only active sessions can be ended." });
     
     // Mark as completed so the rig becomes "Available" again
     const out = req.body && req.body.outTime ? new Date(req.body.outTime) : new Date();

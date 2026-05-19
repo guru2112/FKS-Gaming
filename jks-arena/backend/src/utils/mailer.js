@@ -1,6 +1,11 @@
 const nodemailer = require("nodemailer");
 
+// Singleton transporter — created once, reused for all emails
+let transporter = null;
+
 function getTransporter() {
+  if (transporter) return transporter;
+
   const user = process.env.MAIL_USERNAME;
   const pass = process.env.MAIL_PASSWORD;
   const host = process.env.SMTP_HOST;
@@ -13,31 +18,42 @@ function getTransporter() {
   }
 
   if (host) {
-    return nodemailer.createTransport({
+    transporter = nodemailer.createTransport({
       host,
       port,
       secure,
-      auth: {
-        user,
-        pass,
-      },
+      auth: { user, pass },
+    });
+  } else {
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user, pass },
     });
   }
 
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user,
-      pass,
-    },
-  });
+  return transporter;
+}
+
+/**
+ * Verify SMTP connection on startup.
+ * Returns { ok: true } or { ok: false, error }.
+ */
+async function verifyConnection() {
+  try {
+    const t = getTransporter();
+    await t.verify();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
 }
 
 async function sendMail(message) {
-  const transporter = getTransporter();
-  return transporter.sendMail(message);
+  const t = getTransporter();
+  return t.sendMail(message);
 }
 
 module.exports = {
   sendMail,
+  verifyConnection,
 };

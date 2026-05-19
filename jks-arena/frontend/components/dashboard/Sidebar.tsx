@@ -9,6 +9,7 @@ interface SidebarProps {
   profile: Profile | null;
   getInitials: (name?: string) => string;
   handleLogout: () => void;
+  bgUrl?: string;
 }
 
 const navItems = [
@@ -20,7 +21,7 @@ const navItems = [
   { name: 'Help & Support', href: '/help-support', icon: HelpIcon },
 ];
 
-export default function Sidebar({ profile, getInitials, handleLogout }: SidebarProps) {
+export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: SidebarProps) {
   const pathname = usePathname();
   const [activeHash, setActiveHash] = useState('');
 
@@ -38,37 +39,43 @@ export default function Sidebar({ profile, getInitials, handleLogout }: SidebarP
   };
 
   return (
-    <aside className="flex flex-col w-full h-full bg-[#F3EFEC]">
-      <div className="shrink-0 px-6 pt-10 mb-8">
+    <aside className="flex flex-col w-full h-full bg-[#F3EFEC] relative overflow-hidden text-white">
+      {bgUrl && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img src={bgUrl} alt="Sidebar BG" className="w-full h-full object-cover opacity-95" />
+          <div className="absolute inset-0 bg-[#1A1A1A]/15" />
+        </div>
+      )}
+      <div className="shrink-0 px-6 pt-10 mb-8 relative z-10">
         <Link href="/dashboard" onClick={() => setActiveHash('')} className="font-display flex flex-col">
           <div className="text-3xl font-black italic tracking-wider drop-shadow-sm">
-            <span className="text-[#1A1A1A]">JKS </span>
+            <span className="text-white">JKS </span>
             <span className="text-[#ff6b35]">ARENA</span>
           </div>
-          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 mt-1 pl-0.5">Gaming Cafe</span>
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/70 mt-1 pl-0.5">Gaming Cafe</span>
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-4 space-y-1.5 custom-scrollbar pb-4">
+      <nav className="flex-1 overflow-y-auto px-4 space-y-1.5 custom-scrollbar pb-4 relative z-10">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
-            <Link 
-              key={item.name} 
-              href={item.href} 
+            <Link
+              key={item.name}
+              href={item.href}
               onClick={() => {
                 if (item.href.startsWith('#')) setActiveHash(item.href);
                 if (item.href === '/dashboard') setActiveHash('');
               }}
               className={`flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
-                active 
-                  ? 'bg-[#ff6b35] text-white shadow-[0_4px_15px_rgba(255,107,53,0.3)]' 
-                  : 'text-slate-500 hover:bg-[#ff6b35]/5 hover:text-[#ff6b35]'
+                active
+                  ? 'bg-[#ff6b35] text-white shadow-[0_4px_15px_rgba(255,107,53,0.3)]'
+                  : 'text-white/80 hover:bg-[#ff6b35]/15 hover:text-[#ff6b35]'
               }`}
             >
               <div className="flex items-center gap-4">
-                <item.icon className={`w-5 h-5 transition-colors ${active ? 'text-white' : 'text-slate-400 group-hover:text-[#ff6b35]'}`} />
-                <span className={`text-[13px] font-bold tracking-wide ${active ? 'text-white' : ''}`}>
+                <item.icon className={`w-5 h-5 transition-colors ${active ? 'text-white' : 'text-white/60 group-hover:text-[#ff6b35]'}`} />
+                <span className={`text-[13px] font-bold tracking-wide ${active ? 'text-white' : 'text-white/90'}`}>
                   {item.name}
                 </span>
               </div>
@@ -77,7 +84,7 @@ export default function Sidebar({ profile, getInitials, handleLogout }: SidebarP
         })}
       </nav>
 
-      <div className="shrink-0 p-6 bg-white/40 border-t border-[#ff6b35]/10">
+      <div className="shrink-0 p-6 bg-black/20 border-t border-white/10 relative z-10">
         <div className="flex items-center gap-4 mb-6 px-1">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-lg font-black text-[#ff6b35] shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-2 ring-[#ff6b35] p-0.5">
             <div className="w-full h-full overflow-hidden bg-white rounded-full flex items-center justify-center text-[#ff6b35]">
@@ -94,15 +101,15 @@ export default function Sidebar({ profile, getInitials, handleLogout }: SidebarP
             </div>
           </div>
           <div className="overflow-hidden">
-            <p className="text-sm font-bold text-[#1A1A1A] truncate">{profile?.name || "Player"}</p>
-            <p className="text-[10px] font-bold tracking-wide text-slate-500 mt-0.5">
+            <p className="text-sm font-bold text-white truncate">{profile?.name || "Player"}</p>
+            <p className="text-[10px] font-bold tracking-wide text-white/70 mt-0.5">
               <span className="text-[#ff6b35]">Level 7</span> Gamer
             </p>
           </div>
         </div>
 
-        <button 
-          onClick={handleLogout} 
+        <button
+          onClick={handleLogout}
           className="flex items-center justify-center gap-3 w-full px-4 py-3.5 rounded-xl text-[13px] font-black uppercase tracking-widest transition-all duration-300 bg-white border border-[#ff6b35]/30 text-[#ff6b35] shadow-sm hover:bg-[#ff6b35] hover:text-white group"
         >
           <LogoutIcon className="w-5 h-5 transition-colors" />

@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 router.post("/", requireAdmin, async (req, res) => {
   try {
     // 🔥 Extract facilityType
-    const { name, description, category, gameName, view, profileImageType, facilityType, file } = req.body;
+    const { name, description, category, gameName, view, profileImageType, facilityType, dashboardType, file } = req.body;
 
     if (!file) return res.status(400).json({ message: "No file provided" });
     if (!file.startsWith("data:image")) return res.status(400).json({ message: "Invalid image format" });
@@ -34,7 +34,8 @@ router.post("/", requireAdmin, async (req, res) => {
       gameName,
       view,
       profileImageType,
-      facilityType, 
+      facilityType,
+      dashboardType,
       secure_url: uploadRes.secure_url,
       public_id: uploadRes.public_id,
     });

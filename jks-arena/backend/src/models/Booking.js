@@ -52,7 +52,7 @@ const bookingSchema = new mongoose.Schema(
     paymentMethod: { type: String, enum: ["cash", "online"] },
     amountPaid: { type: Number, min: 0, default: 0 },
     paymentStatus: { type: String, enum: ["paid", "partial"] },
-    status: { type: String, enum: ["upcoming", "active", "completed", "cancelled"], default: "upcoming" },
+    status: { type: String, enum: ["upcoming", "active", "completed", "cancelled", "no-show"], default: "upcoming" },
     actualStartTime: { type: Date }, 
   },
   { timestamps: true }
@@ -60,5 +60,6 @@ const bookingSchema = new mongoose.Schema(
 
 bookingSchema.index({ device: 1, slotStart: 1, slotEnd: 1, status: 1 });
 bookingSchema.index({ source: 1, sessionStatus: 1 });
+bookingSchema.index({ status: 1, slotStart: 1 }); // auto-cancel / auto-complete queries
 
 module.exports = mongoose.model("Booking", bookingSchema, "Bookings");

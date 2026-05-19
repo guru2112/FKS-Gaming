@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    topbarUrl: {
+      type: String,
+      default: "",
+    },
+
     // =========================================================
     // 🔥 NOTIFICATION SETTINGS
     // =========================================================

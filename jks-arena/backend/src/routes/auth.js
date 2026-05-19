@@ -212,6 +212,10 @@ router.post(
 
         resetOTP: otp,
 
+        resetOTPExpires: {
+          $gt: Date.now(),
+        },
+
       });
 
     if (!user) {
@@ -221,7 +225,7 @@ router.post(
         .json({
 
           message:
-            "Action unauthorized.",
+            "Invalid or expired OTP.",
 
         });
 

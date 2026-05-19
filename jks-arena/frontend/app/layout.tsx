@@ -5,6 +5,8 @@ import {
   Space_Grotesk,
 } from "next/font/google";
 
+import { Toaster } from "sonner";
+
 import "./globals.css";
 
 // =========================================================
@@ -66,6 +68,20 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col text-slate-900">
 
         {children}
+
+        <Toaster
+          theme="dark"
+          position="top-right"
+          richColors
+          toastOptions={{
+            style: {
+              background: "#1a1a1a",
+              border: "1px solid rgba(255, 107, 53, 0.2)",
+              color: "#fff",
+              fontFamily: "var(--font-body)",
+            },
+          }}
+        />
 
       </body>
 

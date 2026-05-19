@@ -197,6 +197,8 @@ router.get(
           $set: {
             status:
               "completed",
+            sessionStatus:
+              "completed",
           },
         }
       );
@@ -562,129 +564,146 @@ router.post(
           .lean();
 
       // =====================================================
-      // SEND EMAIL
+      // SEND EMAIL (fire-and-forget — does not block response)
       // =====================================================
 
+      const emailUser = user; // capture for closure
+
       if (
-        user?.email &&
-        user?.notifications
+        emailUser?.email &&
+        emailUser?.notifications
           ?.bookingUpdates !== false
       ) {
 
-        try {
+        // Run in background — booking response returns immediately
+        (async () => {
+          try {
 
-          const qrViewUrl =
-            `${process.env.FRONTEND_URL || "http://192.168.1.16:3000"}/qr/${qrId}`;
+            const frontendUrl =
+              process.env.FRONTEND_URL ||
+              process.env.CLIENT_ORIGIN ||
+              "https://fks-gaming.vercel.app";
 
-          const qrPng =
-            await createQrPngBuffer(
-              qrViewUrl
-            );
+            const qrViewUrl =
+              `${frontendUrl}/qr/${qrId}`;
 
-          const pdfBuffer =
-            await buildBookingPdf({
-              booking,
-              user,
-              qrPng,
-            });
+            const qrPng =
+              await createQrPngBuffer(
+                qrViewUrl
+              );
 
-          const from =
-            process.env.MAIL_FROM ||
-            process.env.MAIL_USERNAME;
+            const pdfBuffer =
+              await buildBookingPdf({
+                booking,
+                user: emailUser,
+                qrPng,
+              });
 
-          await sendMail({
-            from,
+            const from =
+              process.env.MAIL_FROM ||
+              process.env.MAIL_USERNAME;
 
-            to:
-              user.email,
+            await sendMail({
+              from,
 
-            subject:
-              "Your JKS Arena Access Pass",
+              to:
+                emailUser.email,
 
-            html: `
-              <div style="font-family:Arial,sans-serif;padding:20px;">
+              subject:
+                "Your JKS Arena Access Pass",
 
-                <h2 style="color:#ff6b35;">
-                  Booking Confirmed 🎮
-                </h2>
+              html: `
+                <div style="font-family:Arial,sans-serif;padding:20px;">
 
-                <p>
-                  Hi <strong>${user.name}</strong>,
-                </p>
+                  <h2 style="color:#ff6b35;">
+                    Booking Confirmed 🎮
+                  </h2>
 
-                <p>
-                  Your booking has been successfully confirmed.
-                </p>
+                  <p>
+                    Hi <strong>${emailUser.name}</strong>,
+                  </p>
 
-                <div style="margin-top:20px;padding:15px;border:1px solid #eee;border-radius:10px;background:#fafafa;">
+                  <p>
+                    Your booking has been successfully confirmed.
+                  </p>
 
-                  <p><strong>Device:</strong> ${booking.device}</p>
+                  <div style="margin-top:20px;padding:15px;border:1px solid #eee;border-radius:10px;background:#fafafa;">
 
-                  <p><strong>Players:</strong> ${booking.players}</p>
+                    <p><strong>Device:</strong> ${booking.device}</p>
 
-                  <p><strong>Duration:</strong> ${booking.durationHours} Hour(s)</p>
+                    <p><strong>Players:</strong> ${booking.players}</p>
 
-                  <p><strong>Total:</strong> ₹${booking.totalPrice}</p>
+                    <p><strong>Duration:</strong> ${booking.durationHours} Hour(s)</p>
+
+                    <p><strong>Total:</strong> ₹${booking.totalPrice}</p>
+
+                  </div>
+
+                  <p style="margin-top:20px;">
+                    Your QR Pass:
+                  </p>
+
+                  <a
+                    href="${qrViewUrl}"
+                    style="
+                      display:inline-block;
+                      padding:12px 20px;
+                      background:#ff6b35;
+                      color:white;
+                      border-radius:8px;
+                      text-decoration:none;
+                      font-weight:bold;
+                    "
+                  >
+                    View QR Pass
+                  </a>
+
+                  <p style="margin-top:30px;color:#777;font-size:12px;">
+                    JKS Arena • Gaming & Simulator Lounge
+                  </p>
 
                 </div>
+              `,
 
-                <p style="margin-top:20px;">
-                  Your QR Pass:
-                </p>
+              attachments: [
+                {
+                  filename:
+                    `booking-${qrId}.pdf`,
 
-                <a
-                  href="${qrViewUrl}"
-                  style="
-                    display:inline-block;
-                    padding:12px 20px;
-                    background:#ff6b35;
-                    color:white;
-                    border-radius:8px;
-                    text-decoration:none;
-                    font-weight:bold;
-                  "
-                >
-                  View QR Pass
-                </a>
+                  content:
+                    pdfBuffer,
 
-                <p style="margin-top:30px;color:#777;font-size:12px;">
-                  JKS Arena • Gaming & Simulator Lounge
-                </p>
+                  contentType:
+                    "application/pdf",
+                },
+              ],
+            });
 
-              </div>
-            `,
+            console.log(
+              `✅ Booking email sent to ${emailUser.email} for booking ${qrId}`
+            );
 
-            attachments: [
-              {
-                filename:
-                  `booking-${qrId}.pdf`,
+          } catch (emailErr) {
 
-                content:
-                  pdfBuffer,
+            console.error(
+              `❌ Email failed for ${emailUser?.email || "unknown"} (booking ${qrId}, device ${booking.device}):`,
+              emailErr.message || emailErr
+            );
 
-                contentType:
-                  "application/pdf",
-              },
-            ],
-          });
+          }
+        })();
 
-          console.log(
-            "✅ Booking email sent."
-          );
+      } else if (emailUser?.email) {
 
-        } catch (emailErr) {
-
-          console.error(
-            "❌ Email error:",
-            emailErr
-          );
-
-        }
+        console.log(
+          `ℹ️  Email skipped for ${emailUser.email} — bookingUpdates notifications disabled`
+        );
 
       }
 
       return res.status(201).json({
         booking,
+        emailQueued: !!(emailUser?.email && emailUser?.notifications?.bookingUpdates !== false),
       });
 
     } catch (err) {
@@ -720,6 +739,77 @@ router.get(
 
       return res.json({
         plans,
+      });
+
+    } catch (err) {
+
+      return next(err);
+
+    }
+
+  }
+);
+
+// =========================================================
+// 🔥 CANCEL BOOKING (user)
+// =========================================================
+
+router.patch(
+  "/bookings/:id/cancel",
+  authenticate,
+  async (req, res, next) => {
+
+    try {
+
+      const booking =
+        await Booking.findOne({
+          _id: req.params.id,
+          userId: req.userId,
+        });
+
+      if (!booking) {
+
+        return res
+          .status(404)
+          .json({ message: "Booking not found." });
+
+      }
+
+      if (booking.status !== "upcoming") {
+
+        return res
+          .status(400)
+          .json({
+            message:
+              "Only upcoming bookings can be cancelled.",
+          });
+
+      }
+
+      // Must be at least 30 minutes before slot start
+      const now = Date.now();
+      const cutoff =
+        new Date(booking.slotStart).getTime() -
+        30 * 60 * 1000;
+
+      if (now >= cutoff) {
+
+        return res
+          .status(400)
+          .json({
+            message:
+              "Too late to cancel. You can only cancel up to 30 minutes before your session.",
+          });
+
+      }
+
+      booking.status = "cancelled";
+      booking.sessionStatus = "cancelled";
+      await booking.save();
+
+      return res.json({
+        booking,
+        message: "Booking cancelled successfully.",
       });
 
     } catch (err) {

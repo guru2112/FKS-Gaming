@@ -7,18 +7,23 @@ const mediaSchema = new mongoose.Schema(
 
     category: {
       type: String,
-      enum: ["Games", "Food", "Drinks", "Application", "Profile", "Facilities"],
+      enum: ["Games", "Food", "Drinks", "Application", "Profile", "Facilities", "Dashboard"],
       required: true,
     },
 
-    gameName: { type: String }, 
-    view: { type: String },     
+    gameName: { type: String },
+    view: { type: String },
     // 🔥 Removed "Header" from enum
-    profileImageType: { type: String, enum: ["Avatar"] }, 
-    
-    facilityType: { 
-      type: String, 
-      enum: ["Screen", "PS", "Seating", "Simulator", "Multiplayer"] 
+    profileImageType: { type: String, enum: ["Avatar"] },
+
+    facilityType: {
+      type: String,
+      enum: ["Screen", "PS", "Seating", "Simulator", "Multiplayer"]
+    },
+
+    dashboardType: {
+      type: String,
+      enum: ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar"]
     },
 
     secure_url: { type: String, required: true },
