@@ -30,7 +30,6 @@ export default function MobileMenu({
   profile,
   getInitials,
   handleLogout,
-  bgUrl,
 }: MobileMenuProps) {
 
   const pathname = usePathname();
