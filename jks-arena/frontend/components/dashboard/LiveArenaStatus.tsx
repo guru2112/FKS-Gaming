@@ -165,7 +165,7 @@ export default function LiveArenaStatus({
       setLoadingSchedule(true);
       setScheduleError(null);
       try {
-        const data = await api.get<{ bookings: any[] }>(
+        const data = await api.get(
           `/api/bookings/schedule?date=${todayDateStr}&device=${activeDevice}`
         );
         setSchedule(data.bookings || []);

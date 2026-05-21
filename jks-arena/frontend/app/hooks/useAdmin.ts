@@ -27,14 +27,14 @@ export function useAdmin() {
     try {
       const [overviewData, usersData, bookingsData, combosData, mediaData] =
         await Promise.all([
-          api.get<{ users: number; bookings: number; combos: number }>(
+          api.get(
             "/api/admin/overview",
             { token }
           ),
-          api.get<{ users: any[] }>("/api/admin/users", { token }),
-          api.get<{ bookings: any[] }>("/api/admin/bookings", { token }),
-          api.get<{ combos: any[] }>("/api/admin/combos", { token }),
-          api.get<{ items: any[] }>("/api/admin/media", { token }),
+          api.get("/api/admin/users", { token }),
+          api.get("/api/admin/bookings", { token }),
+          api.get("/api/admin/combos", { token }),
+          api.get("/api/admin/media", { token }),
         ]);
 
       setOverview(overviewData || { users: 0, bookings: 0, combos: 0 });

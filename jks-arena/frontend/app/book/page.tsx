@@ -99,7 +99,7 @@ export default function BookSlotPage() {
     setLoadingSchedule(true);
     setError(null);
     try {
-      const data = await api.get<{ bookings: ScheduleItem[] }>(`/api/bookings/schedule?date=${dateStr}`);
+      const data = await api.get(`/api/bookings/schedule?date=${dateStr}`) as { bookings: ScheduleItem[] };
       setSchedule(data.bookings || []);
     } catch (err: any) {
       setError(err.message || "Failed to load schedule");

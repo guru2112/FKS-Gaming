@@ -119,7 +119,7 @@ export default function AdminSessionsPage() {
   const fetchSessions = useCallback(async () => {
     try {
       setError(null);
-      const data = await api.get<{ sessions: Session[] }>("/api/admin/sessions");
+      const data = await api.get("/api/admin/sessions") as { sessions: Session[] };
       setSessions(Array.isArray(data.sessions) ? data.sessions : []);
     } catch (e: any) {
       setError(e?.message || "Failed to load sessions");

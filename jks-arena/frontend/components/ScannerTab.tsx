@@ -92,7 +92,7 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
     setIsActivating(true);
 
     try {
-      const data = await api.post<{ booking?: any; message?: string }>("/api/admin/scan", { token: pendingToken });
+      const data = await api.post("/api/admin/scan", { token: pendingToken }) as { booking?: any; message?: string };
 
       // Hide pending preview and show final success result
       setPendingToken(null);

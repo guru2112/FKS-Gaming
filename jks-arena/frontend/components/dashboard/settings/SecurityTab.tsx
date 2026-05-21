@@ -125,7 +125,7 @@ export default function SecurityTab() {
         // 🔥 API CALL
         // =========================================================
 
-        const data = await api.put<{ message?: string }>(
+        const data = await api.put(
           "/api/user/change-password",
           {
             currentPassword,
