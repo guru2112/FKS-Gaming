@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { API_BASE_URL, type Booking } from "@/lib/auth";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { type Booking } from "@/lib/auth";
+import { api } from "@/lib/apiClient";
 
 const DEVICES: Array<"PS1" | "PS2" | "PS3" | "SIM1"> = ["PS1", "PS2", "PS3", "SIM1"];
 
@@ -12,6 +12,8 @@ const DEVICE_RATES: Record<"PS1" | "PS2" | "PS3" | "SIM1", number> = {
   PS3: 60,
   SIM1: 100,
 };
+
+const initialNow = Date.now();
 
 type Session = Booking & {
   slotStart: string;
@@ -54,12 +56,11 @@ function msToHuman(ms: number) {
 }
 
 export default function AdminSessionsPage() {
-  const router = useRouter();
 
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(initialNow);
 
   const [form, setForm] = useState({
     customerName: "",
@@ -101,52 +102,44 @@ export default function AdminSessionsPage() {
   }, [form.amountPaid, form.device, form.inTime, form.outTime, form.players]);
 
   useEffect(() => {
-    setForm((f) => {
-      const desired = Math.max(0, Number(f.players || 1) - 1);
-      const current = Array.isArray(f.companions) ? f.companions : [];
-      if (current.length === desired) return f;
-      const next = current.slice(0, desired);
-      while (next.length < desired) next.push({ name: "", phone: "" });
-      return { ...f, companions: next };
-    });
+    const timeout = setTimeout(() => {
+      setForm((f) => {
+        const desired = Math.max(0, Number(f.players || 1) - 1);
+        const current = Array.isArray(f.companions) ? f.companions : [];
+        if (current.length === desired) return f;
+        const next = current.slice(0, desired);
+        while (next.length < desired) next.push({ name: "", phone: "" });
+        return { ...f, companions: next };
+      });
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [form.players]);
 
-  async function fetchSessions() {
+  const fetchSessions = useCallback(async () => {
     try {
       setError(null);
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
-      const res = await fetch(`${API_BASE_URL}/api/admin/sessions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          router.push("/login");
-          return;
-        }
-        throw new Error(data.message || "Failed to load sessions");
-      }
-
+      const data = await api.get<{ sessions: Session[] }>("/api/admin/sessions");
       setSessions(Array.isArray(data.sessions) ? data.sessions : []);
     } catch (e: any) {
       setError(e?.message || "Failed to load sessions");
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    fetchSessions();
-    const interval = setInterval(fetchSessions, 30000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const timeout = setTimeout(() => {
+      void fetchSessions();
+    }, 0);
+    const interval = setInterval(() => {
+      void fetchSessions();
+    }, 30000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [fetchSessions]);
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -193,11 +186,6 @@ export default function AdminSessionsPage() {
   async function startSession() {
     try {
       setError(null);
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
 
       if (!form.outTime) {
         throw new Error("Out time is required.");
@@ -222,19 +210,7 @@ export default function AdminSessionsPage() {
         amountPaid: form.amountPaid,
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/sessions/start`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to start session");
-      }
+      await api.post("/api/admin/sessions/start", payload);
 
       setForm((f) => ({
         ...f,

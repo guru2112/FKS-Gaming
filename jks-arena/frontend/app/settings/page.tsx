@@ -12,11 +12,22 @@ import AccountTab from "@/components/dashboard/settings/AccountTab";
 import SecurityTab from "@/components/dashboard/settings/SecurityTab";
 import NotificationTab from "@/components/dashboard/settings/NotificationTab";
 import SettingsSidebar from "@/components/dashboard/settings/SettingsSidebar";
+import SettingsBottomNav from "@/components/dashboard/settings/SettingsBottomNav";
 
 export default function SettingsPage() {
 
   const [profile, setProfile] =
-    useState<Profile | null>(null);
+    useState<Profile | null>(() => {
+      if (typeof window === "undefined") return null;
+      const savedProfile = localStorage.getItem("profile");
+      if (!savedProfile) return null;
+      try {
+        return JSON.parse(savedProfile) as Profile;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    });
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -53,27 +64,6 @@ export default function SettingsPage() {
         "/login";
 
       return;
-
-    }
-
-    const savedProfile =
-      localStorage.getItem(
-        "profile"
-      );
-
-    if (savedProfile) {
-
-      try {
-
-        setProfile(
-          JSON.parse(savedProfile)
-        );
-
-      } catch (err) {
-
-        console.error(err);
-
-      }
 
     }
 
@@ -353,11 +343,11 @@ export default function SettingsPage() {
 
             {profile?.avatarUrl ? (
 
-              <img
-                src={`${profile?.avatarUrl}?t=${Date.now()}`}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+                <img
+                  src={profile?.avatarUrl}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
 
             ) : (
 
@@ -402,7 +392,7 @@ export default function SettingsPage() {
 
 <div className="flex-1 overflow-y-auto">
 
-  <div className="p-6 md:p-8">
+  <div className="p-6 md:p-8 pb-24 md:pb-8">
 
     {/* BACK BUTTON */}
 
@@ -456,7 +446,10 @@ export default function SettingsPage() {
 
     {activeTab ===
       "notifications" && (
-      <NotificationTab />
+      <NotificationTab
+        profile={profile}
+        onProfileUpdated={refreshProfile}
+      />
     )}
 
   </div>
@@ -464,6 +457,11 @@ export default function SettingsPage() {
 </div>
 
       </div>
+
+      <SettingsBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
     </div>
 

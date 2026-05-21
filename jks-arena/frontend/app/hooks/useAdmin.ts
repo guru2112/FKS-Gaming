@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, getToken, redirectToLogin } from "@/lib/apiClient";
 
 export function useAdmin() {
@@ -12,7 +12,7 @@ export function useAdmin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     const token = getToken();
 
     if (!token) {
@@ -49,11 +49,14 @@ export function useAdmin() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    fetchData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const timeout = setTimeout(() => {
+      void fetchData();
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [fetchData]);
 
   return {
     overview,

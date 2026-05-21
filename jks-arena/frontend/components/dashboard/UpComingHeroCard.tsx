@@ -9,18 +9,14 @@ interface UpcomingHeroCardProps {
   isCancelling?: boolean;
   timerBgUrl?: string;
   detailsBgUrl?: string;
+  themeBg?: string;
 }
 
-export default function UpcomingHeroCard({ booking, onCancel, isCancelling, timerBgUrl, detailsBgUrl }: UpcomingHeroCardProps) {
+export default function UpcomingHeroCard({ booking, onCancel, isCancelling, timerBgUrl, detailsBgUrl, themeBg }: UpcomingHeroCardProps) {
   const [timeLeft, setTimeLeft] = useState({ hrs: '00', mins: '00', secs: '00' });
   const [showModal, setShowModal] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // Set mounted state to ensure Portal only runs on the client-side
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = typeof window !== "undefined";
 
   useEffect(() => {
     if (!booking) return;
@@ -51,8 +47,21 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
 
   if (!booking) {
     return (
-      <div className="flex flex-col items-center justify-center bg-white border border-[#1A1A1A] rounded-[2rem] p-6 shadow-sm h-full min-h-[250px]">
-        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No Upcoming Sessions</p>
+      <div
+        className="flex flex-col items-center justify-center backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)] h-full min-h-[250px]"
+        style={themeBg ? { backgroundColor: `${themeBg}99` } : { backgroundColor: "rgba(255,255,255,0.4)" }}
+      >
+        <div className="w-16 h-16 rounded-2xl bg-[#F3EFEC] flex items-center justify-center mb-4 shadow-sm">
+          <svg className="w-8 h-8 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+        </div>
+        <h3 className="text-base font-display text-[#1A1A1A] uppercase tracking-tight mb-1">No Upcoming Sessions</h3>
+        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-5 text-center">Book a slot to see your countdown here</p>
+        <a
+          href="/book"
+          className="bg-[#ff6b35] text-white rounded-xl px-6 py-3 text-[11px] font-black uppercase tracking-widest hover:bg-[#e05928] transition-colors shadow-[0_0_15px_rgba(255,107,53,0.2)]"
+        >
+          Book Now
+        </a>
       </div>
     );
   }
@@ -61,7 +70,10 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
 
   return (
     <>
-      <div className="relative flex flex-col bg-white border border-[#1A1A1A] rounded-[2rem] p-6 md:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] h-full overflow-hidden group">
+      <div
+        className="relative flex flex-col backdrop-blur-xl border border-white/50 rounded-3xl p-6 md:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)] h-full overflow-hidden group"
+        style={themeBg ? { backgroundColor: `${themeBg}99` } : { backgroundColor: "rgba(255,255,255,0.4)" }}
+      >
         {/* Decorative Orange Dot */}
         <div className="absolute top-10 right-10 w-2 h-2 rounded-full bg-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.6)] z-10"></div>
 

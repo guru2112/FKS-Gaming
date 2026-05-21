@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, api } from "@/lib/auth";
 import { toast } from "sonner";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
@@ -99,15 +99,10 @@ export default function BookSlotPage() {
     setLoadingSchedule(true);
     setError(null);
     try {
-      const token = localStorage.getItem("auth_token");
-      const res = await fetch(`${API_BASE_URL}/api/bookings/schedule?date=${dateStr}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) setSchedule(data.bookings || []);
-      else setError(data.message || "Failed to load schedule");
-    } catch {
-      setError("Network error: Could not connect to the server.");
+      const data = await api.get<{ bookings: ScheduleItem[] }>(`/api/bookings/schedule?date=${dateStr}`);
+      setSchedule(data.bookings || []);
+    } catch (err: any) {
+      setError(err.message || "Failed to load schedule");
     } finally {
       setLoadingSchedule(false);
     }
@@ -173,7 +168,6 @@ export default function BookSlotPage() {
     if (!formData.userName || !formData.userPhone) return setError("Provide your name and contact.");
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("auth_token");
       const startDateTime = new Date(`${formData.date}T${formData.time}`);
       const payload = {
         device: formData.device,
@@ -184,15 +178,7 @@ export default function BookSlotPage() {
         contactNumber: formData.userPhone,
         companions: formData.companions,
       };
-      const res = await fetch(`${API_BASE_URL}/api/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Booking failed");
-      }
+      await api.post("/api/bookings", payload);
       setShowConfetti(true);
       toast.success("Booking confirmed!", { description: "Check your dashboard for your QR pass.", duration: 5000 });
       setTimeout(() => router.push("/dashboard?justBooked=true"), 1200);
@@ -205,10 +191,10 @@ export default function BookSlotPage() {
   const stepLabels = ["Select Date", "Arena Availability", "Rig & Time", "Player Details"];
 
   return (
-    <div className="min-h-screen relative overflow-hidden font-sans text-white pt-4 md:pt-6 pb-24 px-4 sm:px-6 selection:bg-[#ff6b35] selection:text-[#050505]">
+    <div className="min-h-screen relative overflow-hidden font-sans text-[#1A1A1A] pt-4 md:pt-6 pb-24 px-4 sm:px-6 selection:bg-[#ff6b35] selection:text-[#050505]">
 
       {/* ═══════════════════════════════════════════════════════════════
-          CYBERPUNK CSS EFFECTS
+          CSS EFFECTS
       ═══════════════════════════════════════════════════════════════ */}
       <style>{`
         @keyframes pan-image {
@@ -216,25 +202,6 @@ export default function BookSlotPage() {
           100% { transform: scale(1.05) translateX(-1%); }
         }
         .animate-pan { animation: pan-image 20s ease-in-out infinite alternate; }
-
-        /* Scan lines overlay */
-        @keyframes scanlines {
-          0%   { background-position: 0 0; }
-          100% { background-position: 0 4px; }
-        }
-        .scanlines::after {
-          content: "";
-          position: absolute; inset: 0;
-          background: repeating-linear-gradient(
-            0deg,
-            transparent, transparent 2px,
-            rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px
-          );
-          animation: scanlines 0.3s linear infinite;
-          pointer-events: none;
-          border-radius: inherit;
-          z-index: 1;
-        }
 
         /* Glitch text effect */
         @keyframes glitch {
@@ -258,25 +225,6 @@ export default function BookSlotPage() {
         @keyframes shimmer {
           0%   { background-position: -200% 0; }
           100% { background-position: 200% 0; }
-        }
-
-        /* Corner brackets */
-        .corner-brackets::before, .corner-brackets::after {
-          content: "";
-          position: absolute;
-          width: 24px; height: 24px;
-          border-color: rgba(255,107,53,0.4);
-          border-style: solid;
-          pointer-events: none;
-          z-index: 2;
-        }
-        .corner-brackets::before {
-          top: 12px; left: 12px;
-          border-width: 2px 0 0 2px;
-        }
-        .corner-brackets::after {
-          bottom: 12px; right: 12px;
-          border-width: 0 2px 2px 0;
         }
 
         /* Confetti particles */
@@ -322,17 +270,6 @@ export default function BookSlotPage() {
           50%  { stroke-dashoffset: 45; }
           100% { stroke-dashoffset: 180; }
         }
-
-        /* Hover shimmer on badges */
-        .badge-shimmer { position: relative; overflow: hidden; }
-        .badge-shimmer::after {
-          content: "";
-          position: absolute; inset: 0;
-          background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
-          transform: translateX(-100%);
-          transition: transform 0.6s ease;
-        }
-        .badge-shimmer:hover::after { transform: translateX(100%); }
       `}</style>
 
       {/* ═══════════════════════════════════════════════════════════════
@@ -357,9 +294,9 @@ export default function BookSlotPage() {
             </div>
           ))}
         </div>
-        <div className="absolute inset-0 bg-[#050505]/40 z-20"></div>
-        <div className="absolute top-[-20%] right-[-10%] w-[80%] h-[80%] bg-gradient-to-bl from-[#ff6b35]/30 via-[#ff4500]/10 to-transparent blur-[140px] rounded-full pointer-events-none z-30"></div>
-        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-tr from-[#ff6b35]/20 via-[#ff4500]/5 to-transparent blur-[120px] rounded-full pointer-events-none z-30"></div>
+        <div className="absolute inset-0 bg-[#FFF4E6]/85 z-20"></div>
+        <div className="absolute top-[-20%] right-[-10%] w-[80%] h-[80%] bg-gradient-to-bl from-[#ff6b35]/15 via-[#ff4500]/5 to-transparent blur-[140px] rounded-full pointer-events-none z-30"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-tr from-[#ff6b35]/10 via-[#ff4500]/3 to-transparent blur-[120px] rounded-full pointer-events-none z-30"></div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
@@ -369,12 +306,17 @@ export default function BookSlotPage() {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
           {Array.from({ length: 40 }).map((_, i) => {
             const colors = ["#ff6b35", "#00f0ff", "#ff4500", "#22c55e", "#a855f7", "#facc15"];
-            const left = Math.random() * 100;
-            const delay = Math.random() * 0.5;
-            const duration = 1 + Math.random() * 1.5;
-            const size = 4 + Math.random() * 8;
+            const pseudoRandom = (seed: number) => {
+              const value = Math.sin(seed) * 10000;
+              return value - Math.floor(value);
+            };
+            const left = pseudoRandom(i * 11 + 1) * 100;
+            const delay = pseudoRandom(i * 11 + 2) * 0.5;
+            const duration = 1 + pseudoRandom(i * 11 + 3) * 1.5;
+            const size = 4 + pseudoRandom(i * 11 + 4) * 8;
+            const heightScale = pseudoRandom(i * 11 + 5) > 0.5 ? 1 : 0.6;
             const color = colors[i % colors.length];
-            const shape = Math.random() > 0.5 ? "rounded-full" : "rounded-sm";
+            const shape = pseudoRandom(i * 11 + 6) > 0.5 ? "rounded-full" : "rounded-sm";
             return (
               <div
                 key={i}
@@ -382,7 +324,7 @@ export default function BookSlotPage() {
                 style={{
                   left: `${left}%`,
                   width: `${size}px`,
-                  height: `${size * (Math.random() > 0.5 ? 1 : 0.6)}px`,
+                  height: `${size * heightScale}px`,
                   backgroundColor: color,
                   animation: `confetti-fall ${duration}s ${delay}s ease-in forwards`,
                 }}
@@ -399,17 +341,17 @@ export default function BookSlotPage() {
 
         {/* Header */}
         <div className="flex flex-col mb-4 md:mb-5">
-          <span className="font-display font-black text-xl md:text-2xl italic tracking-wider leading-none text-slate-300">JKS ARENA</span>
+          <span className="font-display font-black text-xl md:text-2xl italic tracking-wider leading-none text-[#1A1A1A]">JKS ARENA</span>
           <span className="text-[8px] font-bold tracking-[0.25em] text-[#ff6b35] mt-1">GAMING CAFE</span>
         </div>
 
         {/* Title with glitch */}
         <div className="mb-4 md:mb-6">
           <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tight leading-[0.9] flex items-center whitespace-nowrap">
-            <span className="text-white mr-4 glitch-text">Reserve</span>
+            <span className="text-[#1A1A1A] mr-4 glitch-text">Reserve</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff6b35] to-[#ff4500]">A Rig</span>
           </h1>
-          <p className="mt-2 md:mt-3 text-xs sm:text-sm text-slate-300 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+          <p className="mt-2 md:mt-3 text-xs sm:text-sm text-[#1A1A1A]/60 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
             Book your favorite console and enjoy the ultimate gaming experience.
           </p>
         </div>
@@ -417,10 +359,10 @@ export default function BookSlotPage() {
         {/* ═══════════════════════════════════════════════════════════════
             MAIN CARD with scanlines + corner brackets
         ═══════════════════════════════════════════════════════════════ */}
-        <div className="scanlines corner-brackets bg-[#111111]/70 backdrop-blur-sm border border-white/[0.06] rounded-[2rem] p-6 md:p-12 pt-12 md:pt-14 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="bg-white/70 backdrop-blur-xl border border-[#1A1A1A]/10 rounded-[2rem] p-6 md:p-12 pt-12 md:pt-14 relative shadow-[0_8px_32px_rgba(0,0,0,0.06)] overflow-hidden">
 
           {/* Cancel button */}
-          <Link href="/dashboard" className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-4 py-2 text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all text-slate-300 hover:text-white z-20">
+          <Link href="/dashboard" className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 bg-[#1A1A1A]/5 hover:bg-[#1A1A1A]/10 border border-[#1A1A1A]/10 rounded-full px-4 py-2 text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all text-[#1A1A1A]/60 hover:text-[#1A1A1A] z-20">
             <svg className="w-3 h-3 text-[#ff6b35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             Cancel Booking
           </Link>
@@ -430,7 +372,7 @@ export default function BookSlotPage() {
           ═══════════════════════════════════════════════════════════ */}
           <div className="flex items-center justify-between relative mb-10 md:mb-14 mt-4 md:mt-0 max-w-[600px] mx-auto">
             {/* Background rail */}
-            <div className="absolute top-5 md:top-6 left-0 w-full h-[2px] bg-white/[0.06] -translate-y-1/2 z-0" />
+            <div className="absolute top-5 md:top-6 left-0 w-full h-[2px] bg-[#1A1A1A]/10 -translate-y-1/2 z-0" />
 
             {/* Animated progress rail with shimmer */}
             <div
@@ -455,10 +397,10 @@ export default function BookSlotPage() {
                   <motion.div
                     className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-sm font-black border-2 transition-all duration-300 ${
                       isDone
-                        ? "bg-green-500/20 border-green-500/60 text-green-400"
+                        ? "bg-green-500/20 border-green-500/60 text-green-500"
                         : isActive
                         ? "bg-[#ff6b35] border-[#ff6b35] text-black neon-pulse"
-                        : "bg-[#1a1a1a] border-white/[0.08] text-slate-600"
+                        : "bg-white border-[#1A1A1A]/10 text-[#1A1A1A]/40"
                     }`}
                     animate={isActive ? { scale: [1, 1.08, 1] } : {}}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -467,7 +409,7 @@ export default function BookSlotPage() {
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                     ) : i}
                   </motion.div>
-                  <span className={`text-[8px] md:text-[9px] uppercase tracking-widest font-bold absolute -bottom-6 md:-bottom-8 whitespace-nowrap transition-colors ${isActive ? "text-[#ff6b35]" : isDone ? "text-green-500/70" : "text-slate-600"}`}>
+                  <span className={`text-[8px] md:text-[9px] uppercase tracking-widest font-bold absolute -bottom-6 md:-bottom-8 whitespace-nowrap transition-colors ${isActive ? "text-[#ff6b35]" : isDone ? "text-green-500/70" : "text-[#1A1A1A]/40"}`}>
                     {stepLabels[i - 1]}
                   </span>
                 </div>
@@ -482,7 +424,7 @@ export default function BookSlotPage() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="error-glitch mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tracking-wide flex items-start gap-3"
+                className="error-glitch mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-bold tracking-wide flex items-start gap-3"
               >
                 <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 <span>{error}</span>
@@ -513,8 +455,8 @@ export default function BookSlotPage() {
                         <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
                       </div>
                       <div>
-                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-white">Select Date</h2>
-                        <p className="text-xs text-slate-400">Pick your session date to see rig availability.</p>
+                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-[#1A1A1A]">Select Date</h2>
+                        <p className="text-xs text-[#1A1A1A]/50">Pick your session date to see rig availability.</p>
                       </div>
                     </div>
 
@@ -525,7 +467,7 @@ export default function BookSlotPage() {
                         min={new Date().toISOString().split("T")[0]}
                         value={formData.date}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        className="w-full bg-[#0a0a0a]/80 border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-white font-bold focus:outline-none transition-all duration-300 [color-scheme:dark]"
+                        className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300"
                       />
                     </div>
 
@@ -536,7 +478,7 @@ export default function BookSlotPage() {
                       transition={{ delay: 0.2 }}
                     >
                       <svg className="w-6 h-6 text-[#ff6b35] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
-                      <p className="text-xs text-slate-300 font-medium leading-relaxed">You will be able to view arena availability for the selected date in the next step.</p>
+                      <p className="text-xs text-[#1A1A1A]/60 font-medium leading-relaxed">You will be able to view arena availability for the selected date in the next step.</p>
                     </motion.div>
                   </div>
                 )}
@@ -549,8 +491,8 @@ export default function BookSlotPage() {
                         <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       </div>
                       <div>
-                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-white">Arena Availability</h2>
-                        <p className="text-xs text-slate-400">Booked slots for <span className="text-[#ff6b35] font-bold">{formData.date}</span></p>
+                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-[#1A1A1A]">Arena Availability</h2>
+                        <p className="text-xs text-[#1A1A1A]/50">Booked slots for <span className="text-[#ff6b35] font-bold">{formData.date}</span></p>
                       </div>
                     </div>
 
@@ -572,11 +514,11 @@ export default function BookSlotPage() {
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: didx * 0.08 }}
-                              className="border border-white/[0.08] hover:border-[#ff6b35]/40 transition-all duration-300 rounded-xl p-5 bg-[#0a0a0a]/60 hover:shadow-[0_0_20px_rgba(255,107,53,0.1)] group"
+                              className="border border-[#1A1A1A]/10 hover:border-[#ff6b35]/40 transition-all duration-300 rounded-xl p-5 bg-white/60 hover:shadow-[0_0_20px_rgba(255,107,53,0.1)] group"
                             >
                               <div className="flex justify-between items-center mb-4">
-                                <span className="font-black text-sm text-white uppercase tracking-wider">{device}</span>
-                                <span className="text-[9px] font-black uppercase text-slate-400 bg-[#050505] border border-white/5 px-2 py-1 rounded-md">{deviceBookings.length} Booked</span>
+                                <span className="font-black text-sm text-[#1A1A1A] uppercase tracking-wider">{device}</span>
+                                <span className="text-[9px] font-black uppercase text-[#1A1A1A]/50 bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 px-2 py-1 rounded-md">{deviceBookings.length} Booked</span>
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 {deviceBookings.length > 0 ? deviceBookings.map((b, idx) => (
@@ -603,21 +545,21 @@ export default function BookSlotPage() {
                         <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       </div>
                       <div>
-                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-white">Rig & Time</h2>
-                        <p className="text-xs text-slate-400">Pick your console, duration, and start time.</p>
+                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-[#1A1A1A]">Rig & Time</h2>
+                        <p className="text-xs text-[#1A1A1A]/50">Pick your console, duration, and start time.</p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                       <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Console</label>
-                        <select value={formData.device} onChange={(e) => setFormData({ ...formData, device: e.target.value })} className="w-full appearance-none bg-[#0a0a0a]/80 border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-white font-bold focus:outline-none transition-all duration-300 cursor-pointer">
+                        <select value={formData.device} onChange={(e) => setFormData({ ...formData, device: e.target.value })} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
                           {DEVICES.map((d) => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Duration</label>
-                        <select value={formData.durationHours} onChange={(e) => setFormData({ ...formData, durationHours: Number(e.target.value) })} className="w-full appearance-none bg-[#0a0a0a]/80 border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-white font-bold focus:outline-none transition-all duration-300 cursor-pointer">
+                        <select value={formData.durationHours} onChange={(e) => setFormData({ ...formData, durationHours: Number(e.target.value) })} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
                           {[1, 2, 3, 4, 5].map((h) => <option key={h} value={h}>{h} Hour{h > 1 ? "s" : ""}</option>)}
                         </select>
                       </div>
@@ -625,7 +567,7 @@ export default function BookSlotPage() {
 
                     <div className="space-y-3">
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Start Time</label>
-                      <input type="time" required value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="w-full bg-[#0a0a0a]/80 border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-white font-bold focus:outline-none transition-all duration-300 [color-scheme:dark]" />
+                      <input type="time" required value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300" />
                     </div>
                   </div>
                 )}
@@ -638,14 +580,14 @@ export default function BookSlotPage() {
                         <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                       </div>
                       <div>
-                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-white">Player Details</h2>
-                        <p className="text-xs text-slate-400">Add details for everyone attending the session.</p>
+                        <h2 className="text-xl font-display font-bold uppercase tracking-wider text-[#1A1A1A]">Player Details</h2>
+                        <p className="text-xs text-[#1A1A1A]/50">Add details for everyone attending the session.</p>
                       </div>
                     </div>
 
                     <div className="space-y-3 mb-8">
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">Total Players</label>
-                      <select value={formData.players} onChange={(e) => handlePlayersChange(Number(e.target.value))} className="w-full appearance-none bg-[#0a0a0a]/80 border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-white font-bold focus:outline-none transition-all duration-300 cursor-pointer">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]/50">Total Players</label>
+                      <select value={formData.players} onChange={(e) => handlePlayersChange(Number(e.target.value))} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
                         {[1, 2, 3, 4, 5].map((p) => <option key={p} value={p}>{p} Player{p > 1 ? "s" : ""}</option>)}
                       </select>
                     </div>
@@ -653,7 +595,7 @@ export default function BookSlotPage() {
                     <div className="space-y-4">
                       {/* Host */}
                       <motion.div
-                        className="bg-[#0a0a0a]/60 p-6 rounded-2xl border border-[#ff6b35]/20 relative overflow-hidden"
+                        className="bg-white/60 p-6 rounded-2xl border border-[#ff6b35]/20 relative overflow-hidden"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.05 }}
@@ -661,8 +603,8 @@ export default function BookSlotPage() {
                         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#ff6b35] to-[#00f0ff]" />
                         <p className="text-[10px] font-black uppercase text-[#ff6b35] mb-4 tracking-widest">Primary Booker (Host)</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <input type="text" placeholder="Full Name" value={formData.userName} onChange={(e) => setFormData({ ...formData, userName: e.target.value })} className="w-full bg-[#050505] border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_15px_rgba(255,107,53,0.2)] rounded-xl px-4 py-3 text-sm text-white font-medium focus:outline-none transition-all duration-300" />
-                          <input type="tel" placeholder="Phone Number" value={formData.userPhone} onChange={(e) => setFormData({ ...formData, userPhone: e.target.value })} className="w-full bg-[#050505] border border-white/[0.08] focus:border-[#ff6b35] focus:shadow-[0_0_15px_rgba(255,107,53,0.2)] rounded-xl px-4 py-3 text-sm text-white font-medium focus:outline-none transition-all duration-300" />
+                          <input type="text" placeholder="Full Name" value={formData.userName} onChange={(e) => setFormData({ ...formData, userName: e.target.value })} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_15px_rgba(255,107,53,0.2)] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
+                          <input type="tel" placeholder="Phone Number" value={formData.userPhone} onChange={(e) => setFormData({ ...formData, userPhone: e.target.value })} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_15px_rgba(255,107,53,0.2)] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
                         </div>
                       </motion.div>
 
@@ -670,15 +612,15 @@ export default function BookSlotPage() {
                       {formData.companions.map((comp, idx) => (
                         <motion.div
                           key={idx}
-                          className="bg-[#0a0a0a]/60 p-6 rounded-2xl border border-white/[0.05]"
+                          className="bg-white/60 p-6 rounded-2xl border border-[#1A1A1A]/10"
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.1 + idx * 0.06 }}
                         >
-                          <p className="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Player {idx + 2}</p>
+                          <p className="text-[10px] font-black uppercase text-[#1A1A1A]/50 mb-4 tracking-widest">Player {idx + 2}</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <input type="text" placeholder="Name" value={comp.name} onChange={(e) => handleCompanionChange(idx, "name", e.target.value)} className="w-full bg-[#050505] border border-white/[0.05] focus:border-white/30 rounded-xl px-4 py-3 text-sm text-white font-medium focus:outline-none transition-all duration-300" />
-                            <input type="tel" placeholder="Phone" value={comp.phone} onChange={(e) => handleCompanionChange(idx, "phone", e.target.value)} className="w-full bg-[#050505] border border-white/[0.05] focus:border-white/30 rounded-xl px-4 py-3 text-sm text-white font-medium focus:outline-none transition-all duration-300" />
+                            <input type="text" placeholder="Name" value={comp.name} onChange={(e) => handleCompanionChange(idx, "name", e.target.value)} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35]/50 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
+                            <input type="tel" placeholder="Phone" value={comp.phone} onChange={(e) => handleCompanionChange(idx, "phone", e.target.value)} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35]/50 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
                           </div>
                         </motion.div>
                       ))}
@@ -693,13 +635,13 @@ export default function BookSlotPage() {
           {/* ═══════════════════════════════════════════════════════════
               NAVIGATION BUTTONS
           ═══════════════════════════════════════════════════════════ */}
-          <div className="mt-8 md:mt-12 flex items-center justify-between border-t border-white/[0.06] pt-8">
+          <div className="mt-8 md:mt-12 flex items-center justify-between border-t border-[#1A1A1A]/10 pt-8">
             <motion.button
               onClick={handleBack}
               disabled={step === 1 || isLoading}
               whileHover={step > 1 ? { scale: 1.04 } : {}}
               whileTap={step > 1 ? { scale: 0.97 } : {}}
-              className={`text-[10px] font-black uppercase tracking-widest px-6 py-4 rounded-xl transition-all duration-300 ${step === 1 ? "opacity-0 pointer-events-none" : "text-slate-400 bg-white/5 hover:bg-white/10 hover:text-white border border-white/[0.08] hover:border-white/20"}`}
+              className={`text-[10px] font-black uppercase tracking-widest px-6 py-4 rounded-xl transition-all duration-300 ${step === 1 ? "opacity-0 pointer-events-none" : "text-[#1A1A1A]/60 bg-[#1A1A1A]/5 hover:bg-[#1A1A1A]/10 hover:text-[#1A1A1A] border border-[#1A1A1A]/10 hover:border-[#1A1A1A]/20"}`}
             >
               <span className="flex items-center gap-2">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -769,14 +711,14 @@ export default function BookSlotPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 + i * 0.1 }}
-            className="badge-shimmer flex-1 flex items-center gap-4 bg-[#111111]/90 backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 shadow-lg hover:border-[#ff6b35]/20 transition-all duration-300"
+            className="flex-1 flex items-center gap-4 bg-white/70 backdrop-blur-md border border-[#1A1A1A]/10 rounded-2xl p-5 shadow-lg hover:border-[#ff6b35]/20 transition-all duration-300"
           >
             <div className="w-10 h-10 rounded-full bg-[#ff6b35]/10 border border-[#ff6b35]/20 flex items-center justify-center shrink-0">
               <svg className="w-5 h-5 text-[#ff6b35]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={badge.icon} /></svg>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white">{badge.label}</p>
-              <p className="text-[10px] text-slate-500 mt-0.5">{badge.sub}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A]">{badge.label}</p>
+              <p className="text-[10px] text-[#1A1A1A]/50 mt-0.5">{badge.sub}</p>
             </div>
           </motion.div>
         ))}

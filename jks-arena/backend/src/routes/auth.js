@@ -351,8 +351,8 @@ router.post(
                 admin.avatarUrl ||
                 "",
 
-              headerUrl:
-                admin.headerUrl ||
+              topbarUrl:
+                admin.topbarUrl ||
                 "",
 
             },
@@ -391,7 +391,7 @@ router.post(
 
             avatarUrl: "",
 
-            headerUrl: "",
+            topbarUrl: "",
 
           });
 
@@ -424,8 +424,8 @@ router.post(
               user.avatarUrl ||
               "",
 
-            headerUrl:
-              user.headerUrl ||
+            topbarUrl:
+              user.topbarUrl ||
               "",
 
           },
@@ -531,7 +531,7 @@ router.post(
 
           avatarUrl: "",
 
-          headerUrl: "",
+          topbarUrl: "",
 
         });
 
@@ -562,8 +562,8 @@ router.post(
             newUser.avatarUrl ||
             "",
 
-          headerUrl:
-            newUser.headerUrl ||
+          topbarUrl:
+            newUser.topbarUrl ||
             "",
 
         },
@@ -679,8 +679,8 @@ router.post(
                 admin.avatarUrl ||
                 "",
 
-              headerUrl:
-                admin.headerUrl ||
+              topbarUrl:
+                admin.topbarUrl ||
                 "",
 
             },
@@ -760,8 +760,8 @@ router.post(
               user.avatarUrl ||
               "",
 
-            headerUrl:
-              user.headerUrl ||
+            topbarUrl:
+              user.topbarUrl ||
               "",
 
           },

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import { createPortal } from "react-dom";
 
 interface RecentSessionsTableProps {
   bookings: any[];
@@ -9,6 +11,8 @@ interface RecentSessionsTableProps {
 export default function RecentSessionsTable({ bookings }: RecentSessionsTableProps) {
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [arenaFilter, setArenaFilter] = useState("All Arenas");
+  const [viewBooking, setViewBooking] = useState<any | null>(null);
+  const mounted = typeof window !== "undefined";
 
   const filteredBookings = bookings.filter((b) => {
     const matchStatus = statusFilter === "All Status" || b.status.toLowerCase() === statusFilter.toLowerCase();
@@ -67,8 +71,18 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
           <tbody className="text-xs font-bold text-black">
             {filteredBookings.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
-                  No sessions recorded yet.
+                <td colSpan={7} className="px-6 py-16 text-center">
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 rounded-2xl bg-[#F3EFEC] flex items-center justify-center mb-4 shadow-sm">
+                      <svg className="w-7 h-7 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 className="text-sm font-display text-[#1A1A1A] uppercase tracking-tight mb-1">No Sessions Found</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                      {statusFilter !== "All Status" || arenaFilter !== "All Arenas"
+                        ? "Try changing your filters"
+                        : "Your gaming history will appear here"}
+                    </p>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -103,10 +117,18 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-center gap-2 opacity-100 sm:opacity-50 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-[#ff6b35] hover:border-black shadow-sm transition-all" title="View Details">
+                      <button
+                        onClick={() => setViewBooking(booking)}
+                        className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-[#ff6b35] hover:border-black shadow-sm transition-all"
+                        title="View Details"
+                      >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                       </button>
-                      <button className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-[#ff6b35] hover:border-black shadow-sm transition-all" title="Download Receipt">
+                      <button
+                        onClick={() => toast.info("Receipt download coming soon!", { duration: 2000 })}
+                        className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-[#ff6b35] hover:border-black shadow-sm transition-all"
+                        title="Download Receipt"
+                      >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                       </button>
                     </div>
@@ -121,10 +143,72 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
       {/* Footer */}
       {bookings.length > 0 && (
         <div className="p-4 border-t border-black/10 text-center bg-[#FDF8F5]">
-          <button className="text-[10px] font-black uppercase tracking-widest text-[#ff6b35] hover:text-black transition-colors">
+          <a
+            href="/history"
+            className="text-[10px] font-black uppercase tracking-widest text-[#ff6b35] hover:text-black transition-colors"
+          >
             View All Sessions
-          </button>
+          </a>
         </div>
+      )}
+
+      {/* Details Modal */}
+      {mounted && viewBooking && createPortal(
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200"
+          onClick={() => setViewBooking(null)}
+        >
+          <div
+            className="bg-white rounded-[2rem] border-2 border-black shadow-xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Accent */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#ff6b35] via-[#ff6b35]/60 to-transparent" />
+
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-display text-[#1A1A1A] uppercase tracking-tight">
+                  Session <span className="text-[#ff6b35]">Details</span>
+                </h3>
+                <button
+                  onClick={() => setViewBooking(null)}
+                  className="p-2 rounded-full bg-[#FDF8F5] border border-black/10 text-slate-500 hover:text-[#ff6b35] hover:border-[#ff6b35]/30 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+
+              {/* Details */}
+              <div className="space-y-4 text-sm">
+                {[
+                  { label: "Date", value: new Date(viewBooking.slotStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', weekday: 'short' }) },
+                  { label: "Time", value: `${new Date(viewBooking.slotStart).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${new Date(viewBooking.slotEnd).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` },
+                  { label: "Arena", value: viewBooking.device },
+                  { label: "Duration", value: `${viewBooking.durationHours} hour(s)` },
+                  { label: "Players", value: viewBooking.players },
+                  ...(viewBooking.game ? [{ label: "Game", value: viewBooking.game }] : []),
+                  { label: "Amount", value: `₹${viewBooking.totalPrice?.toFixed(2) || '0.00'}` },
+                  { label: "Status", value: viewBooking.status },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-black/5 last:border-0">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{row.label}</span>
+                    <span className="text-sm font-bold text-[#1A1A1A]">{String(row.value)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Close */}
+              <button
+                onClick={() => setViewBooking(null)}
+                className="mt-6 w-full bg-[#ff6b35] text-white rounded-xl py-3 text-[11px] font-black uppercase tracking-widest hover:bg-[#e05928] transition-colors shadow-[0_0_15px_rgba(255,107,53,0.2)]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
 
       <style jsx>{`

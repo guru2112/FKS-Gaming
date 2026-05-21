@@ -117,8 +117,15 @@ function SignupContent() {
           {/* Image */}
           <div className="absolute inset-0 md:relative md:w-[60%] overflow-hidden bg-black z-0">
              <div className="w-full h-full relative">
-              {(typeof window !== 'undefined' && window.innerWidth < 768 ? mobileImages : desktopImages).map((src, idx) => (
-                <div key={idx} className={`absolute inset-0 transition-opacity duration-1000 ${idx === currentBgIndex ? "opacity-100 z-10" : "opacity-0"}`}>
+              {/* Desktop images */}
+              {desktopImages.map((src, idx) => (
+                <div key={`d-${idx}`} className={`hidden md:block absolute inset-0 transition-opacity duration-1000 ${idx === currentBgIndex ? "opacity-100 z-10" : "opacity-0"}`}>
+                  <Image src={src} alt="BG" fill className="object-cover opacity-90 animate-pan" />
+                </div>
+              ))}
+              {/* Mobile images */}
+              {mobileImages.map((src, idx) => (
+                <div key={`m-${idx}`} className={`block md:hidden absolute inset-0 transition-opacity duration-1000 ${idx === currentBgIndex ? "opacity-100 z-10" : "opacity-0"}`}>
                   <Image src={src} alt="BG" fill className="object-cover opacity-90 animate-pan" />
                 </div>
               ))}
@@ -177,7 +184,7 @@ function SignupContent() {
   );
 }
 
-export default function LoginPage() {
+export default function SignupPage() {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   if (!clientId) return <div className="text-white p-10">Config Error: Missing Client ID</div>;
   return <GoogleOAuthProvider clientId={clientId}><SignupContent /></GoogleOAuthProvider>;

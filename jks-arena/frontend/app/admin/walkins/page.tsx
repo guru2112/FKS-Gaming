@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { API_BASE_URL } from "@/lib/auth";
+import { api } from "@/lib/apiClient";
 
 const DEVICES: Array<"PS1" | "PS2" | "PS3" | "SIM1"> = ["PS1", "PS2", "PS3", "SIM1"];
 
@@ -43,14 +43,18 @@ export default function AdminWalkInsPage() {
   });
 
   useEffect(() => {
-    setForm((f) => {
-      const desired = Math.max(0, Number(f.players || 1) - 1);
-      const current = Array.isArray(f.companions) ? f.companions : [];
-      if (current.length === desired) return f;
-      const next = current.slice(0, desired);
-      while (next.length < desired) next.push({ name: "", phone: "" });
-      return { ...f, companions: next };
-    });
+    const timeout = setTimeout(() => {
+      setForm((f) => {
+        const desired = Math.max(0, Number(f.players || 1) - 1);
+        const current = Array.isArray(f.companions) ? f.companions : [];
+        if (current.length === desired) return f;
+        const next = current.slice(0, desired);
+        while (next.length < desired) next.push({ name: "", phone: "" });
+        return { ...f, companions: next };
+      });
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [form.players]);
 
   const computed = useMemo(() => {
@@ -84,12 +88,6 @@ export default function AdminWalkInsPage() {
       setSuccess(null);
       setSaving(true);
 
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
       if (!form.customerName.trim() || !form.phoneNumber.trim()) {
         throw new Error("Customer name and phone number are required.");
       }
@@ -117,23 +115,7 @@ export default function AdminWalkInsPage() {
         amountPaid: form.amountPaid,
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/sessions/start`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          router.push("/login");
-          return;
-        }
-        throw new Error(data.message || "Failed to save walk-in session");
-      }
+      await api.post("/api/admin/sessions/start", payload);
 
       setSuccess("Walk-in session saved successfully.");
       setForm((f) => ({

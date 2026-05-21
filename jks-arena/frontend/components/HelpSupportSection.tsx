@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface FAQItem {
   question: string;
@@ -126,7 +127,10 @@ export default function HelpSupportSection() {
             >
               Email Support
             </a>
-            <button className="bg-white/10 border border-white/10 text-white px-8 py-3.5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/20 transition-all">
+            <button
+              onClick={() => toast.info("Live chat coming soon! Use email for now.", { duration: 3000 })}
+              className="bg-white/10 border border-white/10 text-white px-8 py-3.5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/20 transition-all"
+            >
               Live Chat
             </button>
           </div>

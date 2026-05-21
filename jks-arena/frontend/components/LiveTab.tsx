@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { API_BASE_URL } from "@/lib/auth"; // Assume you want to use the global base URL
+import { useCallback, useEffect, useState } from "react";
+import { api } from "@/lib/apiClient";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
 
@@ -9,24 +9,27 @@ export default function LiveTab() {
   const [liveBookings, setLiveBookings] = useState<any[]>([]);
   const [now, setNow] = useState(new Date().getTime());
 
-  const fetchLiveRigs = async () => {
+  const fetchLiveRigs = useCallback(async () => {
     try {
-      const token = localStorage.getItem("auth_token");
-      const res = await fetch(`${API_BASE_URL}/api/admin/live`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      const data = await api.get<{ liveBookings: any[] }>("/api/admin/live");
       if (data.liveBookings) setLiveBookings(data.liveBookings);
     } catch (err) {
       console.error("Failed to fetch live rigs:", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchLiveRigs();
-    const interval = setInterval(fetchLiveRigs, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    const timeout = setTimeout(() => {
+      void fetchLiveRigs();
+    }, 0);
+    const interval = setInterval(() => {
+      void fetchLiveRigs();
+    }, 30000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [fetchLiveRigs]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date().getTime()), 1000);
@@ -36,12 +39,8 @@ export default function LiveTab() {
   const handleEndSession = async (id: string) => {
     if (!confirm("Are you sure you want to end this session?")) return;
     try {
-      const token = localStorage.getItem("auth_token");
-      await fetch(`${API_BASE_URL}/api/admin/end-session/${id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchLiveRigs();
+      await api.post(`/api/admin/end-session/${id}`);
+      void fetchLiveRigs();
     } catch (err) {
       console.error("Failed to end session:", err);
     }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import {
   fetchNotifications,
@@ -32,7 +33,7 @@ export default function NotificationBell() {
   // FETCH NOTIFICATIONS
   // =====================================================
 
-  async function loadNotifications() {
+  const loadNotifications = useCallback(async () => {
 
     try {
 
@@ -51,22 +52,22 @@ export default function NotificationBell() {
 
     }
 
-  }
+  }, [token]);
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      void loadNotifications();
+    }, 0);
 
-    loadNotifications();
+    const interval = setInterval(() => {
+      void loadNotifications();
+    }, 15000);
 
-    const interval =
-      setInterval(
-        loadNotifications,
-        15000
-      );
-
-    return () =>
+    return () => {
+      clearTimeout(timeout);
       clearInterval(interval);
-
-  }, []);
+    };
+  }, [loadNotifications]);
 
   // =====================================================
   // UNREAD COUNT
@@ -136,9 +137,39 @@ export default function NotificationBell() {
 
   }
 
+  const bellRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 80, right: 24, left: undefined as number | undefined });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (isOpen && bellRef.current) {
+      const rect = bellRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const isSmallScreen = viewportWidth < 640;
+      if (isSmallScreen) {
+        setDropdownPos({
+          top: rect.bottom + 12,
+          left: 16,
+          right: 16,
+        });
+        return;
+      }
+
+      setDropdownPos({
+        top: rect.bottom + 16,
+        right: Math.max(16, viewportWidth - rect.right),
+        left: undefined,
+      });
+    }
+  }, [isOpen]);
+
   return (
 
-    <div className="relative">
+    <div className="relative" ref={bellRef}>
 
       {/* ===================================================== */}
       {/* BELL BUTTON */}
@@ -187,9 +218,16 @@ export default function NotificationBell() {
       {/* DROPDOWN */}
       {/* ===================================================== */}
 
-      {isOpen && (
+      {isOpen && mounted && createPortal(
 
-        <div className="absolute right-0 mt-4 w-[360px] max-h-[500px] overflow-hidden rounded-3xl border border-[#ff6b35]/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.12)] z-50">
+        <div
+          className="fixed w-[360px] max-w-[92vw] max-h-[500px] overflow-hidden rounded-3xl border border-[#ff6b35]/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.12)] z-[200]"
+          style={{
+            top: dropdownPos.top,
+            right: dropdownPos.right,
+            left: dropdownPos.left,
+          }}
+        >
 
           {/* HEADER */}
 
@@ -300,8 +338,8 @@ export default function NotificationBell() {
 
           </div>
 
-        </div>
-
+        </div>,
+        document.body
       )}
 
     </div>

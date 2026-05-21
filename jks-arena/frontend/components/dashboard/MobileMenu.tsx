@@ -18,8 +18,8 @@ interface MobileMenuProps {
 const menuItems = [
   { name: "Dashboard", href: "/dashboard", icon: DashboardIcon },
   { name: "Book Slot", href: "/book", icon: CalendarIcon },
-  { name: "My Sessions", href: "/dashboard#history", icon: SessionsIcon },
-  { name: "Games Library", href: "/dashboard#games", icon: GamepadIcon },
+  { name: "My Sessions", href: "/history", icon: SessionsIcon },
+  { name: "Games Library", href: "/games", icon: GamepadIcon },
   { name: "Settings", href: "/settings", icon: SettingsIcon },
   { name: "Help & Support", href: "/help-support", icon: HelpIcon },
 ];
@@ -30,14 +30,14 @@ export default function MobileMenu({
   profile,
   getInitials,
   handleLogout,
-  bgUrl,
 }: MobileMenuProps) {
 
   const pathname = usePathname();
-  const [activeHash, setActiveHash] = useState("");
+  const [activeHash, setActiveHash] = useState(() =>
+    typeof window === "undefined" ? "" : window.location.hash
+  );
 
   useEffect(() => {
-    setActiveHash(window.location.hash);
     const handleHashChange = () => setActiveHash(window.location.hash);
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
@@ -112,7 +112,7 @@ export default function MobileMenu({
             <div className="w-10 h-10 rounded-full bg-[#ff6b35]/10 flex items-center justify-center text-[#ff6b35] text-sm font-black ring-2 ring-[#ff6b35]/30">
               {profile?.avatarUrl ? (
                 <img
-                  src={`${profile.avatarUrl}?t=${Date.now()}`}
+                  src={profile.avatarUrl}
                   alt="Avatar"
                   className="w-full h-full object-cover rounded-full"
                 />
