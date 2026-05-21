@@ -125,13 +125,13 @@ export default function SecurityTab() {
         // 🔥 API CALL
         // =========================================================
 
-        const data = await api.put(
+        const data = (await api.put(
           "/api/user/change-password",
           {
             currentPassword,
             newPassword,
           }
-        );
+        )) as { message?: string };
 
         // =========================================================
         // 🔥 SUCCESS

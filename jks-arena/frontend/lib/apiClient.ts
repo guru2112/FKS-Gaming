@@ -5,8 +5,7 @@
 
 // ✅ Always read from env — never hardcode
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://fks-gaming.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL ?? "";
 
 // =========================================================
 // 🔥 STORAGE KEYS — ONE PLACE, NEVER DUPLICATED
