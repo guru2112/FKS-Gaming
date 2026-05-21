@@ -136,7 +136,7 @@ export default function SettingsSidebar({
                     profile?.avatarUrl ||
                     "settings-avatar"
                   }
-                  src={`${profile?.avatarUrl}?t=${Date.now()}`}
+                  src={profile?.avatarUrl}
                   alt="Avatar"
                   className="w-full h-full object-cover"
                 />

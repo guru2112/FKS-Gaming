@@ -73,23 +73,14 @@ export default function SettingsSection({
   ========================================================= */
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setName(profile?.name || "");
+      setEmail(profile?.email || "");
+      setAvatarUrl(profile?.avatarUrl || "");
+      setTopbarUrl(profile?.topbarUrl || "");
+    }, 0);
 
-    setName(
-      profile?.name || ""
-    );
-
-    setEmail(
-      profile?.email || ""
-    );
-
-    setAvatarUrl(
-      profile?.avatarUrl || ""
-    );
-
-    setTopbarUrl(
-      profile?.topbarUrl || ""
-    );
-
+    return () => clearTimeout(timeout);
   }, [profile]);
 
   /* =========================================================
@@ -231,6 +222,9 @@ export default function SettingsSection({
             updatedUser
           )
         );
+
+        // Clear theme cache so new topbar color re-extracts
+        localStorage.removeItem("jks_theme_bg");
 
         setMessage({
           text:
@@ -536,26 +530,31 @@ export default function SettingsSection({
               Dashboard Topbar Design
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
               {availableTopbars.map((tb) => (
                 <button
                   key={tb._id}
                   onClick={() => setTopbarUrl(tb.secure_url || "")}
-                  className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 group ${
+                  className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-300 group w-full shrink-0 ${
                     topbarUrl === tb.secure_url
-                      ? "border-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.3)]"
-                      : "border-[#1A1A1A]/10 hover:border-[#ff6b35]/40"
+                      ? "border-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.3)] scale-[1.02]"
+                      : "border-[#1A1A1A]/10 opacity-50 hover:opacity-100 hover:border-[#ff6b35]/40"
                   }`}
                 >
-                  <div className="relative h-24 w-full overflow-hidden">
-                    <img src={tb.secure_url} alt="Topbar" className="w-full h-full object-cover" />
+                  {/* ACTIVE GLOW */}
+                  {topbarUrl === tb.secure_url && (
+                    <div className="absolute -inset-2 rounded-3xl bg-[#ff6b35]/20 blur-xl z-0" />
+                  )}
+
+                  <div className="relative h-28 w-full overflow-hidden z-10">
+                    <img src={tb.secure_url} alt="Topbar" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     {topbarUrl === tb.secure_url && (
                       <div className="absolute top-2 right-2 bg-[#ff6b35] text-white text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-md">
                         Selected
                       </div>
                     )}
-                    <div className="absolute bottom-2 left-2 text-white text-[9px] font-bold uppercase tracking-wider">
+                    <div className="absolute bottom-2 left-2 text-white text-[10px] font-bold uppercase tracking-wider">
                       {tb.name}
                     </div>
                   </div>

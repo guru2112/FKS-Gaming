@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { API_BASE_URL } from "@/lib/auth"; 
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { api } from "@/lib/apiClient";
 
 const APP_OPTIONS = ["Mobile", "Desktop"];
 // 🔥 Added "Multiplayer" to the upload options
 const FACILITY_OPTIONS = ["Screen", "PS", "Seating", "Simulator", "Multiplayer"];
-const DASHBOARD_OPTIONS = ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar"];
+const DASHBOARD_OPTIONS = ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar", "PS", "Simulator", "Book Button"];
 
 export default function MediaTab() {
   const [images, setImages] = useState<any[]>([]);
@@ -19,15 +19,19 @@ export default function MediaTab() {
   const [filterFacilityType, setFilterFacilityType] = useState("ALL"); 
   const [searchQuery, setSearchQuery] = useState("");
 
-  async function fetchImages() {
+  const fetchImages = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/media`);
-      const data = await res.json();
+      const data = await api.get<{ items: any[] }>("/api/media", { noRedirectOn401: true });
       setImages(data.items || []);
     } catch (error) { console.error("Failed to fetch images", error); }
-  }
+  }, []);
 
-  useEffect(() => { fetchImages(); }, []);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      void fetchImages();
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [fetchImages]);
 
   async function handleUpload(e: any) {
     e.preventDefault();
@@ -36,27 +40,22 @@ export default function MediaTab() {
     setUploading(true);
 
     try {
-      const token = localStorage.getItem("auth_token");
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const base64 = await convertToBase64(file);
-        await fetch(`${API_BASE_URL}/api/media`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-          body: JSON.stringify({
-            name: files.length > 1 ? `${e.target.name.value} - ${i + 1}` : e.target.name.value,
-            description: e.target.description?.value, 
-            category: e.target.category.value,
-            gameName: e.target.gameName?.value,
-            view: e.target.view?.value, 
-            profileImageType: e.target.profileImageType?.value,
-            facilityType: e.target.facilityType?.value,
-            dashboardType: e.target.dashboardType?.value,
-            file: base64,
-          }),
+        await api.post("/api/media", {
+          name: files.length > 1 ? `${e.target.name.value} - ${i + 1}` : e.target.name.value,
+          description: e.target.description?.value,
+          category: e.target.category.value,
+          gameName: e.target.gameName?.value,
+          view: e.target.view?.value,
+          profileImageType: e.target.profileImageType?.value,
+          facilityType: e.target.facilityType?.value,
+          dashboardType: e.target.dashboardType?.value,
+          file: base64,
         });
       }
-      fetchImages();
+      void fetchImages();
       e.target.reset();
       setCategory("");
     } catch (err) { console.error("Upload error:", err); }
@@ -74,10 +73,9 @@ export default function MediaTab() {
 
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this asset?")) return;
-    const token = localStorage.getItem("auth_token");
     try {
-      await fetch(`${API_BASE_URL}/api/media/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
-      fetchImages();
+      await api.delete(`/api/media/${id}`);
+      void fetchImages();
     } catch (error) { console.error("Delete error", error); }
   }
 

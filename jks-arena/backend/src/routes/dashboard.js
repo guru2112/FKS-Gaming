@@ -114,7 +114,7 @@ router.get(
         await User.findById(
           req.userId
         ).select(
-          "name email planId"
+          "name email"
         );
 
       if (!user) {
@@ -127,17 +127,6 @@ router.get(
       }
 
       let plan = null;
-
-      if (user.planId) {
-
-        plan =
-          await Plan.findById(
-            user.planId
-          ).select(
-            "name priceMonthly perks"
-          );
-
-      }
 
       return res.json({
         id:

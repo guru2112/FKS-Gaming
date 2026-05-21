@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { API_BASE_URL } from "@/lib/auth";
+import { api } from "@/lib/apiClient";
 
 export default function SecurityTab() {
 
@@ -119,57 +119,19 @@ export default function SecurityTab() {
 
         }
 
-        const token =
-          localStorage.getItem(
-            "auth_token"
-          );
-
-        if (!token) {
-
-          return setMessage({
-            type: "error",
-            text: "Authentication failed.",
-          });
-
-        }
-
         setIsLoading(true);
 
         // =========================================================
         // 🔥 API CALL
         // =========================================================
 
-        const res = await fetch(
-          `${API_BASE_URL}/api/user/change-password`,
+        const data = await api.put<{ message?: string }>(
+          "/api/user/change-password",
           {
-            method: "PUT",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-
-              Authorization:
-                `Bearer ${token}`,
-            },
-
-            body: JSON.stringify({
-              currentPassword,
-              newPassword,
-            }),
+            currentPassword,
+            newPassword,
           }
         );
-
-        const data =
-          await res.json();
-
-        if (!res.ok) {
-
-          throw new Error(
-            data.message ||
-              "Failed to update password."
-          );
-
-        }
 
         // =========================================================
         // 🔥 SUCCESS

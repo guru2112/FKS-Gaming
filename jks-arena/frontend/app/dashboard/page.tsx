@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, Suspense } from "react";
+import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -18,9 +18,9 @@ import MobileMenu from "@/components/dashboard/MobileMenu";
 import Header from "@/components/dashboard/Header";
 import LiveArenaStatus from "@/components/dashboard/LiveArenaStatus";
 import UpcomingHeroCard from "@/components/dashboard/UpComingHeroCard";
-import RecentSessionsTable from "@/components/dashboard/RecentSessionsTable";
-import GamesSection from "@/components/GamesSection";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import BottomNav from "@/components/dashboard/BottomNav";
+import { getCachedThemeColor, getCachedNeonColor, getDynamicBgColor } from "@/lib/theme";
 
 export type LocalBooking = Omit<AuthBooking, "status"> & {
   userName?: string;
@@ -45,11 +45,11 @@ const navItems = [
   },
   {
     name: "My Sessions",
-    href: "/dashboard#history",
+    href: "/history",
   },
   {
     name: "Games Library",
-    href: "/dashboard#games",
+    href: "/games",
   },
   {
     name: "Settings",
@@ -61,10 +61,19 @@ const navItems = [
   },
 ];
 
-export default function DashboardPage() {
-  const [profile, setProfile] =
-    useState<Profile | null>(null);
-
+function DashboardPageContent() {
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    if (typeof window === "undefined") return null;
+    const savedProfile = localStorage.getItem("profile");
+    if (!savedProfile) return null;
+    try {
+      return JSON.parse(savedProfile) as Profile;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  });
+  
   const [bookings, setBookings] =
     useState<LocalBooking[]>([]);
 
@@ -84,6 +93,37 @@ export default function DashboardPage() {
 
   // Dashboard background images
   const [dashboardBg, setDashboardBg] = useState<Record<string, string>>({});
+  const [themeBg, setThemeBg] = useState("");
+  const [themeNeon, setThemeNeon] = useState("");
+
+  // Dynamic theme color from topbar image (for cards only)
+  const applyTheme = useCallback((topbarUrl: string | undefined | null) => {
+    if (!topbarUrl) { setThemeBg(""); setThemeNeon(""); return; }
+    const cached = getCachedThemeColor(topbarUrl);
+    if (cached) {
+      setThemeBg(cached);
+      setThemeNeon(getCachedNeonColor(topbarUrl) || "");
+    } else {
+      getDynamicBgColor(topbarUrl);
+    }
+  }, []);
+
+  useEffect(() => {
+    const topbarUrl = profile?.topbarUrl || dashboardBg["Topbar"];
+    applyTheme(topbarUrl);
+  }, [profile?.topbarUrl, dashboardBg["Topbar"], applyTheme]);
+
+  useEffect(() => {
+    const handler = (e: Event) => setThemeBg((e as CustomEvent<string>).detail);
+    window.addEventListener("jks-theme-updated", handler);
+    return () => window.removeEventListener("jks-theme-updated", handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => setThemeNeon((e as CustomEvent<string>).detail);
+    window.addEventListener("jks-theme-neon", handler);
+    return () => window.removeEventListener("jks-theme-neon", handler);
+  }, []);
 
   useEffect(() => {
     async function fetchDashboardBg() {
@@ -184,23 +224,6 @@ export default function DashboardPage() {
       localStorage.getItem(
         "auth_role"
       ) || "";
-
-    // 🔥 Load cached profile first
-
-    const savedProfile =
-      localStorage.getItem(
-        "profile"
-      );
-
-    if (savedProfile) {
-      try {
-        setProfile(
-          JSON.parse(savedProfile)
-        );
-      } catch (err) {
-        console.error(err);
-      }
-    }
 
     // 🔥 No token
 
@@ -345,7 +368,7 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FDF8F5]">
+      <div className="flex min-h-screen items-center justify-center bg-[#FFF4E6]">
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35]" />
 
@@ -362,8 +385,10 @@ export default function DashboardPage() {
   ========================================================= */
 
   return (
-    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-[#FDF8F5]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff6b35]" /></div>}>
-    <div className="flex h-screen w-full overflow-hidden bg-[#FDF8F5] text-[#1A1A1A] selection:bg-[#ff6b35] selection:text-white relative">
+    <div
+      className="flex h-screen w-full overflow-hidden text-[#1A1A1A] selection:bg-[#ff6b35] selection:text-white relative"
+      style={{ backgroundColor: themeBg || "#FFF4E6" }}
+    >
 
       <PushNotificationManager />
 
@@ -377,6 +402,15 @@ export default function DashboardPage() {
         .hide-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+
+        @keyframes topbar-scroll {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
+        }
+
+        .animate-topbar-scroll {
+          animation: topbar-scroll 20s ease-in-out infinite alternate;
         }
       `}</style>
 
@@ -412,27 +446,50 @@ export default function DashboardPage() {
 
         {/* HEADER */}
 
-        <div className={`shrink-0 w-full backdrop-blur-xl z-40 relative overflow-hidden ${profile?.topbarUrl || dashboardBg["Topbar"] ? 'border-b border-white/10' : 'bg-[#FDF8F5]/90 border-b border-[#ff6b35]/20'}`}>
+        <div
+          className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden min-h-[300px] md:min-h-0 rounded-b-[2.5rem] md:rounded-none ${profile?.topbarUrl || dashboardBg["Topbar"] ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
+          style={!(profile?.topbarUrl || dashboardBg["Topbar"]) ? { backgroundColor: themeBg ? `${themeBg}e6` : "#FFF4E6" } : undefined}
+        >
           {(profile?.topbarUrl || dashboardBg["Topbar"]) && (
-            <div className="absolute inset-0 z-0">
-              <img src={profile?.topbarUrl || dashboardBg["Topbar"]} alt="Topbar BG" className="w-full h-full object-cover opacity-90" />
-              <div className="absolute inset-0 bg-[#FDF8F5]/40" />
+            <div className="absolute inset-0 z-0 overflow-hidden">
+              <img src={profile?.topbarUrl || dashboardBg["Topbar"]} alt="Topbar BG" className="w-full min-h-[200%] object-cover opacity-95 animate-topbar-scroll" />
+              <div className="absolute inset-0 bg-[#FFF4E6]/15" />
             </div>
           )}
 
-          <div className="relative z-10 px-6 py-5 w-full">
+          <div className="relative z-10 w-full flex flex-col min-h-[200px] md:min-h-0 md:hidden">
+            {/* TOP: Header with profile */}
+            <div className="px-5 pt-5">
+              <Header
+                profile={profile}
+                setIsMobileMenuOpen={setIsMobileMenuOpen}
+                getInitials={getInitials}
+                handleLogout={handleLogout}
+                hasTopbarBg={!!(profile?.topbarUrl || dashboardBg["Topbar"])}
+              />
+            </div>
 
+            {/* Welcome + subtitle */}
+            <div className="px-5 pt-4">
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#ff6b35] mb-1">
+                Welcome back
+              </p>
+              <h2 className={`font-display text-4xl font-black tracking-tight leading-none ${profile?.topbarUrl || dashboardBg["Topbar"] ? "text-white drop-shadow-lg" : "text-[#1A1A1A]"}`}>
+                {profile?.name?.split(" ")[0] || "Player"}
+              </h2>
+              <p className={`mt-2 text-sm font-bold tracking-[0.18em] uppercase leading-relaxed ${profile?.topbarUrl || dashboardBg["Topbar"] ? "text-white drop-shadow-md" : "text-slate-500"}`}>
+                <span className="text-[#ff6b35]">JKS Arena</span> • Ready for your<br />next gaming session
+              </p>
+            </div>
+          </div>
+
+          {/* Desktop header */}
+          <div className="relative z-10 px-6 py-5 w-full hidden md:block">
             <Header
               profile={profile}
-              setIsMobileMenuOpen={
-                setIsMobileMenuOpen
-              }
-              getInitials={
-                getInitials
-              }
-              handleLogout={
-                handleLogout
-              }
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
+              getInitials={getInitials}
+              handleLogout={handleLogout}
               hasTopbarBg={!!(profile?.topbarUrl || dashboardBg["Topbar"])}
             />
           </div>
@@ -440,42 +497,10 @@ export default function DashboardPage() {
 
         {/* CONTENT */}
 
-        <div className="flex-1 overflow-y-auto w-full hide-scrollbar">
-
-          <div className="px-6 py-8 pb-20 w-full max-w-[1400px] mx-auto">
+        <div className="flex-1 overflow-y-auto w-full hide-scrollbar relative -mt-20 md:mt-0">
+          <div className="px-4 md:px-6 pt-0 md:pt-8 pb-20 w-full max-w-[1400px] mx-auto">
 
             <main className="space-y-10">
-
-              {/* MOBILE WELCOME */}
-
-              <div className="md:hidden -mt-2">
-
-                <h2 className="font-display text-2xl text-[#1A1A1A] tracking-tight leading-none">
-
-                  Welcome back{" "}
-
-                  <span className="text-[#ff6b35]">
-
-                    {profile?.name?.split(
-                      " "
-                    )[0] || "Player"}
-
-                  </span>
-
-                  👋
-                </h2>
-
-                <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 leading-relaxed">
-
-                  <span className="text-[#ff6b35]">
-
-                    JKS Arena
-
-                  </span>{" "}
-
-                  • Ready for your next gaming session
-                </p>
-              </div>
 
               {/* ERROR */}
 
@@ -522,9 +547,14 @@ export default function DashboardPage() {
 
                 <LiveArenaStatus
                   bookings={bookings}
+                  psBgUrl={dashboardBg["PS"]}
+                  simBgUrl={dashboardBg["Simulator"]}
+                  themeBg={themeBg}
+                  themeNeon={themeNeon}
                 />
 
                 <UpcomingHeroCard
+                  themeBg={themeBg}
                   booking={
                     upcomingBooking
                   }
@@ -536,43 +566,27 @@ export default function DashboardPage() {
                   detailsBgUrl={dashboardBg["Details Card"]}
                 />
               </section>
-
-              {/* GAMES */}
-
-              <div
-                id="games"
-                className="pt-2"
-              >
-
-                <div className="flex justify-between items-end mb-4 px-2">
-
-                  <h2 className="text-sm font-black uppercase tracking-widest text-[#ff6b35]">
-
-                    Games Library
-                  </h2>
-
-                  <button className="text-[10px] font-bold uppercase tracking-widest text-[#ff6b35] hover:text-[#1A1A1A] transition-colors">
-
-                    View All Games
-                  </button>
-                </div>
-
-                <GamesSection />
-              </div>
-
-              {/* HISTORY */}
-
-              <div id="history">
-
-                <RecentSessionsTable
-                  bookings={bookings}
-                />
-              </div>
             </main>
           </div>
         </div>
+
+        {/* BOTTOM NAV */}
+        <BottomNav />
       </div>
-    </div>
+      </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#FFF4E6]">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35]" />
+        </div>
+      }
+    >
+      <DashboardPageContent />
     </Suspense>
   );
 }

@@ -11,7 +11,17 @@ import HelpSupportSection from "@/components/HelpSupportSection";
 
 export default function HelpSupportPage() {
 
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    if (typeof window === "undefined") return null;
+    const savedProfile = localStorage.getItem("profile");
+    if (!savedProfile) return null;
+    try {
+      return JSON.parse(savedProfile) as Profile;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,15 +62,6 @@ export default function HelpSupportPage() {
   useEffect(() => {
     const token = localStorage.getItem("auth_token") || "";
     const role = localStorage.getItem("auth_role") || "";
-
-    const savedProfile = localStorage.getItem("profile");
-    if (savedProfile) {
-      try {
-        setProfile(JSON.parse(savedProfile));
-      } catch (err) {
-        console.error(err);
-      }
-    }
 
     if (!token) {
       window.location.href = "/login";

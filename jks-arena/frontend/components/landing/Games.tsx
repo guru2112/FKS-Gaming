@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { API_BASE_URL } from "@/lib/auth";
+import { type GameDetails, getGameDetails } from "@/components/GamesSection";
 
 interface MediaItem {
   _id: string;
@@ -16,6 +17,7 @@ interface GroupedGame {
   name: string;
   tagline: string;
   images: string[];
+  details?: GameDetails;
 }
 
 function GameSliderCard({ game }: { game: GroupedGame }) {
@@ -90,22 +92,35 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
       {/* Text Content */}
       <div className="flex-1 flex flex-col justify-between pointer-events-none">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.35em] text-[#ff6b35] font-bold">Featured</p>
-          <h3 className="font-display mt-1 text-2xl text-white truncate group-hover:text-[#ff6b35] transition-colors">
+          <h3 className="font-display text-2xl text-white truncate group-hover:text-[#ff6b35] transition-colors">
             {game.name}
           </h3>
-          <p className="mt-2 text-sm text-slate-300 line-clamp-2 leading-relaxed font-medium">
-            {game.tagline}
+          <p className="mt-1 text-[11px] font-medium" style={{ color: "#94a3b8" }}>
+            {game.details?.gameType || "Action • Multiplayer"}
           </p>
+
+          {/* Game Details */}
+          <div className="mt-3 space-y-1.5">
+            <div className="flex items-center gap-2 text-[10px]">
+              <span style={{ color: "#ff6b35" }}>&#9658;</span>
+              <span className="font-medium" style={{ color: "#cbd5e1" }}>{game.details?.bestFor}</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px]">
+              <span style={{ color: "#ff6b35" }}>&#9658;</span>
+              <span className="font-medium" style={{ color: "#cbd5e1" }}>{game.details?.specialFeature}</span>
+            </div>
+          </div>
         </div>
-        
-        <div className="mt-4 flex gap-2">
-          <span className="rounded-full bg-white/10 border border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white font-bold">
-            {game.images.length} Highlights
-          </span>
-          <span className="rounded-full bg-[#ff6b35]/20 text-[#ff6b35] border border-[#ff6b35]/30 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] font-bold">
-            Play
-          </span>
+
+        <div className="mt-4 flex items-center justify-between">
+           <div className="flex items-center gap-1.5" style={{ color: "#94a3b8" }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <span className="text-[10px] font-bold">{game.details?.players}</span>
+           </div>
+           <div className="flex items-center gap-1" style={{ color: "#eab308" }}>
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="text-[11px] font-black">{game.details?.rating}</span>
+           </div>
         </div>
       </div>
     </div>
@@ -139,10 +154,12 @@ export default function Games() {
 
           const grouped = gameItems.reduce((acc: Record<string, GroupedGame>, item: MediaItem) => {
             if (!acc[item.gameName]) {
+              const details = getGameDetails(item.gameName);
               acc[item.gameName] = {
                 name: item.gameName,
-                tagline: "Experience the ultimate gaming thrill on our premium setups.", 
+                tagline: "Experience the ultimate gaming thrill on our premium setups.",
                 images: [],
+                details,
               };
             }
             acc[item.gameName].images.push(item.secure_url);

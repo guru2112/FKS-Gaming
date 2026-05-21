@@ -30,7 +30,7 @@ export type AuthResponse = {
     name: string;
     email: string;
     avatarUrl?: string;
-    headerUrl?: string;
+    topbarUrl?: string;
   };
   message?: string;
 };
@@ -57,12 +57,11 @@ export type Profile = {
   email: string;
   avatarUrl?: string;
   topbarUrl?: string;
-  headerUrl?: string;
   currentPlan?: Plan | null;
   notifications?: {
     bookingUpdates?: boolean;
-    sessionReminders?: boolean;
-    newGames?: boolean;
+    reminders?: boolean;
+    promotions?: boolean;
   };
 };
 
@@ -146,7 +145,7 @@ export type MediaItem = {
   itemType?: string;
   profileImageType?: "Avatar";
   facilityType?: "Screen" | "PS" | "Seating" | "Simulator" | "Multiplayer";
-  dashboardType?: "Sidebar" | "Timer Card" | "Mobile Menu" | "Details Card" | "Topbar";
+  dashboardType?: "Sidebar" | "Timer Card" | "Mobile Menu" | "Details Card" | "Topbar" | "PS" | "Simulator";
   imageUrl?: string;
   secure_url?: string;
   publicId?: string;
@@ -218,7 +217,7 @@ export async function loginUser(payload: {
       name: data.user?.name || "",
       email: data.user?.email || "",
       avatarUrl: data.user?.avatarUrl || "",
-      headerUrl: data.user?.headerUrl || "",
+      topbarUrl: data.user?.topbarUrl || "",
     },
   };
 }
@@ -271,8 +270,8 @@ export async function fetchProfile(token?: string): Promise<Profile> {
     currentPlan: data.currentPlan || null,
     notifications: data.notifications || {
       bookingUpdates: true,
-      sessionReminders: true,
-      newGames: true,
+      reminders: true,
+      promotions: true,
     },
   };
 }
@@ -387,8 +386,8 @@ export async function updateProfile(
     topbarUrl?: string;
     notifications?: {
       bookingUpdates?: boolean;
-      sessionReminders?: boolean;
-      newGames?: boolean;
+      reminders?: boolean;
+      promotions?: boolean;
     };
   },
   token?: string

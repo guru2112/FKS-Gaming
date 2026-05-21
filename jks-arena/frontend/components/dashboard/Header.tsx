@@ -45,14 +45,14 @@ export default function Header({
       <div className="flex items-center">
         {/* DESKTOP WELCOME */}
         <div className="hidden md:block">
-          <h1 className={`font-display text-3xl sm:text-4xl tracking-tight ${hasTopbarBg ? 'text-white drop-shadow-md' : 'text-[#1A1A1A]'}`}>
+          <h1 className={`font-display text-3xl sm:text-4xl tracking-tight ${hasTopbarBg ? 'text-white drop-shadow-lg' : 'text-[#1A1A1A]'}`}>
             Welcome back,{" "}
             <span className="text-[#ff6b35]">
               {profile?.name?.split(" ")[0] || "Player"}
             </span>{" "}
             👋
           </h1>
-          <p className={`mt-2 text-xs font-bold tracking-[0.18em] uppercase ${hasTopbarBg ? 'text-white/60' : 'text-slate-500'}`}>
+          <p className={`mt-2 text-xs font-bold tracking-[0.18em] uppercase ${hasTopbarBg ? 'text-white drop-shadow-md' : 'text-slate-500'}`}>
             <span className="text-[#ff6b35]">JKS Arena</span> • Ready for your next gaming session
           </p>
         </div>
@@ -108,7 +108,7 @@ export default function Header({
               <p className={`text-[11px] font-black uppercase tracking-[0.08em] leading-none truncate max-w-[90px] ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
                 {profile?.name || "Player"}
               </p>
-              <p className={`text-[10px] mt-1 truncate max-w-[90px] ${hasTopbarBg ? 'text-white/50' : 'text-slate-500'}`}>
+              <p className={`text-[10px] mt-1 truncate max-w-[90px] hidden md:block ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-slate-500'}`}>
                 {profile?.email || "player@jksarena.com"}
               </p>
             </div>
@@ -178,7 +178,7 @@ export default function Header({
             <p className={`text-sm font-black uppercase tracking-[0.08em] leading-none ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
               {profile?.name || "Player"}
             </p>
-            <p className={`text-xs mt-1 tracking-wide ${hasTopbarBg ? 'text-white/50' : 'text-slate-500'}`}>
+            <p className={`text-xs mt-1 tracking-wide ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-slate-500'}`}>
               {profile?.email || "player@jksarena.com"}
             </p>
           </div>

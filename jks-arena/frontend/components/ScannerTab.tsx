@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { API_BASE_URL } from "@/lib/auth"; 
+import { api } from "@/lib/apiClient";
 
 interface ScannerTabProps {
   bookings?: any[];
@@ -42,36 +42,8 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
     };
   }, []);
 
-  useEffect(() => {
-    if (activeCameraId && !scanResult && !pendingToken) {
-      startScanner();
-    }
-  }, [activeCameraId, scanResult, pendingToken]);
-
-  async function startScanner() {
-    if (!scannerRef.current || !activeCameraId) return;
-
-    try {
-      if (scannerRef.current.isScanning) await scannerRef.current.stop();
-
-      setIsScanning(true);
-      await scannerRef.current.start(
-        activeCameraId,
-        { 
-          fps: 15, 
-          qrbox: (w, h) => ({ width: Math.floor(Math.min(w, h) * 0.7), height: Math.floor(Math.min(w, h) * 0.7) })
-        },
-        onScanSuccess,
-        () => {} // ignore scan failures
-      );
-    } catch (err) {
-      console.error("Failed to start scanner:", err);
-      setIsScanning(false);
-    }
-  }
-
   // 🔥 STEP 1: Scan Success -> Show Preview
-  async function onScanSuccess(decodedText: string) {
+  const onScanSuccess = useCallback(async (decodedText: string) => {
     if (scannerRef.current && scannerRef.current.isScanning) {
       await scannerRef.current.stop();
       setIsScanning(false);
@@ -84,7 +56,35 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
     
     setPendingToken(finalId || "");
     setPendingBooking(found || { _id: finalId, unknown: true });
-  }
+  }, [bookings]);
+
+  const startScanner = useCallback(async () => {
+    if (!scannerRef.current || !activeCameraId) return;
+
+    try {
+      if (scannerRef.current.isScanning) await scannerRef.current.stop();
+
+      setIsScanning(true);
+      await scannerRef.current.start(
+        activeCameraId,
+        {
+          fps: 15,
+          qrbox: (w, h) => ({ width: Math.floor(Math.min(w, h) * 0.7), height: Math.floor(Math.min(w, h) * 0.7) })
+        },
+        onScanSuccess,
+        () => {} // ignore scan failures
+      );
+    } catch (err) {
+      console.error("Failed to start scanner:", err);
+      setIsScanning(false);
+    }
+  }, [activeCameraId, onScanSuccess]);
+
+  useEffect(() => {
+    if (activeCameraId && !scanResult && !pendingToken) {
+      void startScanner();
+    }
+  }, [activeCameraId, scanResult, pendingToken, startScanner]);
 
   // 🔥 STEP 2: Manual Start -> Hit Backend API
   async function handleStartSession() {
@@ -92,25 +92,17 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
     setIsActivating(true);
 
     try {
-      const token = localStorage.getItem("auth_token");
-      const res = await fetch(`${API_BASE_URL}/api/admin/scan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ token: pendingToken }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to start session.");
+      const data = await api.post<{ booking?: any; message?: string }>("/api/admin/scan", { token: pendingToken });
 
       // Hide pending preview and show final success result
       setPendingToken(null);
       setPendingBooking(null);
       setScanResult({ success: true, message: `Timer Started for ${data.booking?.device || "Console"}!`, data: data.booking });
-      
+
       if (onRefresh) onRefresh();
 
     } catch (err: any) {
-      setScanResult({ success: false, message: err.message });
+      setScanResult({ success: false, message: err.message || "Failed to start session." });
     } finally {
       setIsActivating(false);
     }

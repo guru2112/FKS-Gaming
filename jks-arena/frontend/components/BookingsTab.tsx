@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { API_BASE_URL } from "@/lib/auth";
+import { useMemo, useState } from "react";
+import { api } from "@/lib/apiClient";
 
 interface BookingsTabProps {
   bookings: any[];
@@ -69,29 +69,8 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
     try {
       setActionError(null);
       setUpdatingId(bookingId);
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        window.location.href = "/login";
-        return;
-      }
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/bookings/${bookingId}/payment`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ paymentMethod: paymentMethod || null }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          window.location.href = "/login";
-          return;
-        }
-        throw new Error(data.message || "Failed to update payment method");
-      }
+      await api.patch(`/api/admin/bookings/${bookingId}/payment`, { paymentMethod: paymentMethod || null });
 
       onRefresh?.();
     } catch (e: any) {

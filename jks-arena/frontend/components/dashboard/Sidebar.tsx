@@ -15,18 +15,19 @@ interface SidebarProps {
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
   { name: 'Book Slot', href: '/book', icon: CalendarIcon },
-  { name: 'My Sessions', href: '#history', icon: SessionsIcon },
-  { name: 'Games Library', href: '#games', icon: GamepadIcon },
+  { name: 'My Sessions', href: '/history', icon: SessionsIcon },
+  { name: 'Games Library', href: '/games', icon: GamepadIcon },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
   { name: 'Help & Support', href: '/help-support', icon: HelpIcon },
 ];
 
 export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: SidebarProps) {
   const pathname = usePathname();
-  const [activeHash, setActiveHash] = useState('');
+  const [activeHash, setActiveHash] = useState(() =>
+    typeof window === "undefined" ? "" : window.location.hash
+  );
 
   useEffect(() => {
-    setActiveHash(window.location.hash);
     const handleHashChange = () => setActiveHash(window.location.hash);
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -91,7 +92,7 @@ export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: S
               {profile?.avatarUrl ? (
                 <img
                   key={profile?.avatarUrl || "default-avatar"}
-                  src={`${profile?.avatarUrl}?t=${Date.now()}`}
+                  src={profile?.avatarUrl}
                   alt="Avatar"
                   className="w-full h-full object-cover"
                 />

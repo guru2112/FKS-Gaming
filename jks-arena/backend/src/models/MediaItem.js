@@ -23,7 +23,7 @@ const mediaSchema = new mongoose.Schema(
 
     dashboardType: {
       type: String,
-      enum: ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar"]
+      enum: ["Sidebar", "Timer Card", "Mobile Menu", "Details Card", "Topbar", "PS", "Simulator", "Book Button"]
     },
 
     secure_url: { type: String, required: true },

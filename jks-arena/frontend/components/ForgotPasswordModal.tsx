@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { API_BASE_URL } from "@/lib/auth";
+import { api } from "@/lib/apiClient";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -33,13 +33,10 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (res.ok) setStep(2);
-      else setMessage("Email not found.");
+      await api.post("/api/auth/forgot-password", { email }, { noRedirectOn401: true });
+      setStep(2);
+    } catch {
+      setMessage("Email not found.");
     } finally { setLoading(false); }
   };
 
@@ -48,13 +45,10 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      if (res.ok) setStep(3);
-      else setMessage("Invalid OTP.");
+      await api.post("/api/auth/verify-otp", { email, otp }, { noRedirectOn401: true });
+      setStep(3);
+    } catch {
+      setMessage("Invalid OTP.");
     } finally { setLoading(false); }
   };
 
@@ -63,17 +57,11 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, password }),
-      });
-      if (res.ok) {
-        setMessage("Success! Closing...");
-        setTimeout(() => handleClose(), 2000);
-      } else {
-        setMessage("Reset failed.");
-      }
+      await api.post("/api/auth/reset-password", { email, otp, password }, { noRedirectOn401: true });
+      setMessage("Success! Closing...");
+      setTimeout(() => handleClose(), 2000);
+    } catch {
+      setMessage("Reset failed.");
     } finally { setLoading(false); }
   };
 

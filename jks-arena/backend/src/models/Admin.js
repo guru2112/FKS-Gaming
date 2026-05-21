@@ -22,6 +22,14 @@ const adminSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    avatarUrl: {
+      type: String,
+      default: "",
+    },
+    topbarUrl: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
