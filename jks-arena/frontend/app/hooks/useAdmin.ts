@@ -37,7 +37,7 @@ export function useAdmin() {
           api.get("/api/admin/media", { token }),
         ]);
 
-      setOverview(overviewData || { users: 0, bookings: 0, combos: 0 });
+      setOverview((overviewData as any) || { users: 0, bookings: 0, combos: 0 });
       setUsers(usersData.users || []);
       setBookings(bookingsData.bookings || []);
       setCombos(combosData.combos || []);
