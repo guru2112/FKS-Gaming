@@ -25,23 +25,21 @@ export function useAdmin() {
     setError(null);
 
     try {
-      const [overviewData, usersData, bookingsData, combosData, mediaData] =
-        await Promise.all([
-          api.get(
-            "/api/admin/overview",
-            { token }
-          ),
-          api.get("/api/admin/users", { token }),
-          api.get("/api/admin/bookings", { token }),
-          api.get("/api/admin/combos", { token }),
-          api.get("/api/admin/media", { token }),
-        ]);
+      const results = await Promise.all([
+        api.get("/api/admin/overview", { token }),
+        api.get("/api/admin/users", { token }),
+        api.get("/api/admin/bookings", { token }),
+        api.get("/api/admin/combos", { token }),
+        api.get("/api/admin/media", { token }),
+      ]);
 
-      setOverview((overviewData as any) || { users: 0, bookings: 0, combos: 0 });
-      setUsers(usersData.users || []);
-      setBookings(bookingsData.bookings || []);
-      setCombos(combosData.combos || []);
-      setMedia(mediaData.items || []);
+      const [overviewData, usersData, bookingsData, combosData, mediaData] = results as any[];
+
+      setOverview(overviewData || { users: 0, bookings: 0, combos: 0 });
+      setUsers(usersData?.users || []);
+      setBookings(bookingsData?.bookings || []);
+      setCombos(combosData?.combos || []);
+      setMedia(mediaData?.items || []);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to load admin data";
       console.error("Admin fetch error:", msg);
