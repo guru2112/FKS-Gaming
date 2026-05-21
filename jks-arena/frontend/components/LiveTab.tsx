@@ -11,7 +11,7 @@ export default function LiveTab() {
 
   const fetchLiveRigs = useCallback(async () => {
     try {
-      const data = await api.get<{ liveBookings: any[] }>("/api/admin/live");
+      const data = await api.get("/api/admin/live") as { liveBookings: any[] };
       if (data.liveBookings) setLiveBookings(data.liveBookings);
     } catch (err) {
       console.error("Failed to fetch live rigs:", err);

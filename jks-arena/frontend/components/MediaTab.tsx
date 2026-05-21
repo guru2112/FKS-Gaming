@@ -21,7 +21,7 @@ export default function MediaTab() {
 
   const fetchImages = useCallback(async () => {
     try {
-      const data = await api.get<{ items: any[] }>("/api/media", { noRedirectOn401: true });
+      const data = await api.get("/api/media", { noRedirectOn401: true }) as { items: any[] };
       setImages(data.items || []);
     } catch (error) { console.error("Failed to fetch images", error); }
   }, []);
