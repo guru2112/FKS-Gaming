@@ -51,7 +51,7 @@ export default function HeroSection() {
           className="w-full px-[22px] sm:px-5 md:pl-14 lg:pl-20 xl:pl-40 md:pr-20 lg:pr-28"
         >
           {/* CONTENT WRAPPER — 88% mobile, 42% desktop */}
-          <div className="w-[88%] sm:w-full md:w-[42%] mt-[-10px] sm:mt-[-16px] md:mt-0">
+          <div className="w-[88%] sm:w-full md:w-[42%] mt-[28px] sm:mt-[16px] md:mt-0">
 
             {/* MAIN HEADING */}
             <h1 className="font-display text-[2.7rem] sm:text-7xl md:text-7xl lg:text-[7.5rem] font-black text-white tracking-tight leading-[0.95] sm:leading-[0.92] uppercase drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]">
@@ -178,7 +178,7 @@ export default function HeroSection() {
       {/* ============================================= */}
       {/* STATS — Mobile 2x2 Grid                       */}
       {/* ============================================= */}
-      <div className="md:hidden absolute bottom-8 left-1/2 -translate-x-1/2 z-40 w-[88%]">
+      <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-40 w-[88%]">
         <div className="grid grid-cols-2 gap-[14px]">
           {[
             { icon: "⭐", value: "4.8 / 5", label: "Google Rating" },
