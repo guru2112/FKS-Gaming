@@ -20,8 +20,8 @@ const DEVICE_RATES: Record<string, number> = { PS1: 60, PS2: 60, PS3: 60, SIM1: 
 // =========================================================
 
 export async function GET(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await authenticate(req);
     if (auth instanceof NextResponse) return auth;
 
@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
 // =========================================================
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await authenticate(req);
     if (auth instanceof NextResponse) return auth;
 

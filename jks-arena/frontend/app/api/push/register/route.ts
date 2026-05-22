@@ -5,8 +5,8 @@ import { handleApiError } from "@/lib/errorHandler";
 import PushToken from "@/models/PushToken.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await authenticate(req);
     if (auth instanceof NextResponse) return auth;
 

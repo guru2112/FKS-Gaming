@@ -5,8 +5,8 @@ import { handleApiError } from "@/lib/errorHandler";
 import Notification from "@/models/Notification.js";
 
 export async function PATCH(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await authenticate(req);
     if (auth instanceof NextResponse) return auth;
 

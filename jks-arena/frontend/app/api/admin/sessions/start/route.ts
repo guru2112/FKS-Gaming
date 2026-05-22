@@ -17,8 +17,8 @@ const DEVICE_RATES: Record<string, number> = {
 };
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await requireAdmin(req);
     if (auth instanceof NextResponse) return auth;
 

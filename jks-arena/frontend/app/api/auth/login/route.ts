@@ -7,8 +7,8 @@ import Admin from "@/models/Admin.js";
 import User from "@/models/User.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const { email, password } = await req.json();
 
     if (!email || !password) {

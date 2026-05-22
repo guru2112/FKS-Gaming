@@ -6,8 +6,8 @@ import Admin from "@/models/Admin.js";
 import User from "@/models/User.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const { token: googleToken } = await req.json();
 
     if (!googleToken) {

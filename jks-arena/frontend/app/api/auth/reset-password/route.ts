@@ -5,8 +5,8 @@ import { handleApiError } from "@/lib/errorHandler";
 import User from "@/models/User.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const { email, otp, password } = await req.json();
 
     if (!email || !otp || !password) {

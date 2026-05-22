@@ -5,8 +5,8 @@ import User from "@/models/User.js";
 import { sendMail } from "@/lib/utils/mailer.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const { email } = await req.json();
 
     if (!email) {

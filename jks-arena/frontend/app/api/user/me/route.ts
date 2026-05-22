@@ -5,8 +5,8 @@ import { handleApiError } from "@/lib/errorHandler";
 import User from "@/models/User.js";
 
 export async function GET(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await authenticate(req);
     if (auth instanceof NextResponse) return auth;
 

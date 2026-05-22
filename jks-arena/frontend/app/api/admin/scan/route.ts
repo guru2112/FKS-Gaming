@@ -5,8 +5,8 @@ import { handleApiError } from "@/lib/errorHandler";
 import Booking from "@/models/Booking.js";
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await requireAdmin(req);
     if (auth instanceof NextResponse) return auth;
 

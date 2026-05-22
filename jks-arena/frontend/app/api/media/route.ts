@@ -6,8 +6,8 @@ import MediaItem from "@/models/MediaItem.js";
 import cloudinary from "@/lib/utils/cloudinary.js";
 
 export async function GET() {
-  await connectDB();
   try {
+    await connectDB();
     const items = await MediaItem.find().sort({ createdAt: -1 });
     return NextResponse.json({ items });
   } catch (err) {
@@ -16,8 +16,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await requireAdmin(req);
     if (auth instanceof NextResponse) return auth;
 

@@ -8,8 +8,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  await connectDB();
   try {
+    await connectDB();
     const auth = await requireAdmin(req);
     if (auth instanceof NextResponse) return auth;
 
