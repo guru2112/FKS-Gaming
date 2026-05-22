@@ -56,7 +56,7 @@ export function handleApiError(err: unknown): NextResponse {
   // Generic error
   const status = error.statusCode || error.status || 500;
   const message =
-    false && status === 500
+    process.env.NODE_ENV === "production" && status === 500
       ? "Internal server error. Please try again later."
       : error.message || "Server error";
 
