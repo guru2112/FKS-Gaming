@@ -94,7 +94,7 @@ export default function Navbar() {
 
             <Link
               href="/login"
-              className="group relative overflow-hidden px-7 py-3 rounded-2xl border border-[#ff6b35]/50 bg-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-[#ff6b35]"
+              className="hidden md:flex group relative overflow-hidden px-7 py-3 rounded-2xl border border-[#ff6b35]/50 bg-black/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-[#ff6b35]"
             >
 
               <span className="relative z-10 text-[#ff6b35] group-hover:text-white text-xs font-black uppercase tracking-[0.3em] transition-colors duration-300">

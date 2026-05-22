@@ -21,7 +21,7 @@ export default function HeroSection() {
       />
 
       {/* LAYER 1b — Mobile: vertical gradient (top dark → bottom transparent) */}
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-black/85 via-black/45 to-transparent md:hidden" />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-black/75 via-black/35 to-transparent md:hidden" />
 
       {/* LAYER 2 — Orange ambient glow (left-center, behind content) */}
       <div className="absolute inset-0 z-[2] pointer-events-none"
@@ -48,13 +48,13 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
-          className="w-full px-5 md:pl-14 lg:pl-20 xl:pl-40 md:pr-20 lg:pr-28"
+          className="w-full px-[22px] sm:px-5 md:pl-14 lg:pl-20 xl:pl-40 md:pr-20 lg:pr-28"
         >
-          {/* CONTENT WRAPPER — 100% mobile, 42% desktop */}
-          <div className="w-full md:w-[42%] -mt-16 md:mt-0">
+          {/* CONTENT WRAPPER — 88% mobile, 42% desktop */}
+          <div className="w-[88%] sm:w-full md:w-[42%] mt-[-10px] sm:mt-[-16px] md:mt-0">
 
             {/* MAIN HEADING */}
-            <h1 className="font-display text-5xl sm:text-7xl md:text-7xl lg:text-[7.5rem] font-black text-white tracking-tight leading-[0.92] uppercase drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]">
+            <h1 className="font-display text-[2.7rem] sm:text-7xl md:text-7xl lg:text-[7.5rem] font-black text-white tracking-tight leading-[0.95] sm:leading-[0.92] uppercase drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]">
               EAT. SLEEP.
               <br />
               <span className="text-[#ff6b35] drop-shadow-[0_0_35px_rgba(255,107,53,0.85)]">
@@ -63,8 +63,8 @@ export default function HeroSection() {
             </h1>
 
             {/* DESCRIPTION — 34px from heading */}
-            <div className="max-w-2xl mt-[24px] md:mt-[34px]">
-              <p className="text-sm sm:text-lg md:text-xl text-slate-100 leading-relaxed font-medium drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+            <div className="max-w-2xl mt-[30px] md:mt-[34px]">
+              <p className="text-sm sm:text-lg md:text-xl text-white/90 leading-relaxed font-medium drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
                 Enter a premium gaming experience featuring
                 high-end PS5 setups, immersive racing simulators,
                 cinematic vibes, and the perfect atmosphere for
@@ -75,7 +75,7 @@ export default function HeroSection() {
             {/* ============================= */}
             {/* CTA BUTTONS — 42px from para  */}
             {/* ============================= */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-start gap-[14px] md:gap-5 mt-[30px] md:mt-[42px]">
+            <div className="flex flex-col md:flex-row items-stretch md:items-start gap-[16px] md:gap-5 mt-[38px] md:mt-[42px]">
 
               {/* ====== JOIN ARENA ====== */}
               <Link
@@ -178,8 +178,8 @@ export default function HeroSection() {
       {/* ============================================= */}
       {/* STATS — Mobile 2x2 Grid                       */}
       {/* ============================================= */}
-      <div className="md:hidden absolute bottom-16 left-1/2 -translate-x-1/2 z-40 w-[90%]">
-        <div className="grid grid-cols-2 gap-3.5">
+      <div className="md:hidden absolute bottom-8 left-1/2 -translate-x-1/2 z-40 w-[88%]">
+        <div className="grid grid-cols-2 gap-[14px]">
           {[
             { icon: "⭐", value: "4.8 / 5", label: "Google Rating" },
             { icon: "🎮", value: "10+", label: "Premium Games" },
@@ -200,7 +200,7 @@ export default function HeroSection() {
               label: "Simulators",
             },
           ].map((item, i) => (
-            <div key={i} className="stat-card h-[110px] p-[18px]">
+            <div key={i} className="stat-card h-[105px] p-[16px]">
               {/* Corner accents */}
               <span className="corner-accent corner-accent-h corner-tl"></span>
               <span className="corner-accent corner-accent-v corner-tl"></span>
