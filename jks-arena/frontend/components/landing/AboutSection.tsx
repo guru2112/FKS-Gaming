@@ -142,7 +142,7 @@ export default function AboutSection() {
 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative z-10">
 
-      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           PS5
@@ -154,7 +154,7 @@ export default function AboutSection() {
 
       </div>
 
-      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           SIM
@@ -166,7 +166,7 @@ export default function AboutSection() {
 
       </div>
 
-      <div className="rounded-3xl border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl hover:border-[#ff6b35]/40 hover:shadow-[0_0_25px_rgba(255,107,53,0.12)] transition-all duration-300">
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
 
         <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
           VIP
@@ -182,7 +182,7 @@ export default function AboutSection() {
 
     {/* DIVIDER */}
 
-    <div className="my-10 h-[1px] w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    <div className="my-10 neon-line"></div>
 
     {/* FEATURES */}
 

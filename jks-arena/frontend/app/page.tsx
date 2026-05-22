@@ -56,17 +56,6 @@ export default function Home() {
 
   return (
     <main className="bg-[#151520] min-h-screen text-white relative selection:bg-[#ff6b35] selection:text-white">
-      
-      {/* Slow Pan Animation CSS */}
-      <style>{`
-        @keyframes pan-image {
-          0% { transform: scale(1.05) translateX(1%); }
-          100% { transform: scale(1.05) translateX(-1%); }
-        }
-        .animate-pan {
-          animation: pan-image 20s ease-in-out infinite alternate;
-        }
-      `}</style>
 
       {/* =========================================================
           🔥 GLOBAL FIXED DYNAMIC BACKGROUND
@@ -83,7 +72,7 @@ export default function Home() {
               }`}
             >
               <div className="absolute inset-0 w-full h-full animate-pan">
-                <Image src={src} alt="Desktop Background" fill sizes="100vw" priority={idx === 0} className="object-cover opacity-100" />
+                <Image src={src} alt="Desktop Background" fill sizes="100vw" priority={idx === 0} className="object-cover" style={{filter:'brightness(0.90)'}} />
               </div>
             </div>
           ))}
@@ -99,7 +88,7 @@ export default function Home() {
               }`}
             >
               <div className="absolute inset-0 w-full h-full animate-pan">
-                <Image src={src} alt="Mobile Background" fill priority={idx === 0} className="object-cover opacity-100" />
+                <Image src={src} alt="Mobile Background" fill priority={idx === 0} className="object-cover" style={{filter:'brightness(0.90)'}} />
               </div>
             </div>
           ))}

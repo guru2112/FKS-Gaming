@@ -108,10 +108,13 @@ export default function PushNotificationManager() {
                 Notification.permission !==
                 "granted"
               ) {
-                console.log(
-                  "🔕 Foreground push received but permission is:",
-                  Notification.permission
-                );
+                return;
+              }
+
+              // Skip OS notification when user is already on the page
+              if (document.visibilityState === "visible") {
+                // Still refresh the in-app notification bell
+                window.dispatchEvent(new Event("refresh-notifications"));
                 return;
               }
 

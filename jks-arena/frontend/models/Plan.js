@@ -10,4 +10,4 @@ const planSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Plan", planSchema, "Plans");
+export default mongoose.models.Plan || mongoose.model("Plan", planSchema, "Plans");

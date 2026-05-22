@@ -154,7 +154,7 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
         </div>
 
         {/* Footer */}
-        <div className="flex gap-4 mt-8 relative z-10 border-t border-[#1A1A1A]/10 pt-6">
+        <div className="flex gap-4 mt-8 relative z-10 pt-6">
           <button
             onClick={() => setShowModal(true)}
             className="flex-1 bg-[#F3EFEC] border border-[#1A1A1A]/10 text-[#1A1A1A] rounded-xl py-3.5 text-[11px] font-black uppercase tracking-widest hover:bg-[#DED5D0] transition-colors"

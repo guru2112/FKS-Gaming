@@ -40,7 +40,7 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
 
   return (
     <div 
-      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] bg-black/30 backdrop-blur-lg p-5 border border-white/15 hover:border-[#ff6b35]/60 shadow-lg hover:shadow-[0_0_40px_rgba(255,107,53,0.15)] transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none"
+      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -148,11 +148,15 @@ export async function POST(req: NextRequest) {
       rig: normalizedDevice,
     });
 
-    // Create notification
+    // Create notification with rich details
+    const slotDate = start.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    const slotTime = start.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+    const slotEndTime = slotEnd.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+
     const notification = await Notification.create({
       userId: auth.userId,
       title: "Booking Confirmed",
-      message: `Your ${booking.device} session has been booked successfully.`,
+      message: `${booking.device} session on ${slotDate}, ${slotTime} - ${slotEndTime} for ${playersCount} player${playersCount > 1 ? "s" : ""} (Rs.${totalPrice}) is confirmed.`,
       type: "booking",
       link: "/dashboard",
     });

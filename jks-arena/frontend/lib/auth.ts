@@ -358,6 +358,11 @@ export async function createBooking(
     throw new Error(response.message || "Failed to create booking");
   }
 
+  // Refresh notification bell immediately after booking
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("refresh-notifications"));
+  }
+
   return response.booking;
 }
 

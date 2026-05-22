@@ -26,4 +26,4 @@ const mediaSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("MediaItem", mediaSchema);
+export default mongoose.models.MediaItem || mongoose.model("MediaItem", mediaSchema);

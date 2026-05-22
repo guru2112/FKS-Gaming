@@ -27,7 +27,7 @@ export default function Navbar() {
 
       {/* TOP GLOW LINE */}
 
-      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35]/80 to-transparent"></div>
+      {scrolled && <div className="neon-line-strong absolute bottom-0 left-0 w-full"></div>}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 

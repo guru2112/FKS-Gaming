@@ -7,45 +7,52 @@ import { API_BASE_URL } from "@/lib/auth";
 // ================= RULE ICONS =================
 
 const IconNoFood = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className="w-10 h-10"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M8 14H16M8 10H16M10 18H14" />
-    <path d="M4 4L20 20" strokeWidth="2.5" />
+  <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+    {/* Burger */}
+    <path d="M10 26c0-6 5-11 14-11s14 5 14 11" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M10 26h28v3c0 2-3 4-7 5H17c-4-1-7-3-7-5v-3z" stroke="currentColor" strokeWidth="2.5" fill="none" />
+    <path d="M15 26v-2c0-1 1-2 2-2h14c1 0 2 1 2 2v2" stroke="currentColor" strokeWidth="2" />
+    {/* Fries */}
+    <line x1="19" y1="15" x2="18" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <line x1="23" y1="14" x2="23" y2="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <line x1="27" y1="15" x2="26" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    {/* Prohibition */}
+    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" />
+    <line x1="8" y1="8" x2="40" y2="40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
 
 const IconNoAlcohol = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className="w-10 h-10"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M10 7V17M14 7V13L16 9" />
-    <path d="M4 4L20 20" strokeWidth="2.5" />
+  <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+    {/* Wine glass */}
+    <path d="M17 6h14v10l6 14H11l6-14V6z" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
+    <line x1="24" y1="30" x2="24" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <line x1="18" y1="40" x2="30" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    {/* Liquid inside */}
+    <path d="M14 18h20l-3 7H17l-3-7z" fill="currentColor" opacity="0.15" />
+    {/* Prohibition */}
+    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" />
+    <line x1="8" y1="8" x2="40" y2="40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
 
 const IconNoSmoking = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className="w-10 h-10"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <rect x="6" y="11" width="12" height="4" rx="1" />
-    <path d="M16 11V15" fill="currentColor" />
-    <path d="M4 4L20 20" strokeWidth="2.5" />
+  <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+    {/* Cigarette */}
+    <rect x="10" y="21" width="22" height="6" rx="1" stroke="currentColor" strokeWidth="2" fill="none" />
+    <rect x="32" y="21" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="2" fill="currentColor" opacity="0.15" />
+    {/* Smoke */}
+    <path d="M38 21c1-2 2-4 0-6s1-4 2-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
+    <path d="M41 22c0.5-1.5 1.5-3 0-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
+    {/* Prohibition */}
+    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" />
+    <line x1="8" y1="8" x2="40" y2="40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
+const IconRespect = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+    <path d="M24 4l5.5 11.2L42 17l-9 8.8L34.9 38 24 32.2 13.1 38 15 25.8 6 17l12.5-1.8L24 4z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" fill="currentColor" opacity="0.1" />
   </svg>
 );
 
@@ -54,18 +61,27 @@ const IconNoSmoking = () => (
 const rulesData = [
   {
     title: "No Outside Food",
-    desc: "Outside food & beverages are not allowed inside the cafe.",
+    desc: "Our cafe serves everything you need. Outside food & beverages are not permitted inside the arena.",
     icon: <IconNoFood />,
+    tag: "Food Policy",
   },
   {
     title: "No Alcohol",
-    desc: "Strictly no alcohol allowed in the cafe.",
+    desc: "This is a strictly alcohol-free zone. Keep it clean, keep it competitive.",
     icon: <IconNoAlcohol />,
+    tag: "Alcohol Policy",
   },
   {
     title: "No Smoking",
-    desc: "Smoking is strictly prohibited inside the cafe.",
+    desc: "Smoking and vaping are strictly prohibited. Fresh air, fresh gameplay.",
     icon: <IconNoSmoking />,
+    tag: "Health Policy",
+  },
+  {
+    title: "Respect Everyone",
+    desc: "Treat fellow gamers with respect. No toxicity, no hate speech, good vibes only.",
+    icon: <IconRespect />,
+    tag: "Sportsmanship",
   },
 ];
 
@@ -117,7 +133,7 @@ function FacilitySliderCard({
 
   return (
     <div
-      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] bg-black/30 backdrop-blur-lg p-5 border border-white/15 hover:border-[#ff6b35]/60 shadow-lg hover:shadow-[0_0_40px_rgba(255,107,53,0.15)] transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
+      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -235,6 +251,25 @@ function FacilitySliderCard({
 export default function FacilitiesSection() {
   const [facilities, setFacilities] = useState<GroupedFacility[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dividerVisible, setDividerVisible] = useState(false);
+  const dividerRef = useRef<HTMLDivElement>(null);
+
+  // Show divider when it scrolls into view
+  useEffect(() => {
+    const el = dividerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setDividerVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     async function fetchFacilities() {
@@ -385,8 +420,8 @@ export default function FacilitiesSection() {
 
       {/* DIVIDER LINE */}
 
-      <div className="flex justify-center px-6 md:px-20 lg:px-40 mb-24">
-        <div className="w-full max-w-[1400px] h-[3px] rounded-full bg-gradient-to-r from-transparent via-[#ff6b35] via-white to-transparent opacity-100 shadow-[0_0_35px_rgba(255,107,53,0.9)]"></div>
+      <div ref={dividerRef} className="flex justify-center px-6 md:px-20 lg:px-40 mb-24">
+        <div className={`w-full max-w-[1400px] h-[3px] rounded-full neon-line-strong shadow-[0_0_35px_rgba(255,107,53,0.9)] transition-all duration-1000 ease-out ${dividerVisible ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"}`}></div>
       </div>
 
       {/* RULES TITLE */}
@@ -423,9 +458,8 @@ export default function FacilitiesSection() {
 
   {/* SUBTEXT */}
 
-  <p className="mt-5 text-white text-base uppercase tracking-[0.25em] text-center">
-    Respect The Arena • Play Fair • Enjoy
-    Responsibly
+  <p className="mt-5 text-slate-400 text-xs uppercase tracking-[0.2em] text-center">
+    Keep It Clean • Play Fair • Respect The Arena
   </p>
 
 </div>
@@ -433,27 +467,37 @@ export default function FacilitiesSection() {
       {/* RULES CARDS */}
 
       <div className="max-w-[1400px] mx-auto px-6 md:px-20 lg:px-40">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {rulesData.map((rule, idx) => (
             <div
               key={idx}
-              className="relative overflow-hidden flex flex-col items-center text-center bg-black/35 backdrop-blur-xl border border-red-500/15 p-10 rounded-[36px] hover:border-red-500/50 transition-all duration-500 group shadow-[0_0_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(239,68,68,0.15)]"
+              className="relative overflow-hidden flex flex-col items-center text-center bg-gradient-to-b from-white/[0.04] to-transparent backdrop-blur-xl border border-white/8 p-8 rounded-3xl hover:border-[#ff6b35]/30 transition-all duration-500 group hover:-translate-y-1"
             >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-red-500/5 to-transparent"></div>
+              {/* Top accent line */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              <div className="relative z-10 text-red-500 mb-7 transform group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+              {/* Tag */}
+              <span className="relative z-10 text-[9px] font-black uppercase tracking-[0.3em] text-[#ff6b35]/70 bg-[#ff6b35]/10 px-3 py-1 rounded-full border border-[#ff6b35]/10 mb-6">
+                {rule.tag}
+              </span>
+
+              {/* Icon container */}
+              <div className="relative z-10 w-16 h-16 rounded-2xl bg-[#ff6b35]/10 border border-[#ff6b35]/15 flex items-center justify-center text-[#ff6b35] mb-6 group-hover:bg-[#ff6b35]/20 group-hover:border-[#ff6b35]/30 group-hover:scale-110 transition-all duration-300">
                 {rule.icon}
               </div>
 
-              <h4 className="relative z-10 text-white font-black text-xl uppercase tracking-[0.2em] mb-4">
+              {/* Number */}
+              <span className="absolute top-4 right-5 text-[50px] font-black text-white/[0.03] leading-none select-none">
+                0{idx + 1}
+              </span>
+
+              <h4 className="relative z-10 text-[#ff6b35] font-black text-sm uppercase tracking-[0.15em] mb-3">
                 {rule.title}
               </h4>
 
-              <p className="relative z-10 text-slate-300 text-base leading-relaxed max-w-[250px]">
+              <p className="relative z-10 text-white/80 text-xs leading-relaxed max-w-[220px]">
                 {rule.desc}
               </p>
-
-              <div className="relative z-10 mt-8 w-14 h-[3px] rounded-full bg-gradient-to-r from-red-500 to-[#ff6b35]"></div>
             </div>
           ))}
         </div>

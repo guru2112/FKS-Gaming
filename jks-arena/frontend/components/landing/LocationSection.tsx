@@ -65,7 +65,7 @@ export default function LocationSection() {
 
               {/* TOP LINE */}
 
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35] to-transparent opacity-80"></div>
+              <div className="neon-line-strong absolute top-0 left-0 w-full opacity-80"></div>
 
               {/* ORANGE GLOW */}
 

@@ -55,4 +55,4 @@ bookingSchema.index({ device: 1, slotStart: 1, slotEnd: 1, status: 1 });
 bookingSchema.index({ source: 1, sessionStatus: 1 });
 bookingSchema.index({ status: 1, slotStart: 1 });
 
-export default mongoose.model("Booking", bookingSchema, "Bookings");
+export default mongoose.models.Booking || mongoose.model("Booking", bookingSchema, "Bookings");

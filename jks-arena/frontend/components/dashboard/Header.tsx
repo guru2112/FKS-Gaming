@@ -20,7 +20,16 @@ export default function Header({
   hasTopbarBg,
 }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Detect viewport for single NotificationBell instance
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Safely handle "Click Outside" to close the profile dropdown
   useEffect(() => {
@@ -80,8 +89,10 @@ export default function Header({
           </svg>
         </button>
 
-        {/* NOTIFICATION BELL */}
-        <NotificationBell />
+        {/* NOTIFICATION BELL (mobile) */}
+        <div className="md:hidden">
+          <NotificationBell active={isMobile} />
+        </div>
 
         {/* PROFILE DROPDOWN */}
         <div className="relative" ref={dropdownRef}>
@@ -144,8 +155,8 @@ export default function Header({
       {/* DESKTOP PROFILE */}
       {/* ===================================================== */}
       <div className="hidden md:flex items-center gap-4">
-        {/* NOTIFICATION BELL */}
-        <NotificationBell />
+        {/* NOTIFICATION BELL (desktop) */}
+        <NotificationBell active={!isMobile} />
 
         {/* PROFILE CARD */}
         <div className={`group flex items-center gap-4 rounded-3xl px-4 py-3 hover:border-[#ff6b35]/40 transition-all duration-300 ${hasTopbarBg ? 'border border-white/15 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_8px_30px_rgba(255,107,53,0.08)]'}`}>

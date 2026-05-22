@@ -12,4 +12,4 @@ const comboSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Combo", comboSchema, "Combos");
+export default mongoose.models.Combo || mongoose.model("Combo", comboSchema, "Combos");
