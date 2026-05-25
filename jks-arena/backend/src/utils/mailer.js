@@ -17,7 +17,7 @@ function getTransporter() {
     throw new Error("MAIL_USERNAME and MAIL_PASSWORD are required for SMTP.");
   }
 
-  if (host) {
+  if (host && !host.includes("gmail.com")) {
     transporter = nodemailer.createTransport({
       host,
       port,
@@ -25,6 +25,8 @@ function getTransporter() {
       auth: { user, pass },
     });
   } else {
+    // If it's gmail or host isn't set, use the built-in gmail service
+    // This perfectly bypasses Render's IPv6 routing bugs
     transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
