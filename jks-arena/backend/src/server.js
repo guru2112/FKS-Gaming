@@ -1,8 +1,13 @@
 const path = require("path");
 const dotenv = require("dotenv");
+const dns = require("dns");
 
 // ✅ Load env BEFORE anything else
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+// ✅ Force Node.js to use IPv4 first for all DNS lookups
+// This fixes the ENETUNREACH error caused by Render's broken IPv6 routing to Google SMTP
+dns.setDefaultResultOrder("ipv4first");
 
 const app = require("./app");
 const { connectDb } = require("./db");
