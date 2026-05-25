@@ -36,20 +36,21 @@ async function start() {
     await connectDb();
     console.log("✅ Database connected");
 
-    // Verify SMTP connection (non-fatal — warn only)
-    if (missingSmtp.length === 0) {
-      const smtp = await verifyConnection();
-      if (smtp.ok) {
-        console.log("✅ SMTP connection verified");
-      } else {
-        console.warn("⚠️  SMTP connection failed:", smtp.error);
-        console.warn("   Booking emails will fail. Check MAIL_USERNAME and MAIL_PASSWORD.");
-      }
-    }
-
     app.listen(port, "0.0.0.0", () => {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+
+      // Verify SMTP connection (non-fatal — warn only)
+      if (missingSmtp.length === 0) {
+        verifyConnection().then((smtp) => {
+          if (smtp.ok) {
+            console.log("✅ SMTP connection verified");
+          } else {
+            console.warn("⚠️  SMTP connection failed:", smtp.error);
+            console.warn("   Booking emails will fail. Check MAIL_USERNAME and MAIL_PASSWORD.");
+          }
+        });
+      }
 
       // Initialize Cron Jobs (e.g. Booking Reminders)
       startCronJobs();
