@@ -52,7 +52,8 @@ const IconNoSmoking = () => (
 
 const IconRespect = () => (
   <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
-    <path d="M24 4l5.5 11.2L42 17l-9 8.8L34.9 38 24 32.2 13.1 38 15 25.8 6 17l12.5-1.8L24 4z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" fill="currentColor" opacity="0.1" />
+    <path d="M24 6L10 12v12c0 10 14 18 14 18s14-8 14-18V12L24 6z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M24 18a4 4 0 0 0-4 4c0 3 4 7 4 7s4-4 4-7a4 4 0 0 0-4-4z" fill="currentColor" opacity="0.5" />
   </svg>
 );
 
@@ -133,7 +134,7 @@ function FacilitySliderCard({
 
   return (
     <div
-      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
+      className="w-[300px] md:w-[380px] min-h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-2 active:-translate-y-2 flex flex-col gap-4 group shrink-0 select-none cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -390,7 +391,7 @@ export default function FacilitiesSection() {
 
         {/* MOBILE SLIDER */}
 
-        <div className="md:hidden overflow-x-auto overflow-y-hidden scrollbar-hide pb-20">
+        <div className="md:hidden overflow-x-auto overflow-y-hidden scrollbar-hide pt-4 pb-20">
 
           <div className="flex gap-6 w-max px-6 animate-scroll-mobile">
 
@@ -407,7 +408,7 @@ export default function FacilitiesSection() {
 
           {/* DESKTOP GRID */}
 
-          <div className="hidden md:flex flex-wrap justify-center gap-10 max-w-[1300px] mx-auto px-6 pb-32">
+          <div className="hidden md:flex flex-wrap justify-center gap-10 max-w-[1300px] mx-auto px-6 pt-4 pb-32">
             {facilities.map((fac, idx) => (
               <FacilitySliderCard
                 key={idx}
@@ -471,7 +472,7 @@ export default function FacilitiesSection() {
           {rulesData.map((rule, idx) => (
             <div
               key={idx}
-              className="relative overflow-hidden flex flex-col items-center text-center bg-gradient-to-b from-white/[0.04] to-transparent backdrop-blur-xl border border-white/8 p-8 rounded-3xl hover:border-[#ff6b35]/30 transition-all duration-500 group hover:-translate-y-1"
+              className="relative overflow-hidden flex flex-col items-center text-center glass-panel glass-panel-hover bg-black/30 p-8 rounded-[32px] shadow-lg transition-all duration-300 ease-in-out group hover:-translate-y-2 active:-translate-y-2"
             >
               {/* Top accent line */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff6b35]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

@@ -11,6 +11,8 @@ const {
   cancelExpiredBookings,
   completeExpiredSessions,
 } = require("./utils/bookingCleanup");
+const { scrapeReviews } = require("./utils/reviewsScraper");
+const { startCronJobs } = require("./utils/cron");
 
 // ✅ Verify critical env vars on startup
 const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
@@ -49,6 +51,9 @@ async function start() {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 
+      // Initialize Cron Jobs (e.g. Booking Reminders)
+      startCronJobs();
+
       // Background job: auto-cancel no-shows + auto-complete sessions (every 5 min)
       setInterval(async () => {
         try {
@@ -59,11 +64,27 @@ async function start() {
         }
       }, 5 * 60 * 1000);
 
+      // Background job: Google Reviews Scraper (every 72 hours)
+      setInterval(async () => {
+        try {
+          await scrapeReviews();
+        } catch (err) {
+          console.error("❌ Reviews scraper job failed:", err.message);
+        }
+      }, 72 * 60 * 60 * 1000);
+
       // Run once immediately on startup
       (async () => {
         try {
           await cancelExpiredBookings();
           await completeExpiredSessions();
+          
+          const Review = require("./models/Review");
+          const count = await Review.countDocuments();
+          if (count === 0) {
+            console.log("⚠️ No reviews found in DB. Running initial scrape...");
+            scrapeReviews(); // Run asynchronously without awaiting to not block server startup
+          }
         } catch (err) {
           console.error("❌ Initial cleanup failed:", err.message);
         }

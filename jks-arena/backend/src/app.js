@@ -13,6 +13,7 @@ const mediaRoutes = require("./routes/media");
 const notificationRoutes = require("./routes/notifications");
 const pushRoutes = require("./routes/push");
 const userRoutes = require("./routes/user");
+const reviewRoutes = require("./routes/reviews");
 
 const { errorHandler } = require("./middleware/errorHandler");
 
@@ -169,6 +170,9 @@ app.use("/api/notifications", notificationRoutes);
 
 // Push notifications
 app.use("/api/push", pushRoutes);
+
+// Reviews
+app.use("/api/reviews", reviewRoutes);
 
 /* =========================================================
    🔥 TEST ROUTE (remove in production if not needed)

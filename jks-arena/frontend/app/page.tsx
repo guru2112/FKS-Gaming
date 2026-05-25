@@ -9,6 +9,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import FacilitiesSection from "@/components/landing/FacilitiesSection";
 import Games from "@/components/landing/Games";
 import AboutSection from "@/components/landing/AboutSection";
+import ReviewsSection from "@/components/landing/ReviewsSection";
 import LocationSection from "@/components/landing/LocationSection";
 import Footer from "@/components/landing/Footer";
 
@@ -128,6 +129,13 @@ export default function Home() {
   {/* DIVIDER */}
   <div className="flex justify-center px-6">
     <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
+  </div>
+
+  <ReviewsSection />
+
+  {/* DIVIDER */}
+  <div className="flex justify-center px-6">
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-[#ff6b35]/80 to-transparent shadow-[0_0_30px_rgba(255,107,53,0.4)]"></div>
   </div>
 
   <LocationSection />

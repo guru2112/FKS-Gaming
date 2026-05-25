@@ -54,6 +54,7 @@ const bookingSchema = new mongoose.Schema(
     paymentStatus: { type: String, enum: ["paid", "partial"] },
     status: { type: String, enum: ["upcoming", "active", "completed", "cancelled", "no-show"], default: "upcoming" },
     actualStartTime: { type: Date }, 
+    reminderSent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

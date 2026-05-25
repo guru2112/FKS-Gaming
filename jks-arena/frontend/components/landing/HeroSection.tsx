@@ -48,7 +48,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
-          className="w-full px-[22px] sm:px-5 md:pl-14 lg:pl-20 xl:pl-40 md:pr-20 lg:pr-28"
+          className="w-full px-[22px] sm:px-5 md:pl-14 lg:pl-20 xl:pl-40 md:pr-20 lg:pr-28 -mt-48 md:mt-0"
         >
           {/* CONTENT WRAPPER — 88% mobile, 42% desktop */}
           <div className="w-[88%] sm:w-full md:w-[42%] mt-[28px] sm:mt-[16px] md:mt-0">
@@ -138,17 +138,26 @@ export default function HeroSection() {
             {[
               { icon: "⭐", value: "4.8 / 5", label: "Google Rating" },
               { icon: "🎮", value: "10+", label: "Premium Games" },
-              { icon: "🎧", value: "Premium", label: "PS5 Setups" },
               {
                 icon: (
                   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="12" r="4"/>
-                    <circle cx="12" cy="12" r="1"/>
-                    <line x1="12" y1="2" x2="12" y2="8"/>
-                    <line x1="12" y1="16" x2="12" y2="22"/>
-                    <line x1="2" y1="12" x2="8" y2="12"/>
-                    <line x1="16" y1="12" x2="22" y2="12"/>
+                    <line x1="6" y1="12" x2="10" y2="12" />
+                    <line x1="8" y1="10" x2="8" y2="14" />
+                    <line x1="15" y1="13" x2="15.01" y2="13" />
+                    <line x1="18" y1="11" x2="18.01" y2="11" />
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                  </svg>
+                ),
+                value: "Premium", label: "PS5 Setups"
+              },
+              {
+                icon: (
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 2v7" />
+                    <path d="M21.5 15.5 14.5 13" />
+                    <path d="M2.5 15.5 9.5 13" />
                   </svg>
                 ),
                 value: "Driving",
@@ -183,17 +192,26 @@ export default function HeroSection() {
           {[
             { icon: "⭐", value: "4.8 / 5", label: "Google Rating" },
             { icon: "🎮", value: "10+", label: "Premium Games" },
-            { icon: "🎧", value: "Premium", label: "PS5 Setups" },
             {
               icon: (
                 <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <circle cx="12" cy="12" r="4"/>
-                  <circle cx="12" cy="12" r="1"/>
-                  <line x1="12" y1="2" x2="12" y2="8"/>
-                  <line x1="12" y1="16" x2="12" y2="22"/>
-                  <line x1="2" y1="12" x2="8" y2="12"/>
-                  <line x1="16" y1="12" x2="22" y2="12"/>
+                  <line x1="6" y1="12" x2="10" y2="12" />
+                  <line x1="8" y1="10" x2="8" y2="14" />
+                  <line x1="15" y1="13" x2="15.01" y2="13" />
+                  <line x1="18" y1="11" x2="18.01" y2="11" />
+                  <rect x="2" y="6" width="20" height="12" rx="2" />
+                </svg>
+              ),
+              value: "Premium", label: "PS5 Setups"
+            },
+            {
+              icon: (
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2v7" />
+                  <path d="M21.5 15.5 14.5 13" />
+                  <path d="M2.5 15.5 9.5 13" />
                 </svg>
               ),
               value: "Driving",

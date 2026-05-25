@@ -81,6 +81,7 @@ function getTypeIcon(type: string) {
 }
 
 export default function NotificationBell({ active = true }: { active?: boolean }) {
+  if (!active) return null;
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);

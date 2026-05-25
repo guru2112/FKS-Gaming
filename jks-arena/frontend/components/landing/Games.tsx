@@ -40,7 +40,7 @@ function GameSliderCard({ game }: { game: GroupedGame }) {
 
   return (
     <div 
-      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out flex flex-col gap-4 group shrink-0 select-none"
+      className="w-[300px] md:w-[400px] h-[450px] overflow-hidden rounded-[32px] glass-panel glass-panel-hover bg-black/30 p-5 shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-2 active:-translate-y-2 flex flex-col gap-4 group shrink-0 select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -311,7 +311,7 @@ export default function Games() {
           onTouchStart={() => setIsInteracting(true)}
           onTouchEnd={() => setIsInteracting(false)}
 
-          className={`flex overflow-x-auto pb-10 hide-scroll-bar px-6 md:px-20 lg:px-40 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          className={`flex overflow-x-auto pt-4 pb-10 hide-scroll-bar px-6 md:px-20 lg:px-40 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           style={{ WebkitOverflowScrolling: 'touch' }} // Adds momentum scrolling on iOS
         >
           {/* The Track */}

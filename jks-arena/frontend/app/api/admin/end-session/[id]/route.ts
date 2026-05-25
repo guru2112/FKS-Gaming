@@ -29,8 +29,13 @@ export async function POST(
       );
     }
 
-    const body = await req.json();
-    const { outTime, amountPaid, paymentMethod } = body;
+    let body: Record<string, unknown> = {};
+    try {
+      body = await req.json();
+    } catch {
+      // Empty or invalid body — use defaults
+    }
+    const { outTime, amountPaid, paymentMethod } = body as { outTime?: string; amountPaid?: number; paymentMethod?: string };
 
     const end = outTime ? new Date(outTime) : new Date();
 

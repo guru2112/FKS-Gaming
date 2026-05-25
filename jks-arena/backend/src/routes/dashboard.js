@@ -528,16 +528,7 @@ router.post(
           "/dashboard",
       });
 
-      // Best-effort push (do not block booking flow)
-      await sendPushToUser(req.userId, {
-        title: notification.title,
-        body: notification.message,
-        data: {
-          type: notification.type,
-          link: notification.link,
-          notificationId: notification._id,
-        },
-      });
+
 
       // =====================================================
       // GET USER
@@ -551,6 +542,23 @@ router.post(
             "name email notifications"
           )
           .lean();
+
+      // =====================================================
+      // SEND PUSH (respect user setting)
+      // =====================================================
+
+      if (user?.notifications?.bookingUpdates !== false) {
+        // Best-effort push (do not block booking flow)
+        await sendPushToUser(req.userId, {
+          title: notification.title,
+          body: notification.message,
+          data: {
+            type: notification.type,
+            link: notification.link,
+            notificationId: notification._id,
+          },
+        });
+      }
 
       // =====================================================
       // SEND EMAIL (fire-and-forget — does not block response)

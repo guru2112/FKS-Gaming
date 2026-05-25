@@ -5,6 +5,12 @@ const companionSchema = new mongoose.Schema({
   phone: { type: String, required: true },
 });
 
+const paymentEntrySchema = new mongoose.Schema({
+  method: { type: String, enum: ["cash", "online"], required: true },
+  amount: { type: Number, required: true, min: 0 },
+  collectedAt: { type: Date, default: Date.now },
+});
+
 const bookingSchema = new mongoose.Schema(
   {
     source: { type: String, enum: ["online", "offline"], default: "online" },
@@ -41,6 +47,7 @@ const bookingSchema = new mongoose.Schema(
     paymentMethod: { type: String, enum: ["cash", "online"] },
     amountPaid: { type: Number, min: 0, default: 0 },
     paymentStatus: { type: String, enum: ["paid", "partial"] },
+    payments: [paymentEntrySchema],
     status: {
       type: String,
       enum: ["upcoming", "active", "completed", "cancelled", "no-show"],

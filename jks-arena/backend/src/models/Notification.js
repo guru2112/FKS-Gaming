@@ -27,6 +27,7 @@ const notificationSchema =
           "reminder",
           "announcement",
           "games",
+          "promo",
         ],
         default:
           "announcement",

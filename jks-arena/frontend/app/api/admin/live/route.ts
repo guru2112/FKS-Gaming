@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const liveBookings = await Booking.find({ status: "active" })
       .select(
-        "userName device slotStart slotEnd durationHours players"
+        "userName device slotStart slotEnd durationHours players perHeadRate paymentStatus amountPaid"
       )
       .lean();
 
