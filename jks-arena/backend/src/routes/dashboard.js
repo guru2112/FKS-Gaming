@@ -516,10 +516,10 @@ router.post(
           req.userId,
 
         title:
-          "Booking Confirmed",
+          "🎮 Booking Confirmed!",
 
         message:
-          `Your ${booking.device} session has been booked successfully.`,
+          `Your ${booking.durationHours} hour session on ${booking.device} is confirmed! Get ready to play.`,
 
         type:
           "booking",
@@ -610,54 +610,66 @@ router.post(
                 "Your JKS Arena Access Pass",
 
               html: `
-                <div style="font-family:Arial,sans-serif;padding:20px;">
-
-                  <h2 style="color:#ff6b35;">
-                    Booking Confirmed 🎮
-                  </h2>
-
-                  <p>
-                    Hi <strong>${emailUser.name}</strong>,
-                  </p>
-
-                  <p>
-                    Your booking has been successfully confirmed.
-                  </p>
-
-                  <div style="margin-top:20px;padding:15px;border:1px solid #eee;border-radius:10px;background:#fafafa;">
-
-                    <p><strong>Device:</strong> ${booking.device}</p>
-
-                    <p><strong>Players:</strong> ${booking.players}</p>
-
-                    <p><strong>Duration:</strong> ${booking.durationHours} Hour(s)</p>
-
-                    <p><strong>Total:</strong> ₹${booking.totalPrice}</p>
-
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0a; color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                  
+                  <!-- Header -->
+                  <div style="background: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%); padding: 30px 20px; text-align: center;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">JKS ARENA</h1>
+                    <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">PREMIUM GAMING LOUNGE</p>
                   </div>
 
-                  <p style="margin-top:20px;">
-                    Your QR Pass:
-                  </p>
+                  <!-- Body -->
+                  <div style="padding: 40px 30px;">
+                    <h2 style="margin-top: 0; color: #ffffff; font-size: 22px;">Booking Confirmed! 🎮</h2>
+                    <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6;">
+                      Hi <strong style="color: #ffffff;">${emailUser.name}</strong>,<br>
+                      Your gaming session has been successfully booked. Get ready for an epic experience!
+                    </p>
 
-                  <a
-                    href="${qrViewUrl}"
-                    style="
-                      display:inline-block;
-                      padding:12px 20px;
-                      background:#ff6b35;
-                      color:white;
-                      border-radius:8px;
-                      text-decoration:none;
-                      font-weight:bold;
-                    "
-                  >
-                    View QR Pass
-                  </a>
+                    <!-- Details Card -->
+                    <div style="margin-top: 30px; background-color: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 25px;">
+                      <h3 style="margin-top: 0; color: #ff4500; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 10px;">Session Details</h3>
+                      
+                      <table style="width: 100%; color: #e0e0e0; font-size: 15px; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a;"><strong>Rig / Device</strong></td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${booking.device}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a;"><strong>Game</strong></td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${booking.game || "Decide on arrival"}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a;"><strong>Players</strong></td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${booking.players}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a;"><strong>Duration</strong></td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${booking.durationHours} Hour(s)</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 15px 0 5px 0;"><strong>Total Price</strong></td>
+                          <td style="padding: 15px 0 5px 0; text-align: right; color: #ff4500; font-size: 18px; font-weight: bold;">₹${booking.totalPrice}</td>
+                        </tr>
+                      </table>
+                    </div>
 
-                  <p style="margin-top:30px;color:#777;font-size:12px;">
-                    JKS Arena • Gaming & Simulator Lounge
-                  </p>
+                    <!-- Action -->
+                    <div style="margin-top: 40px; text-align: center;">
+                      <p style="color: #a0a0a0; font-size: 14px; margin-bottom: 15px;">Please present your QR Pass upon arrival at the arena.</p>
+                      <a href="${qrViewUrl}" style="display: inline-block; padding: 14px 30px; background: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%); color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);">
+                        View Your QR Pass
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Footer -->
+                  <div style="background-color: #111111; padding: 25px; text-align: center; border-top: 1px solid #222;">
+                    <p style="margin: 0; color: #666666; font-size: 12px;">
+                      <strong>JKS Arena</strong> • Gaming & Simulator Lounge<br>
+                      Check the attached PDF for an offline copy of your pass.
+                    </p>
+                  </div>
 
                 </div>
               `,
