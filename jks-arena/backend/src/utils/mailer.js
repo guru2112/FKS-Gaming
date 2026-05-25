@@ -25,14 +25,18 @@ function getTransporter() {
       auth: { user, pass },
     });
   } else {
-    // If it's gmail or host isn't set, explicitly force IPv4
-    // Render has known IPv6 blackhole issues with Google SMTP causing indefinite hangs
+    // If it's gmail or host isn't set, use port 587 (STARTTLS)
+    // Add timeouts so it throws an error instead of hanging indefinitely
     transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: { user, pass },
-      family: 4, // Force IPv4 explicitly
+      family: 4, // Force IPv4
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
   }
 
