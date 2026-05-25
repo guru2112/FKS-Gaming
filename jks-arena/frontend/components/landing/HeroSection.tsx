@@ -34,7 +34,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-[3] pointer-events-none bg-gradient-to-b from-black/35 via-transparent to-black/25" />
 
       {/* TOP CENTER LABEL */}
-      <div className="absolute top-12 md:top-24 left-1/2 -translate-x-1/2 z-40 flex items-center gap-5 w-full justify-center px-4">
+      <div className="absolute top-16 md:top-24 left-1/2 -translate-x-1/2 z-40 flex items-center gap-5 w-full justify-center px-4">
         <div className="h-[2px] w-18 md:w-28 bg-gradient-to-r from-transparent to-[#ff6b35]"></div>
         <p className="text-[14px] md:text-xs uppercase tracking-[0.38em] text-[#ff6b35] font-black whitespace-nowrap">
           Level Up Your Game
