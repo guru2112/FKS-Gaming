@@ -27,11 +27,11 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// ✅ Warn if SMTP credentials are missing (non-fatal — booking still works, just no emails)
-const smtpVars = ["MAIL_USERNAME", "MAIL_PASSWORD"];
-const missingSmtp = smtpVars.filter((v) => !process.env[v]);
-if (missingSmtp.length > 0) {
-  console.warn("⚠️  Missing SMTP credentials:", missingSmtp, "— booking emails will NOT be sent.");
+// ✅ Warn if Brevo API Key is missing (non-fatal — booking still works, just no emails)
+const brevoVars = ["BREVO_API_KEY"];
+const missingBrevo = brevoVars.filter((v) => !process.env[v]);
+if (missingBrevo.length > 0) {
+  console.warn("⚠️  Missing Brevo API Key:", missingBrevo, "— booking emails will NOT be sent.");
 }
 
 const port = process.env.PORT || 5000;
@@ -45,14 +45,14 @@ async function start() {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 
-      // Verify SMTP connection (non-fatal — warn only)
-      if (missingSmtp.length === 0) {
-        verifyConnection().then((smtp) => {
-          if (smtp.ok) {
-            console.log("✅ SMTP connection verified");
+      // Verify Brevo API connection (non-fatal — warn only)
+      if (missingBrevo.length === 0) {
+        verifyConnection().then((api) => {
+          if (api.ok) {
+            console.log("✅ Brevo Email API connection verified");
           } else {
-            console.warn("⚠️  SMTP connection failed:", smtp.error);
-            console.warn("   Booking emails will fail. Check MAIL_USERNAME and MAIL_PASSWORD.");
+            console.warn("⚠️  Brevo Email API connection failed:", api.error);
+            console.warn("   Booking emails will fail. Check BREVO_API_KEY.");
           }
         });
       }
