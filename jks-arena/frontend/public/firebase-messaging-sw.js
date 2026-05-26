@@ -50,32 +50,28 @@ const messaging =
 // =========================================================
 
 messaging.onBackgroundMessage(
-  (payload) => {
+  async (payload) => {
+    console.log("🔥 Background notification:", payload);
 
-    console.log(
-      "🔥 Background notification:",
-      payload
-    );
+    let logoUrl = "/favicon.ico";
+    try {
+      const res = await fetch("/api/media/logo");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.secure_url) {
+          logoUrl = data.secure_url;
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch logo for notification", err);
+    }
 
-    const title =
-      payload.notification?.title ||
-      "JKS Arena";
-
+    const title = payload.notification?.title || "JKS Arena";
     const options = {
-
-      body:
-        payload.notification?.body ||
-        "New notification",
-
-      icon:
-        "/favicon.ico",
-
+      body: payload.notification?.body || "New notification",
+      icon: logoUrl,
     };
 
-    self.registration.showNotification(
-      title,
-      options
-    );
-
+    self.registration.showNotification(title, options);
   }
 );

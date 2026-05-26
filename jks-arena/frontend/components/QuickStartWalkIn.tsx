@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import DurationPicker from "@/components/DurationPicker";
 import { api } from "@/lib/apiClient";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"] as const;
@@ -14,9 +16,14 @@ const DEVICE_RATES: Record<string, number> = {
 
 const DURATION_OPTIONS = [
   { label: "1 Hr", hours: 1 },
+  { label: "1.5 Hr", hours: 1.5 },
   { label: "2 Hr", hours: 2 },
+  { label: "2.5 Hr", hours: 2.5 },
   { label: "3 Hr", hours: 3 },
-  { label: "Open", hours: 0 },
+  { label: "3.5 Hr", hours: 3.5 },
+  { label: "4 Hr", hours: 4 },
+  { label: "4.5 Hr", hours: 4.5 },
+  { label: "5 Hr", hours: 5 },
 ];
 
 interface QuickStartWalkInProps {
@@ -43,14 +50,12 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
     if (!device) { setError("Select a device."); return; }
     if (!name.trim()) { setError("Customer name is required."); return; }
     if (!phone.trim()) { setError("Phone number is required."); return; }
-    if (duration === null) { setError("Select a duration."); return; }
+    if (duration === null) { setError("Duration is required."); return; }
 
     setSaving(true);
     try {
       const now = new Date();
-      const outTime = duration === 0
-        ? new Date(now.getTime() + 8 * 60 * 60 * 1000) // 8 hours for open-ended
-        : new Date(now.getTime() + duration * 60 * 60 * 1000);
+      const outTime = new Date(now.getTime() + duration * 60 * 60 * 1000);
 
       await api.post("/api/admin/sessions/start", {
         customerName: name.trim(),
@@ -70,7 +75,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
       setName("");
       setPhone("");
       setPlayers(1);
-      setDuration(null);
+      setDuration(1);
       setError(null);
       onStarted();
     } catch (e: any) {
@@ -159,38 +164,28 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
             </button>
             <span className="font-display text-2xl font-black text-[#1A1A1A] tabular-nums w-8 text-center">{players}</span>
             <button
-              onClick={() => setPlayers(players + 1)}
+              onClick={() => setPlayers(Math.min(4, players + 1))}
               className="w-10 h-10 rounded-xl bg-slate-50 border border-black/5 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
             >
               +
             </button>
           </div>
+          <div className="mt-2 text-[9px] text-[#ff6b35] font-bold">
+            Note: For a single console you can only select up to 4 players.
+          </div>
         </div>
         <div>
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Duration</label>
-          <div className="grid grid-cols-4 gap-1.5">
-            {DURATION_OPTIONS.map((opt) => {
-              const isSelected = duration === opt.hours;
-              return (
-                <button
-                  key={opt.hours}
-                  onClick={() => setDuration(opt.hours)}
-                  className={`py-2.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
-                    isSelected
-                      ? "bg-[#ff6b35] text-white"
-                      : "bg-slate-50 text-slate-600 border border-black/5 hover:border-[#ff6b35]/30"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
+          <DurationPicker 
+            value={duration ?? 1} 
+            onChange={setDuration} 
+            theme="light" 
+          />
         </div>
       </div>
 
       {/* Price Estimate */}
-      {device && duration !== null && duration > 0 && (
+      {device && (
         <div className="mb-5 rounded-2xl bg-[#ff6b35]/5 border border-[#ff6b35]/15 px-4 py-3 flex items-center justify-between">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
             {players} player{players > 1 ? "s" : ""} × ₹{selectedRate}/hr × {duration}hr

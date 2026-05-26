@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { api } from "@/lib/apiClient";
@@ -12,6 +13,8 @@ interface LiveArenaStatusProps {
   themeBg?: string;
   themeNeon?: string;
 }
+
+const DEVICE_LABELS: Record<string, string> = { PS1: "Console 1", PS2: "Console 2", PS3: "Console 3", SIM1: "Simulator" };
 
 const initialTime = Date.now();
 
@@ -285,17 +288,19 @@ export default function LiveArenaStatus({
               >
                 {psBgUrl && (
                   <div className="absolute inset-0">
-                    <img
+                    <Image
                       src={psBgUrl}
                       alt="PS BG"
-                      className="w-full h-full object-cover opacity-80"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover opacity-80"
                     />
                     <div className="absolute inset-0 bg-black/30" />
                   </div>
                 )}
 
                 <span className="relative z-10 text-base font-black text-white drop-shadow-lg">
-                  {slot.id}
+                  {DEVICE_LABELS[slot.id] || slot.id}
                 </span>
 
                 <div className="relative z-10 flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
@@ -330,17 +335,19 @@ export default function LiveArenaStatus({
               >
                 {simBgUrl && (
                   <div className="absolute inset-0">
-                    <img
+                    <Image
                       src={simBgUrl}
                       alt="Sim BG"
-                      className="w-full h-full object-cover opacity-80"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover opacity-80"
                     />
                     <div className="absolute inset-0 bg-black/30" />
                   </div>
                 )}
 
                 <span className="relative z-10 text-base font-black text-white drop-shadow-lg">
-                  {slot.id}
+                  {DEVICE_LABELS[slot.id] || slot.id}
                 </span>
 
                 <div className="relative z-10 flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1.5 rounded-full border border-white/10">
@@ -411,7 +418,7 @@ export default function LiveArenaStatus({
                       Today
                     </p>
                     <h3 className="mt-1 text-lg font-display text-[#1A1A1A] uppercase tracking-tight">
-                      {activeDevice} <span className="text-[#ff6b35]">Details</span>
+                      {DEVICE_LABELS[activeDevice] || activeDevice} <span className="text-[#ff6b35]">Details</span>
                     </h3>
                   </div>
                   <button

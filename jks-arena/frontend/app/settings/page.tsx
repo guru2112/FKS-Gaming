@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import {
   fetchProfile,
@@ -339,14 +340,16 @@ export default function SettingsPage() {
 
         <div className="relative">
 
-          <div className="flex h-12 w-12 overflow-hidden items-center justify-center rounded-full bg-white border-2 border-[#ff6b35] text-sm font-black text-[#ff6b35]">
+          <div className="flex h-12 w-12 relative overflow-hidden items-center justify-center rounded-full bg-white border-2 border-[#ff6b35] text-sm font-black text-[#ff6b35]">
 
             {profile?.avatarUrl ? (
 
-                <img
+                <Image
                   src={profile?.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="48px"
+                  className="object-cover"
                 />
 
             ) : (

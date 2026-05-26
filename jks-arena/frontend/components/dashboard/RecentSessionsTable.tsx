@@ -54,14 +54,14 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
 
       {/* Table */}
       {/* 🔥 The wrapper handles horizontal scrolling smoothly without breaking the card layout */}
-      <div className="w-full overflow-x-auto custom-scrollbar">
+      <div className="w-full max-h-[450px] overflow-auto scrollbar-hide">
         <table className="w-full text-left border-collapse min-w-[800px]">
-          <thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-[0_2px_0_0_#000]">
             {/* 🔥 Removed background color and made text black */}
-            <tr className="border-b-2 border-black text-[10px] font-black uppercase tracking-widest text-black">
+            <tr className="text-[10px] font-black uppercase tracking-widest text-black">
               <th className="px-6 py-4">Date</th>
               <th className="px-6 py-4">Arena</th>
-              <th className="px-6 py-4">Game</th>
+              <th className="px-6 py-4">Time</th>
               <th className="px-6 py-4">Duration</th>
               <th className="px-6 py-4">Amount</th>
               <th className="px-6 py-4">Status</th>
@@ -94,8 +94,8 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
                   <td className="px-6 py-5">
                     {booking.device.includes('SIM') ? 'Simulator' : 'PS5 Arena'} – {booking.device}
                   </td>
-                  <td className="px-6 py-5 text-slate-500">
-                    {booking.game || "General Session"}
+                  <td className="px-6 py-5 text-slate-500 whitespace-nowrap">
+                    {new Date(booking.slotStart).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - {new Date(booking.slotEnd).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td className="px-6 py-5">
                     {booking.durationHours} Hour{booking.durationHours > 1 ? 's' : ''}

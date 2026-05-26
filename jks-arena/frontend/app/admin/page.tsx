@@ -136,10 +136,11 @@ export default function AdminPage() {
                <div className="flex items-center justify-between">
                 <h2 className="font-display text-2xl font-black uppercase text-[#1A1A1A] tracking-wide">System Overview</h2>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <Card title="Registered Users" value={overview.users || 0} />
                 <Card title="Total Bookings" value={overview.bookings || 0} />
                 <Card title="Active Combos" value={overview.combos || 0} />
+                <Card title="Total Emails" value={(overview as any).emails || 0} />
                 <Card title="Media Assets" value={media?.length || 0} />
               </div>
             </div>

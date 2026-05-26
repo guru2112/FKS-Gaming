@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Profile } from "@/lib/auth";
@@ -109,12 +110,14 @@ export default function MobileMenu({
         {/* PROFILE SECTION */}
         <div className="shrink-0 px-4 py-4 border-t border-[#1A1A1A]/10">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-[#ff6b35]/10 flex items-center justify-center text-[#ff6b35] text-sm font-black ring-2 ring-[#ff6b35]/30">
+            <div className="w-10 h-10 rounded-full bg-[#ff6b35]/10 flex items-center justify-center text-[#ff6b35] text-sm font-black ring-2 ring-[#ff6b35]/30 relative overflow-hidden">
               {profile?.avatarUrl ? (
-                <img
+                <Image
                   src={profile.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover rounded-full"
+                  fill
+                  sizes="40px"
+                  className="object-cover rounded-full"
                 />
               ) : (
                 getInitials(profile?.name)

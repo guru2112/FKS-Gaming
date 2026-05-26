@@ -17,6 +17,7 @@ interface BookingHistoryProps {
 }
 
 const DEVICES = ["ALL", "PS1", "PS2", "PS3", "SIM1"];
+const DEVICE_LABELS: Record<string, string> = { ALL: "All Consoles", PS1: "Console 1", PS2: "Console 2", PS3: "Console 3", SIM1: "Simulator" };
 const STATUSES = ["ALL", "upcoming", "active", "completed", "cancelled"];
 
 export default function BookingHistory({
@@ -69,7 +70,7 @@ export default function BookingHistory({
               onChange={(e) => setDeviceFilter(e.target.value)}
               className="w-full appearance-none bg-[#FDF8F5] border border-[#1A1A1A]/20 hover:border-[#1A1A1A]/50 rounded-xl pl-4 pr-10 py-3 text-xs font-bold uppercase tracking-wider text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#ff6b35]/50 transition-all cursor-pointer shadow-sm"
             >
-              {DEVICES.map(d => <option key={d} value={d}>{d}</option>)}
+              {DEVICES.map(d => <option key={d} value={d}>{DEVICE_LABELS[d] || d}</option>)}
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#1A1A1A]">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
@@ -121,7 +122,7 @@ export default function BookingHistory({
 
               <div className="flex justify-between items-start mb-4 relative z-10">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FDF8F5] text-[#1A1A1A] group-hover:bg-[#1A1A1A] group-hover:text-white transition-colors shadow-sm border border-[#1A1A1A]/10">
-                   <span className="font-black text-xs uppercase">{booking.device}</span>
+                   <span className="font-black text-xs uppercase text-center leading-none">{DEVICE_LABELS[booking.device]?.replace('Console ', 'C') || booking.device}</span>
                 </div>
                 
                 {/* Status Badges Adjusted for Light Theme */}

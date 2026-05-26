@@ -27,11 +27,11 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// ✅ Warn if Brevo API Key is missing (non-fatal — booking still works, just no emails)
+// ✅ Warn if Brevo credentials are missing
 const brevoVars = ["BREVO_API_KEY"];
 const missingBrevo = brevoVars.filter((v) => !process.env[v]);
 if (missingBrevo.length > 0) {
-  console.warn("⚠️  Missing Brevo API Key:", missingBrevo, "— booking emails will NOT be sent.");
+  console.warn("⚠️  Missing Brevo Email Credentials:", missingBrevo, "— emails will NOT be sent.");
 }
 
 const port = process.env.PORT || 5000;
@@ -45,17 +45,14 @@ async function start() {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 
-      // Verify Brevo API connection (non-fatal — warn only)
-      if (missingBrevo.length === 0) {
-        verifyConnection().then((api) => {
-          if (api.ok) {
-            console.log("✅ Brevo Email API connection verified");
-          } else {
-            console.warn("⚠️  Brevo Email API connection failed:", api.error);
-            console.warn("   Booking emails will fail. Check BREVO_API_KEY.");
-          }
-        });
-      }
+      // Verify Brevo Email API Connection
+      verifyConnection().then((api) => {
+        if (api.ok) {
+          console.log(`✅ Brevo Email API: Connected`);
+        } else {
+          console.log(`❌ Brevo Email API: Disconnected (${api.error})`);
+        }
+      });
 
       // Initialize Cron Jobs (e.g. Booking Reminders)
       startCronJobs();

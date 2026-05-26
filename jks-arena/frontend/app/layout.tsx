@@ -35,16 +35,35 @@ const bodyFont =
 // 🔥 METADATA
 // =========================================================
 
-export const metadata:
-  Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  let faviconUrl = "/favicon.ico"; // Default fallback
 
-  title:
-    "JKS Arena | Gaming Cafe",
+  try {
+    // Assuming backend is running on process.env.NEXT_PUBLIC_API_URL or localhost:5000
+    // But since this is a server component, we need the full URL.
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const res = await fetch(`${apiUrl}/api/media/logo`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.secure_url) {
+        // Append timestamp to break aggressive browser favicon caching
+        faviconUrl = `${data.secure_url}?v=${Date.now()}`;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to fetch dynamic favicon:", err);
+  }
 
-  description:
-    "Competitive gaming nights, premium rigs, and a cafe built for squads.",
-
-};
+  return {
+    title: "JKS Arena | Gaming Cafe",
+    description: "Competitive gaming nights, premium rigs, and a cafe built for squads.",
+    icons: {
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+      apple: faviconUrl,
+    },
+  };
+}
 
 // =========================================================
 // 🔥 ROOT LAYOUT

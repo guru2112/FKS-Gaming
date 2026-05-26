@@ -15,29 +15,29 @@ export default function NotificationsTab() {
   const [isFetchingUsers, setIsFetchingUsers] = useState(false);
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      setIsFetchingUsers(true);
+      try {
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUsers(data.users || []);
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load users");
+      } finally {
+        setIsFetchingUsers(false);
+      }
+    };
+
     if (targetType === "specific" && users.length === 0) {
       fetchUsers();
     }
-  }, [targetType]);
-
-  const fetchUsers = async () => {
-    setIsFetchingUsers(true);
-    try {
-      const token = localStorage.getItem("auth_token");
-      const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data.users || []);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load users");
-    } finally {
-      setIsFetchingUsers(false);
-    }
-  };
+  }, [targetType, users.length]);
 
   const handleSend = async () => {
     if (!title.trim() || !message.trim()) {

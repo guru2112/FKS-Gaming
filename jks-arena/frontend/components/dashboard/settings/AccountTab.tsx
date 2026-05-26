@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 import {
   updateProfile,
@@ -26,15 +27,9 @@ export default function SettingsSection({
      🔥 STATES
   ========================================================= */
 
-  const [name, setName] =
-    useState(
-      profile?.name || ""
-    );
-
-  const [email, setEmail] =
-    useState(
-      profile?.email || ""
-    );
+  const [name, setName] = useState(profile?.name || "");
+  const [email, setEmail] = useState(profile?.email || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
 
   const [avatarUrl, setAvatarUrl] =
     useState(
@@ -76,6 +71,7 @@ export default function SettingsSection({
     const timeout = setTimeout(() => {
       setName(profile?.name || "");
       setEmail(profile?.email || "");
+      setPhone(profile?.phone || "");
       setAvatarUrl(profile?.avatarUrl || "");
       setTopbarUrl(profile?.topbarUrl || "");
     }, 0);
@@ -167,88 +163,27 @@ export default function SettingsSection({
      🔥 SAVE PROFILE
   ========================================================= */
 
-  const handleSave =
-    async () => {
-
+    const handleSave = async () => {
       setIsLoading(true);
-
       setMessage(null);
 
       try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) throw new Error("No authentication token found");
 
-        const token =
-          localStorage.getItem(
-            "auth_token"
-          );
+        const updatedData = await updateProfile({ name, email, phone, avatarUrl, topbarUrl }, token);
+        const updatedUser = (updatedData as any)?.user || updatedData;
 
-        if (!token) {
-
-          throw new Error(
-            "No authentication token found"
-          );
-
-        }
-
-        // ✅ Correct updateProfile usage
-
-        const updatedData =
-          await updateProfile(
-            {
-              name,
-              email,
-              avatarUrl,
-              topbarUrl,
-            },
-            token
-          );
-
-        // ✅ Handle returned profile safely
-
-        const updatedUser =
-          (updatedData as any)?.user ||
-          updatedData;
-
-        // ✅ Update parent state
-
-        await onProfileUpdated(
-          updatedUser
-        );
-
-        // ✅ Save latest profile locally
-
-        localStorage.setItem(
-          "profile",
-          JSON.stringify(
-            updatedUser
-          )
-        );
-
-        // Clear theme cache so new topbar color re-extracts
+        await onProfileUpdated(updatedUser);
+        localStorage.setItem("profile", JSON.stringify(updatedUser));
         localStorage.removeItem("jks_theme_bg");
 
-        setMessage({
-          text:
-            "Profile updated successfully!",
-
-          type: "success",
-        });
-
+        setMessage({ text: "Profile updated successfully!", type: "success" });
       } catch (err: any) {
-
         console.error(err);
-
-        setMessage({
-          text:
-            err?.message ||
-            "Failed to update profile",
-
-          type: "error",
-        });
-
+        setMessage({ text: err?.message || "Failed to update profile", type: "error" });
       } finally {
-
         setIsLoading(false);
-
       }
     };
 
@@ -316,14 +251,16 @@ export default function SettingsSection({
                   }`}
                 >
 
-                  <img
+                  <Image
                     src={
-                      avatar.secure_url
+                      avatar.secure_url!
                     }
 
                     alt="Avatar"
+                    fill
+                    sizes="64px"
 
-                    className="w-full h-full object-cover"
+                    className="object-cover"
                   />
 
                 </div>
@@ -362,14 +299,16 @@ export default function SettingsSection({
 
                 {avatarUrl ? (
 
-                  <img
+                  <Image
                     key={avatarUrl}
 
                     src={avatarUrl}
 
                     alt="Avatar"
+                    fill
+                    sizes="128px"
 
-                    className="w-full h-full object-cover"
+                    className="object-cover"
                   />
 
                 ) : (
@@ -464,59 +403,45 @@ export default function SettingsSection({
         {/* ========================================================= */}
 
         <div className="grid md:grid-cols-2 gap-8">
-
           {/* NAME */}
-
           <div className="space-y-3">
-
             <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1">
-
               Gamer Tag / Name
-
             </label>
-
             <input
               type="text"
-
               value={name}
-
-              onChange={(e) =>
-                setName(
-                  e.target.value
-                )
-              }
-
+              onChange={(e) => setName(e.target.value)}
               className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-2xl px-5 py-4 text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all shadow-sm"
             />
+          </div>
 
+          {/* PHONE */}
+          <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1">
+              WhatsApp Number
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-2xl px-5 py-4 text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all shadow-sm"
+              placeholder="+91 9876543210"
+            />
           </div>
 
           {/* EMAIL */}
-
-          <div className="space-y-3">
-
+          <div className="space-y-3 md:col-span-2">
             <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 ml-1">
-
               Email Address
-
             </label>
-
             <input
               type="email"
-
               value={email}
-
-              onChange={(e) =>
-                setEmail(
-                  e.target.value
-                )
-              }
-
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-2xl px-5 py-4 text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all shadow-sm"
             />
-
           </div>
-
         </div>
 
         {/* ========================================================= */}
@@ -547,7 +472,7 @@ export default function SettingsSection({
                   )}
 
                   <div className="relative h-28 w-full overflow-hidden z-10">
-                    <img src={tb.secure_url} alt="Topbar" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <Image src={tb.secure_url!} alt="Topbar" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     {topbarUrl === tb.secure_url && (
                       <div className="absolute top-2 right-2 bg-[#ff6b35] text-white text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-md">
@@ -585,7 +510,6 @@ export default function SettingsSection({
           border-radius: 999px;
         }
       `}</style>
-
     </div>
   );
 }

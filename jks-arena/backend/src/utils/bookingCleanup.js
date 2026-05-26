@@ -1,6 +1,6 @@
 const Booking = require("../models/Booking");
 
-const NO_SHOW_GRACE_MS = 30 * 60 * 1000; // 30 minutes after slotStart
+const NO_SHOW_GRACE_MS = 20 * 60 * 1000; // 20 minutes after slotStart
 
 /**
  * Mark upcoming bookings as no-show if they passed their grace period.

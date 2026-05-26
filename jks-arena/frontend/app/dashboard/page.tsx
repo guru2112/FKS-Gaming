@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -87,6 +88,8 @@ function DashboardPageContent() {
     isMobileMenuOpen,
     setIsMobileMenuOpen,
   ] = useState(false);
+
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const searchParams = useSearchParams();
   const justBooked = searchParams.get("justBooked") === "true";
@@ -263,13 +266,9 @@ function DashboardPageContent() {
           JSON.stringify(profileData)
         );
 
-        setProfile({
-          ...profileData,
-
-          avatarUrl:
-            profileData.avatarUrl ||
-            "",
-        });
+        if (profileData) {
+          setProfile(profileData);
+        }
 
         setBookings(
           (bookingsData as LocalBooking[]) ||
@@ -447,17 +446,17 @@ function DashboardPageContent() {
         {/* HEADER */}
 
         <div
-          className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden min-h-[300px] md:min-h-0 rounded-b-[2.5rem] md:rounded-none ${profile?.topbarUrl || dashboardBg["Topbar"] ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
+          className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden md:min-h-0 md:rounded-none ${profile?.topbarUrl || dashboardBg["Topbar"] ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
           style={!(profile?.topbarUrl || dashboardBg["Topbar"]) ? { backgroundColor: themeBg ? `${themeBg}e6` : "#FFF4E6" } : undefined}
         >
           {(profile?.topbarUrl || dashboardBg["Topbar"]) && (
             <div className="absolute inset-0 z-0 overflow-hidden">
-              <img src={profile?.topbarUrl || dashboardBg["Topbar"]} alt="Topbar BG" className="w-full min-h-[200%] object-cover opacity-95 animate-topbar-scroll" />
+              <Image src={(profile?.topbarUrl || dashboardBg["Topbar"])!} alt="Topbar BG" fill sizes="100vw" className="object-cover opacity-95 animate-topbar-scroll" />
               <div className="absolute inset-0 bg-[#FFF4E6]/15" />
             </div>
           )}
 
-          <div className="relative z-10 w-full flex flex-col min-h-[200px] md:min-h-0 md:hidden">
+          <div className="relative z-10 w-full flex flex-col pb-6 md:pb-0 md:min-h-0 md:hidden">
             {/* TOP: Header with profile */}
             <div className="px-5 pt-5">
               <Header
@@ -497,7 +496,7 @@ function DashboardPageContent() {
 
         {/* CONTENT */}
 
-        <div className="flex-1 overflow-y-auto w-full hide-scrollbar relative -mt-20 md:mt-0">
+        <div className="flex-1 overflow-y-auto w-full hide-scrollbar relative md:mt-0">
           <div className="px-4 md:px-6 pt-0 md:pt-8 pb-20 w-full max-w-[1400px] mx-auto">
 
             <main className="space-y-10">

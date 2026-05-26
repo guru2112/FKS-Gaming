@@ -20,7 +20,7 @@ const ReviewCard = ({ review }: { review: any }) => {
   const initial = review.name?.charAt(0)?.toUpperCase() || "G";
 
   return (
-    <article className="group relative h-full overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 active:-translate-y-2 hover:border-[#ff6b35]/50 hover:bg-white/[0.07] hover:shadow-[0_22px_80px_rgba(255,107,53,0.16)] sm:p-6">
+    <article className="group relative h-full overflow-hidden rounded-[28px] border border-white/10 bg-[#050505] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-2 active:-translate-y-2 hover:border-[#ff6b35]/50 hover:bg-[#111111] hover:shadow-[0_22px_80px_rgba(255,107,53,0.16)] sm:p-6">
       <div className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-[#ff6b35]/20 blur-3xl transition-opacity duration-300 group-hover:opacity-90" />
       <div className="pointer-events-none absolute -bottom-12 -left-12 h-24 w-24 rounded-full bg-cyan-400/10 blur-3xl" />
 
@@ -65,7 +65,12 @@ export default function ReviewsSection() {
       try {
         const data = await api.get<{ success: boolean; data: any[] }>("/api/reviews");
         if (data && data.success && data.data) {
-          const validReviews = data.data.filter((r: any) => r.comment && r.comment.trim() !== "");
+          const validReviews = data.data.filter((r: any) => {
+            if (!r.comment || r.comment.trim() === "") return false;
+            const text = r.comment.trim().toLowerCase();
+            if (text === "no comments" || text === "no comment") return false;
+            return true;
+          });
           setReviews(validReviews as any);
         }
       } catch (error) {
@@ -78,9 +83,8 @@ export default function ReviewsSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#050505] px-4 py-20 text-white sm:px-6 lg:px-8 lg:py-28">
+    <section className="relative overflow-hidden bg-[#151520]/40 backdrop-blur-sm border-t border-b border-white/8 px-4 py-20 text-white sm:px-6 lg:px-8 lg:py-28">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,53,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.12),transparent_34%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff6b35]/70 to-transparent" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mx-auto mb-12 max-w-3xl text-center">
@@ -101,7 +105,7 @@ export default function ReviewsSection() {
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#ff6b35] border-t-transparent"></div>
             </div>
           ) : reviews.length > 0 ? (
-            <div className="flex gap-5 lg:gap-6 w-max px-4 animate-scroll-mobile hover:[animation-play-state:paused]">
+            <div className="flex gap-5 lg:gap-6 w-max px-4 animate-scroll-mobile hover:[animation-play-state:paused]" style={{ animationDuration: '80s' }}>
               {[...reviews, ...reviews].map((review: any, idx) => (
                 <div key={`review-${idx}`} className="w-[300px] sm:w-[360px] shrink-0">
                   <ReviewCard review={review} />

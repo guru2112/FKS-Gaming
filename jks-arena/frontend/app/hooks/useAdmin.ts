@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api, getToken, redirectToLogin } from "@/lib/apiClient";
 
 export function useAdmin() {
-  const [overview, setOverview] = useState({ users: 0, bookings: 0, combos: 0 });
+  const [overview, setOverview] = useState({ users: 0, bookings: 0, combos: 0, emails: 0 });
   const [users, setUsers] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [combos, setCombos] = useState<any[]>([]);
@@ -35,7 +35,7 @@ export function useAdmin() {
 
       const [overviewData, usersData, bookingsData, combosData, mediaData] = results as any[];
 
-      setOverview(overviewData || { users: 0, bookings: 0, combos: 0 });
+      setOverview(overviewData || { users: 0, bookings: 0, combos: 0, emails: 0 });
       setUsers(usersData?.users || []);
       setBookings(bookingsData?.bookings || []);
       setCombos(combosData?.combos || []);

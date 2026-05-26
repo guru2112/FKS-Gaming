@@ -92,7 +92,7 @@ export class ApiError extends Error {
 
 interface ApiRequestOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: object;
+  body?: object | FormData;
   token?: string;
   // Don't auto-redirect on 401 (useful for auth routes)
   noRedirectOn401?: boolean;
@@ -110,11 +110,14 @@ export async function apiRequest<T = unknown>(
   } = options;
 
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     "Cache-Control": "no-cache, no-store, must-revalidate",
     Pragma: "no-cache",
     Expires: "0",
   };
+
+  if (!(body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   // Attach JWT if provided or available in storage
   const authToken = token || getToken();
@@ -128,7 +131,7 @@ export async function apiRequest<T = unknown>(
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
       cache: "no-store",
     });
   } catch (networkError) {
@@ -196,13 +199,13 @@ export const api = {
   get: <T>(path: string, options?: Omit<ApiRequestOptions, "method" | "body">) =>
     apiRequest<T>(path, { ...options, method: "GET" }),
 
-  post: <T>(path: string, body?: object, options?: Omit<ApiRequestOptions, "method" | "body">) =>
+  post: <T>(path: string, body?: object | FormData, options?: Omit<ApiRequestOptions, "method" | "body">) =>
     apiRequest<T>(path, { ...options, method: "POST", body }),
 
-  put: <T>(path: string, body?: object, options?: Omit<ApiRequestOptions, "method" | "body">) =>
+  put: <T>(path: string, body?: object | FormData, options?: Omit<ApiRequestOptions, "method" | "body">) =>
     apiRequest<T>(path, { ...options, method: "PUT", body }),
 
-  patch: <T>(path: string, body?: object, options?: Omit<ApiRequestOptions, "method" | "body">) =>
+  patch: <T>(path: string, body?: object | FormData, options?: Omit<ApiRequestOptions, "method" | "body">) =>
     apiRequest<T>(path, { ...options, method: "PATCH", body }),
 
   delete: <T>(path: string, options?: Omit<ApiRequestOptions, "method" | "body">) =>

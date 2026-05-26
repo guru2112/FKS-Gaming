@@ -13,7 +13,7 @@ type View = "bookings" | "payments";
 const DEVICES = ["ALL", "PS1", "PS2", "PS3", "SIM1"];
 const STATUSES = ["ALL", "upcoming", "active", "completed", "cancelled"];
 
-const TABLE_VISIBLE_ROWS = 15;
+const TABLE_VISIBLE_ROWS = 7;
 const TABLE_ROW_HEIGHT_PX = 56;
 const TABLE_HEADER_HEIGHT_PX = 56;
 
@@ -40,7 +40,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
   // Add Payment modal
   const [addPaymentBooking, setAddPaymentBooking] = useState<any | null>(null);
   const [payMethod, setPayMethod] = useState<"cash" | "online">("cash");
-  const [payAmount, setPayAmount] = useState(0);
+  const [payAmount, setPayAmount] = useState<number | string>(0);
   const [paying, setPaying] = useState(false);
 
   const filteredBookings = useMemo(() => {
@@ -88,13 +88,14 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
   const clipPathStyle = { clipPath: "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)" };
 
   const handleAddPayment = async () => {
-    if (!addPaymentBooking || payAmount <= 0) return;
+    const amountNum = Number(payAmount);
+    if (!addPaymentBooking || amountNum <= 0) return;
     setPaying(true);
     setActionError(null);
     try {
       const res = await api.post(`/api/admin/bookings/${addPaymentBooking._id}/payments/add`, {
         method: payMethod,
-        amount: payAmount,
+        amount: amountNum,
       }) as { booking?: any };
       // Update modal with fresh data so remaining reflects new payment
       if (res?.booking) {
@@ -260,7 +261,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
       {/* ===== BOOKINGS TABLE ===== */}
       {view === "bookings" && (
         <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: tableMaxHeight }}>
+          <div className="overflow-auto scrollbar-hide" style={{ maxHeight: tableMaxHeight }}>
             <table className="w-full text-left border-collapse min-w-[1000px]">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-black/5 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50">
@@ -334,7 +335,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
       {/* ===== PAYMENTS TABLE ===== */}
       {view === "payments" && (
         <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: tableMaxHeight }}>
+          <div className="overflow-auto scrollbar-hide" style={{ maxHeight: tableMaxHeight }}>
             <table className="w-full table-fixed text-left border-collapse">
               <colgroup>
                 <col className="w-[18%]" />
@@ -370,8 +371,15 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                 ) : (
                   sortedBookings.map((b) => {
                     const payments: Array<{ method: string; amount: number }> = b.payments || [];
-                    const cashTotal = payments.filter((p) => p.method === "cash").reduce((s, p) => s + (p.amount || 0), 0);
-                    const onlineTotal = payments.filter((p) => p.method === "online").reduce((s, p) => s + (p.amount || 0), 0);
+                    let cashTotal = payments.filter((p) => p.method === "cash").reduce((s, p) => s + (p.amount || 0), 0);
+                    let onlineTotal = payments.filter((p) => p.method === "online").reduce((s, p) => s + (p.amount || 0), 0);
+
+                    // Fallback to legacy fields if payments array doesn't exist
+                    if (payments.length === 0 && b.amountPaid > 0) {
+                      if (b.paymentMethod === "online") onlineTotal = b.amountPaid;
+                      else cashTotal = b.amountPaid;
+                    }
+
                     const collected = cashTotal + onlineTotal;
                     const remaining = Math.max(0, (b.totalPrice || 0) - collected);
                     const isPaid = b.paymentStatus === "paid" || remaining === 0;
@@ -491,14 +499,14 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
               <input
                 type="number"
                 value={payAmount}
-                onChange={(e) => setPayAmount(Number(e.target.value))}
+                onChange={(e) => setPayAmount(e.target.value === "" ? "" : Number(e.target.value))}
                 className="w-full bg-white border border-black/10 rounded-xl px-4 py-3 text-lg font-display font-black text-[#1A1A1A] outline-none focus:border-[#ff6b35]"
               />
             </div>
 
             <button
               onClick={handleAddPayment}
-              disabled={paying || payAmount <= 0}
+              disabled={paying || Number(payAmount) <= 0}
               style={clipPathStyle}
               className="w-full py-4 text-sm font-black uppercase tracking-widest bg-[#1A1A1A] text-white hover:bg-[#ff6b35] transition-all shadow-[0_0_15px_rgba(0,0,0,0.10)] disabled:opacity-60"
             >

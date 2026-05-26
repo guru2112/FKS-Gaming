@@ -34,16 +34,7 @@ const crypto = require("crypto");
 
 const router = express.Router();
 
-// =========================================================
-// 🔥 DEVICE RATES
-// =========================================================
-
-const DEVICE_RATES = {
-  PS1: 60,
-  PS2: 60,
-  PS3: 60,
-  SIM1: 100,
-};
+const { DEVICE_RATES } = require("../config/constants");
 
 // =========================================================
 // 🔥 DEFAULT PLANS
@@ -169,28 +160,19 @@ router.get(
       // AUTO COMPLETE OLD BOOKINGS
       // =====================================================
 
-      await Booking.updateMany(
+      Booking.updateMany(
         {
-          userId:
-            req.userId,
-
-          status:
-            "upcoming",
-
-          slotEnd: {
-            $exists: true,
-            $lt: now,
-          },
+          userId: req.userId,
+          status: "upcoming",
+          slotEnd: { $exists: true, $lt: now },
         },
         {
           $set: {
-            status:
-              "completed",
-            sessionStatus:
-              "completed",
+            status: "completed",
+            sessionStatus: "completed",
           },
         }
-      );
+      ).catch(err => console.error("Auto complete bookings error:", err));
 
       const bookings =
         await Booking.find({
@@ -496,7 +478,7 @@ router.post(
             contact,
 
           companions:
-            companions || [],
+            (companions || []).filter(c => c && c.name && c.phone),
 
           perHeadRate,
 

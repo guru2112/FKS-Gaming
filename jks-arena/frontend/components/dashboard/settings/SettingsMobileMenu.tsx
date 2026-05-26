@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface SettingsMobileMenuProps {
 
   isOpen: boolean;
@@ -230,11 +232,13 @@ export default function SettingsMobileMenu({
 
             {profile?.avatarUrl ? (
 
-              <img
+              <Image
                 key={profile.avatarUrl}
                 src={profile.avatarUrl}
                 alt="Avatar"
-                className="w-full h-full object-cover"
+                fill
+                sizes="48px"
+                className="object-cover"
               />
 
             ) : (

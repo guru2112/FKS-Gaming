@@ -12,6 +12,7 @@ import AboutSection from "@/components/landing/AboutSection";
 import ReviewsSection from "@/components/landing/ReviewsSection";
 import LocationSection from "@/components/landing/LocationSection";
 import Footer from "@/components/landing/Footer";
+import HelpSupportSection from "@/components/HelpSupportSection";
 
 export default function Home() {
   const [desktopImages, setDesktopImages] = useState<string[]>([]);
@@ -139,6 +140,25 @@ export default function Home() {
   </div>
 
   <LocationSection />
+
+  {/* DIVIDER */}
+  <div className="flex justify-center px-6">
+    <div className="w-full max-w-[1600px] h-[3px] rounded-full bg-linear-to-r from-transparent via-white/60 to-transparent shadow-[0_0_15px_rgba(255,255,255,0.15)]"></div>
+  </div>
+
+  <section id="help" className="relative py-24 sm:py-32 w-full overflow-hidden bg-[#151520]/40 backdrop-blur-sm border-t border-b border-white/8 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1600px] mx-auto">
+      <div className="text-center mb-16">
+      <h2 className="text-4xl sm:text-5xl font-black uppercase font-display tracking-wide drop-shadow-md text-white">
+        Help & <span className="text-[#ff6b35]">Support</span>
+      </h2>
+      <p className="mt-4 text-sm sm:text-base text-slate-400 font-medium max-w-2xl mx-auto">
+        Got a question or an issue? We&apos;ve got you covered.
+      </p>
+    </div>
+      <HelpSupportSection isDark={true} />
+    </div>
+  </section>
 
   {/* DIVIDER */}
   <div className="flex justify-center px-6">

@@ -1,6 +1,6 @@
 export default function CombosTab({ combos }: any) {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[450px] overflow-y-auto custom-scrollbar pr-2 pb-4">
       {combos.map((c: any) => (
         <div
           key={c._id}

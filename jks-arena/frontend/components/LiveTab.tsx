@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/apiClient";
 import QuickStartWalkIn from "@/components/QuickStartWalkIn";
+import RescheduleModal from "@/components/dashboard/RescheduleModal";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
 
@@ -22,6 +23,7 @@ export default function LiveTab() {
   const [now, setNow] = useState(new Date().getTime());
   const [extendOpen, setExtendOpen] = useState<string | null>(null);
   const [extending, setExtending] = useState(false);
+  const [reschedulingBooking, setReschedulingBooking] = useState<any | null>(null);
 
   const fetchLiveRigs = useCallback(async () => {
     try {
@@ -34,8 +36,8 @@ export default function LiveTab() {
 
   const fetchTodayBookings = useCallback(async () => {
     try {
-      const data = await api.get("/api/admin/today-bookings") as { bookings: any[] };
-      if (data.bookings) setTodayBookings(data.bookings);
+      const data = await api.get("/api/admin/sessions") as { sessions: any[] };
+      if (data.sessions) setTodayBookings(data.sessions);
     } catch (err) {
       console.error("Failed to fetch today's bookings:", err);
     }
@@ -238,7 +240,7 @@ export default function LiveTab() {
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{todayBookings.length} booking{todayBookings.length !== 1 ? "s" : ""}</p>
             </div>
           </div>
-          <div className="overflow-auto flex-1" style={{ maxHeight: 460 }}>
+          <div className="overflow-auto scrollbar-hide flex-1" style={{ maxHeight: 460 }}>
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-black/5 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50">
@@ -248,13 +250,16 @@ export default function LiveTab() {
                   <th className="px-3 py-3 font-black text-center w-[60px]">SIM</th>
                   <th className="px-4 py-3 font-black">Customer</th>
                   <th className="px-4 py-3 font-black">Phone</th>
+                  <th className="px-4 py-3 font-black text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="text-xs text-slate-700">
-                {todayBookings.length === 0 ? (
-                  <tr><td colSpan={6} className="px-6 py-16 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No bookings today.</td></tr>
+                {todayBookings.filter(b => b.status === "upcoming" || b.status === "active").length === 0 ? (
+                  <tr><td colSpan={6} className="px-6 py-16 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No active or upcoming bookings.</td></tr>
                 ) : (
-                  todayBookings.map((b) => {
+                  todayBookings
+                    .filter(b => b.status === "upcoming" || b.status === "active")
+                    .map((b) => {
                     const isActive = b.status === "active";
                     const isCompleted = b.status === "completed";
                     return (
@@ -278,6 +283,14 @@ export default function LiveTab() {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <p className="text-xs font-bold text-slate-600">{b.userContact}</p>
                         </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <button
+                            onClick={() => setReschedulingBooking(b)}
+                            className="bg-[#ff6b35]/10 text-[#ff6b35] hover:bg-[#ff6b35]/20 border border-[#ff6b35]/20 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all"
+                          >
+                            Reschedule
+                          </button>
+                        </td>
                       </tr>
                     );
                   })
@@ -287,6 +300,18 @@ export default function LiveTab() {
           </div>
         </div>
       </div>
+      
+      {reschedulingBooking && (
+        <RescheduleModal
+          booking={reschedulingBooking}
+          onClose={() => setReschedulingBooking(null)}
+          onSuccess={() => {
+            setReschedulingBooking(null);
+            fetchTodayBookings();
+            fetchLiveRigs();
+          }}
+        />
+      )}
     </div>
   );
 }

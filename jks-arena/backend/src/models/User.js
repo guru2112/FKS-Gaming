@@ -14,6 +14,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
 
+    phone: {
+      type: String,
+      default: "",
+    },
+
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     passwordHash: {
       type: String,
       required: true,
@@ -68,6 +78,11 @@ const userSchema = new mongoose.Schema(
     resetOTPExpires: {
       type: Date,
       default: null,
+    },
+
+    tokenVersion: {
+      type: Number,
+      default: 0,
     },
 
   },

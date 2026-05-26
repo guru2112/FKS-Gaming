@@ -4,9 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 
 import { API_BASE_URL, fetchProfile, type Profile } from "@/lib/auth";
 
-import Sidebar from "@/components/dashboard/Sidebar";
-import MobileMenu from "@/components/dashboard/MobileMenu";
-import Header from "@/components/dashboard/Header";
+import Link from "next/link";
 import HelpSupportSection from "@/components/HelpSupportSection";
 
 export default function HelpSupportPage() {
@@ -24,29 +22,6 @@ export default function HelpSupportPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const navItems = useMemo(
-    () => [
-      { name: "Dashboard", href: "/dashboard" },
-      { name: "Book Slot", href: "/book" },
-      { name: "My Sessions", href: "/dashboard#history" },
-      { name: "Games Library", href: "/dashboard#games" },
-      { name: "Settings", href: "/settings" },
-      { name: "Help & Support", href: "/help-support" },
-    ],
-    []
-  );
-
-  const fetchFreshProfile = async (token: string) => {
-    return fetchProfile(token);
-  };
-
-  function handleLogout() {
-    localStorage.clear();
-    window.location.href = "/login";
-  }
-
   function getInitials(name?: string) {
     if (!name) return "U";
     return (
@@ -76,7 +51,7 @@ export default function HelpSupportPage() {
     async function load() {
       try {
         setIsLoading(true);
-        const fresh = await fetchFreshProfile(token);
+        const fresh = await fetchProfile(token);
         localStorage.setItem("profile", JSON.stringify(fresh));
         setProfile(fresh);
       } catch (err) {
@@ -108,32 +83,17 @@ export default function HelpSupportPage() {
       {/* Subtle Background Grid Pattern */}
 
 
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        setIsOpen={setIsMobileMenuOpen}
-        profile={profile}
-        getInitials={getInitials}
-        handleLogout={handleLogout}
-        navItems={navItems}
-      />
-
-      {/* SIDEBAR */}
-      <div className="hidden md:block w-[20%] h-full shrink-0 border-r border-[#ff6b35]/20 bg-transparent z-50 relative">
-        <Sidebar profile={profile} getInitials={getInitials} handleLogout={handleLogout} />
-      </div>
-
       {/* MAIN */}
-      <div className="flex flex-col w-full md:w-[80%] h-full relative min-w-0 z-10">
-
-        {/* HEADER */}
+      <div className="flex flex-col w-full h-full relative min-w-0 z-10 max-w-4xl mx-auto">
+        {/* HEADER AREA */}
         <div className="shrink-0 w-full bg-[#FDF8F5]/90 backdrop-blur-xl border-b border-[#ff6b35]/20 z-40">
-          <div className="px-6 py-5 w-full">
-            <Header
-              profile={profile}
-              setIsMobileMenuOpen={setIsMobileMenuOpen}
-              getInitials={getInitials}
-              handleLogout={handleLogout}
-            />
+          <div className="px-6 py-5 w-full flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-600 hover:text-[#ff6b35] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Dashboard
+            </Link>
           </div>
         </div>
 
@@ -159,73 +119,8 @@ export default function HelpSupportPage() {
               </div>
 
               {/* CONTENT LAYOUT */}
-              <div className="grid md:grid-cols-3 gap-8 items-start">
-
-                {/* LEFT SIDE: CONTACT INFO CARD */}
-                <div className="md:col-span-1 space-y-6">
-                  <div className="rounded-[36px] border-2 border-black bg-white p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-                    <div className="flex items-center gap-4 mb-8">
-                      <div className="w-14 h-14 rounded-2xl bg-[#FDF8F5] border border-[#ff6b35]/20 flex items-center justify-center">
-                        <svg
-                          className="w-7 h-7 text-[#ff6b35]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 5h18M9 3v2m6-2v2m-9 4h12m-12 4h12m-12 4h7"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-black uppercase text-[#1A1A1A]">
-                          Contact
-                        </h3>
-                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">
-                          Gaming support team
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="rounded-2xl border border-black/5 bg-[#FDF8F5] p-5">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-[#ff6b35] font-black mb-2">
-                          Email
-                        </p>
-                        <p className="text-sm font-black text-[#1A1A1A]">
-                          support@jksarena.com
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl border border-black/5 bg-[#FDF8F5] p-5">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-[#ff6b35] font-black mb-2">
-                          Phone
-                        </p>
-                        <p className="text-sm font-black text-[#1A1A1A]">
-                          +91 98765 43210
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl border border-black/5 bg-[#FDF8F5] p-5">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-[#ff6b35] font-black mb-2">
-                          Location
-                        </p>
-                        <p className="text-sm font-black text-[#1A1A1A] leading-relaxed">
-                          Ashok Nagar, Vikhroli East, Mumbai
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* RIGHT SIDE: FAQ */}
-                <div className="md:col-span-2">
-                  <HelpSupportSection />
-                </div>
-
+              <div className="w-full">
+                <HelpSupportSection isDark={false} />
               </div>
             </main>
           </div>

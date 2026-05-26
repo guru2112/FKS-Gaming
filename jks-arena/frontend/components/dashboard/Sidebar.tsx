@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Profile } from "@/lib/auth";
@@ -43,7 +44,7 @@ export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: S
     <aside className="flex flex-col w-full h-full bg-[#F3EFEC] relative overflow-hidden text-white">
       {bgUrl && (
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <img src={bgUrl} alt="Sidebar BG" className="w-full h-full object-cover opacity-95" />
+          <Image src={bgUrl} alt="Sidebar BG" fill sizes="300px" className="object-cover opacity-95" />
           <div className="absolute inset-0 bg-[#1A1A1A]/15" />
         </div>
       )}
@@ -88,13 +89,15 @@ export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: S
       <div className="shrink-0 p-6 bg-black/20 border-t border-white/10 relative z-10">
         <div className="flex items-center gap-4 mb-6 px-1">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-lg font-black text-[#ff6b35] shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-2 ring-[#ff6b35] p-0.5">
-            <div className="w-full h-full overflow-hidden bg-white rounded-full flex items-center justify-center text-[#ff6b35]">
+            <div className="w-full h-full overflow-hidden bg-white rounded-full flex items-center justify-center text-[#ff6b35] relative">
               {profile?.avatarUrl ? (
-                <img
+                <Image
                   key={profile?.avatarUrl || "default-avatar"}
                   src={profile?.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="44px"
+                  className="object-cover"
                 />
               ) : (
                 getInitials(profile?.name)

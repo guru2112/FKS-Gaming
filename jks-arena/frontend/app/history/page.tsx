@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   fetchBookings,
@@ -170,19 +171,19 @@ export default function HistoryPage() {
 
         {/* Header Area (with optional topbar bg) */}
         <div
-          className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden min-h-[300px] md:min-h-0 rounded-b-[2.5rem] md:rounded-none ${hasTopbarBg ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
+          className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden md:min-h-0 md:rounded-none ${hasTopbarBg ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
           style={!hasTopbarBg ? { backgroundColor: themeBg ? `${themeBg}e6` : "#FFF4E6" } : undefined}
         >
           {/* Topbar Background Image */}
           {(profile?.topbarUrl || dashboardBg["Topbar"]) && (
             <div className="absolute inset-0 z-0 overflow-hidden">
-              <img src={profile?.topbarUrl || dashboardBg["Topbar"]} alt="Topbar BG" className="w-full min-h-[200%] object-cover opacity-95 animate-topbar-scroll" />
+              <Image src={(profile?.topbarUrl || dashboardBg["Topbar"])!} alt="Topbar BG" fill sizes="100vw" className="object-cover opacity-95 animate-topbar-scroll" />
               <div className="absolute inset-0 bg-[#FFF4E6]/15" />
             </div>
           )}
 
           {/* Mobile Header */}
-          <div className="relative z-10 w-full flex flex-col min-h-[200px] md:min-h-0 md:hidden">
+          <div className="relative z-10 w-full flex flex-col pb-6 md:pb-0 md:min-h-0 md:hidden">
             <div className="px-5 pt-5">
               <Header
                 profile={profile}

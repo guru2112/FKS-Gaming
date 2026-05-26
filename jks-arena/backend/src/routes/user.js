@@ -2,8 +2,10 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
+const OTP = require("../models/OTP");
 
 const { authenticate } = require("../middleware/auth");
+const { sendWhatsAppOTP } = require("../utils/whatsapp");
 
 const router = express.Router();
 
@@ -19,6 +21,7 @@ router.put(
       const {
         name,
         email,
+        phone,
         avatarUrl,
         topbarUrl,
       } = req.body;
@@ -58,6 +61,16 @@ router.put(
 
         updates.email =
           normalizedEmail;
+      }
+
+      // =========================================================
+      // 🔥 PHONE
+      // =========================================================
+
+      if (phone !== undefined) {
+        updates.phone = phone.trim();
+        // Since we are removing OTP, we can just mark it verified or ignore the flag
+        updates.isPhoneVerified = true; 
       }
 
       // =========================================================
@@ -124,6 +137,104 @@ router.put(
         message:
           "Error updating profile.",
       });
+    }
+  }
+);
+
+// =========================================================
+// 🔥 SEND WHATSAPP OTP
+// =========================================================
+
+router.post(
+  "/send-whatsapp-otp",
+  authenticate,
+  async (req, res) => {
+    try {
+      const { phone } = req.body;
+
+      if (!phone) {
+        return res.status(400).json({ message: "Phone number is required." });
+      }
+
+      // Generate a 6-digit OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Upsert OTP in database
+      await OTP.findOneAndUpdate(
+        { phone },
+        { otpCode, createdAt: new Date() },
+        { upsert: true, new: true }
+      );
+
+      // Send via WhatsApp
+      await sendWhatsAppOTP(phone, otpCode);
+
+      res.json({ message: "OTP sent successfully." });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to send OTP." });
+    }
+  }
+);
+
+// =========================================================
+// 🔥 VERIFY PHONE (via WhatsApp OTP)
+// =========================================================
+
+router.put(
+  "/verify-phone",
+  authenticate,
+  async (req, res) => {
+    try {
+      const { phone, name, otpCode } = req.body;
+
+      if (!phone || !otpCode) {
+        return res.status(400).json({ message: "Phone number and OTP code are required." });
+      }
+
+      // Check OTP
+      const record = await OTP.findOne({ phone, otpCode });
+      if (!record) {
+        return res.status(400).json({ message: "Invalid or expired OTP." });
+      }
+
+      const updates = {
+        phone: phone.trim(),
+        isPhoneVerified: true,
+      };
+
+      if (name) {
+        updates.name = name.trim();
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.userId,
+        { $set: updates },
+        { new: true, runValidators: false }
+      ).lean();
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      // Delete the OTP after successful verification
+      await OTP.deleteOne({ _id: record._id });
+
+      delete updatedUser.passwordHash;
+
+      res.set({
+        "Cache-Control": "no-store, no-cache, must-revalidate, private",
+        Pragma: "no-cache",
+        Expires: "0",
+      });
+
+      res.json({
+        message: "Phone verified successfully!",
+        user: updatedUser,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error verifying phone." });
     }
   }
 );

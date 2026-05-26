@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Profile } from "@/lib/auth";
 import NotificationBell from "@/components/dashboard/NotificationBell";
 
@@ -103,11 +104,13 @@ export default function Header({
             {/* AVATAR */}
             <div className="relative flex h-10 w-10 shrink-0 overflow-hidden items-center justify-center rounded-full bg-[#FDF8F5] border-2 border-[#ff6b35] text-xs font-black text-[#ff6b35]">
               {profile?.avatarUrl ? (
-                <img
+                <Image
                   key={profile.avatarUrl}
                   src={profile.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="40px"
+                  className="object-cover"
                 />
               ) : (
                 getInitials(profile?.name)
@@ -167,11 +170,13 @@ export default function Header({
 
             <div className="relative flex h-14 w-14 overflow-hidden items-center justify-center rounded-full bg-white border-2 border-[#ff6b35] text-sm font-black text-[#ff6b35] shadow-sm">
               {profile?.avatarUrl ? (
-                <img
+                <Image
                   key={profile.avatarUrl}
                   src={profile.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="56px"
+                  className="object-cover"
                 />
               ) : (
                 <span className="text-lg">

@@ -7,7 +7,7 @@ const mediaSchema = new mongoose.Schema(
 
     category: {
       type: String,
-      enum: ["Games", "Food", "Drinks", "Application", "Profile", "Facilities", "Dashboard"],
+      enum: ["Games", "Food", "Drinks", "Application", "Profile", "Facilities", "Dashboard", "Logo"],
       required: true,
     },
 

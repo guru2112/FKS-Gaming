@@ -1,6 +1,7 @@
 "use client";
 
 import { Profile } from "@/lib/auth";
+import Image from "next/image";
 
 interface SettingsSidebarProps {
   activeTab: string;
@@ -127,18 +128,20 @@ export default function SettingsSidebar({
 
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-lg font-black text-[#ff6b35] shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-2 ring-[#ff6b35] p-0.5">
 
-            <div className="w-full h-full overflow-hidden bg-white rounded-full flex items-center justify-center text-[#ff6b35]">
+            <div className="w-full h-full overflow-hidden bg-white rounded-full flex items-center justify-center text-[#ff6b35] relative">
 
               {profile?.avatarUrl ? (
 
-                <img
+                <Image
                   key={
                     profile?.avatarUrl ||
                     "settings-avatar"
                   }
                   src={profile?.avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="44px"
+                  className="object-cover"
                 />
 
               ) : (

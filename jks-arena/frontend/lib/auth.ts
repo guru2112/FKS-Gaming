@@ -57,6 +57,8 @@ export type Profile = {
   email: string;
   avatarUrl?: string;
   topbarUrl?: string;
+  phone?: string;
+  isPhoneVerified?: boolean;
   currentPlan?: Plan | null;
   notifications?: {
     bookingUpdates?: boolean;
@@ -266,6 +268,8 @@ export async function fetchProfile(token?: string): Promise<Profile> {
     _id: data._id || data.id || "",
     name: data.name || "",
     email: data.email || "",
+    phone: (data as any).phone || "",
+    isPhoneVerified: (data as any).isPhoneVerified || false,
     avatarUrl: data.avatarUrl || "",
     currentPlan: data.currentPlan || null,
     notifications: data.notifications || {
@@ -387,6 +391,7 @@ export async function updateProfile(
   payload: {
     name?: string;
     email?: string;
+    phone?: string;
     avatarUrl?: string;
     topbarUrl?: string;
     notifications?: {

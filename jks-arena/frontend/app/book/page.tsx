@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_BASE_URL, api } from "@/lib/auth";
+import { API_BASE_URL, api, fetchProfile, type Profile } from "@/lib/auth";
 import { toast } from "sonner";
+import { QRCodeSVG } from "qrcode.react";
+import DurationPicker from "@/components/DurationPicker";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
+const DEVICE_LABELS: Record<string, string> = { PS1: "Console 1", PS2: "Console 2", PS3: "Console 3", SIM1: "Simulator" };
 
 interface Companion {
   name: string;
@@ -28,13 +31,15 @@ const stepVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
 };
 
-export default function BookSlotPage() {
+function BookSlotContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [stepDir, setStepDir] = useState(1); // 1 = forward, -1 = back
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   // Background
   const [desktopImages, setDesktopImages] = useState<string[]>([]);
@@ -56,6 +61,29 @@ export default function BookSlotPage() {
     userPhone: "",
     companions: [] as Companion[],
   });
+
+  // Auto-set initial date/time from URL if present
+  useEffect(() => {
+    const d = searchParams.get("date");
+    const t = searchParams.get("time");
+    if (d) setFormData((prev) => ({ ...prev, date: d }));
+    if (t) setFormData((prev) => ({ ...prev, time: t }));
+  }, [searchParams]);
+
+  // Fetch Profile to pre-fill Name and Phone
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token") || "";
+    if (token) {
+      fetchProfile(token).then((data) => {
+        setProfile(data);
+        setFormData(prev => ({
+          ...prev,
+          userName: data.name || prev.userName,
+          userPhone: data.phone || prev.userPhone
+        }));
+      }).catch(console.error);
+    }
+  }, []);
 
   // ── Fetch backgrounds ─────────────────────────────────────────────
   useEffect(() => {
@@ -151,9 +179,7 @@ export default function BookSlotPage() {
   };
 
   const handlePlayersChange = (count: number) => {
-    const companionCount = count - 1;
-    const newCompanions = Array(companionCount).fill(null).map(() => ({ name: "", phone: "" }));
-    setFormData({ ...formData, players: count, companions: newCompanions });
+    setFormData({ ...formData, players: count });
   };
 
   const handleCompanionChange = (index: number, field: keyof Companion, value: string) => {
@@ -176,7 +202,6 @@ export default function BookSlotPage() {
         players: formData.players,
         userName: formData.userName,
         contactNumber: formData.userPhone,
-        companions: formData.companions,
       };
       await api.post("/api/bookings", payload);
       setShowConfetti(true);
@@ -273,7 +298,7 @@ export default function BookSlotPage() {
       `}</style>
 
       {/* ═══════════════════════════════════════════════════════════════
-          MOVING BACKGROUND (UNCHANGED)
+          MOVING BACKGROUND
       ═══════════════════════════════════════════════════════════════ */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="hidden md:block w-full h-full relative">
@@ -356,9 +381,9 @@ export default function BookSlotPage() {
           </p>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            MAIN CARD with scanlines + corner brackets
-        ═══════════════════════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════════════════════════════════
+            MAIN CARD
+        ═══════════════════════════════════════════════════════════ */}
         <div className="bg-white/70 backdrop-blur-xl border border-[#1A1A1A]/10 rounded-[2rem] p-6 md:p-12 pt-12 md:pt-14 relative shadow-[0_8px_32px_rgba(0,0,0,0.06)] overflow-hidden">
 
           {/* Cancel button */}
@@ -367,14 +392,9 @@ export default function BookSlotPage() {
             Cancel Booking
           </Link>
 
-          {/* ═══════════════════════════════════════════════════════════
-              GLOWING STEPPER
-          ═══════════════════════════════════════════════════════════ */}
+          {/* Glowing stepper */}
           <div className="flex items-center justify-between relative mb-10 md:mb-14 mt-4 md:mt-0 max-w-[600px] mx-auto">
-            {/* Background rail */}
             <div className="absolute top-5 md:top-6 left-0 w-full h-[2px] bg-[#1A1A1A]/10 -translate-y-1/2 z-0" />
-
-            {/* Animated progress rail with shimmer */}
             <div
               className="absolute top-5 md:top-6 left-0 h-[2px] -translate-y-1/2 z-0 transition-all duration-700 ease-out"
               style={{
@@ -388,7 +408,6 @@ export default function BookSlotPage() {
                 boxShadow: "0 0 12px rgba(255,107,53,0.6), 0 0 30px rgba(255,107,53,0.2)",
               }}
             />
-
             {[1, 2, 3, 4].map((i) => {
               const isActive = step === i;
               const isDone = step > i;
@@ -432,9 +451,6 @@ export default function BookSlotPage() {
             )}
           </AnimatePresence>
 
-          {/* ═══════════════════════════════════════════════════════════
-              STEP CONTENT with AnimatePresence
-          ═══════════════════════════════════════════════════════════ */}
           <div className="min-h-[250px] relative overflow-hidden">
             <AnimatePresence mode="wait" custom={stepDir}>
               <motion.div
@@ -446,8 +462,6 @@ export default function BookSlotPage() {
                 exit="exit"
                 transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
               >
-
-                {/* ── STEP 1: Select Date ──────────────────────────────── */}
                 {step === 1 && (
                   <div>
                     <div className="flex items-center gap-4 mb-8">
@@ -470,10 +484,9 @@ export default function BookSlotPage() {
                         className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300"
                       />
                     </div>
-
-                    <motion.div
-                      className="mt-6 flex items-center gap-4 p-4 rounded-xl border border-[#ff6b35]/20 bg-[#ff6b35]/5"
-                      initial={{ opacity: 0, y: 10 }}
+                      <motion.div
+                        className="mt-6 flex items-center gap-4 p-4 rounded-xl border border-[#ff6b35]/20 bg-[#ff6b35]/5"
+                        initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                     >
@@ -517,7 +530,7 @@ export default function BookSlotPage() {
                               className="border border-[#1A1A1A]/10 hover:border-[#ff6b35]/40 transition-all duration-300 rounded-xl p-5 bg-white/60 hover:shadow-[0_0_20px_rgba(255,107,53,0.1)] group"
                             >
                               <div className="flex justify-between items-center mb-4">
-                                <span className="font-black text-sm text-[#1A1A1A] uppercase tracking-wider">{device}</span>
+                                <span className="font-black text-sm text-[#1A1A1A] uppercase tracking-wider">{DEVICE_LABELS[device] || device}</span>
                                 <span className="text-[9px] font-black uppercase text-[#1A1A1A]/50 bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 px-2 py-1 rounded-md">{deviceBookings.length} Booked</span>
                               </div>
                               <div className="flex flex-wrap gap-2">
@@ -554,14 +567,16 @@ export default function BookSlotPage() {
                       <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Console</label>
                         <select value={formData.device} onChange={(e) => setFormData({ ...formData, device: e.target.value })} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
-                          {DEVICES.map((d) => <option key={d} value={d}>{d}</option>)}
+                          {DEVICES.map((d) => <option key={d} value={d}>{DEVICE_LABELS[d] || d}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Duration</label>
-                        <select value={formData.durationHours} onChange={(e) => setFormData({ ...formData, durationHours: Number(e.target.value) })} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
-                          {[1, 2, 3, 4, 5].map((h) => <option key={h} value={h}>{h} Hour{h > 1 ? "s" : ""}</option>)}
-                        </select>
+                        <DurationPicker 
+                          value={formData.durationHours} 
+                          onChange={(val) => setFormData({ ...formData, durationHours: val })} 
+                          theme="light" 
+                        />
                       </div>
                     </div>
 
@@ -588,8 +603,11 @@ export default function BookSlotPage() {
                     <div className="space-y-3 mb-8">
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]/50">Total Players</label>
                       <select value={formData.players} onChange={(e) => handlePlayersChange(Number(e.target.value))} className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300 cursor-pointer">
-                        {[1, 2, 3, 4, 5].map((p) => <option key={p} value={p}>{p} Player{p > 1 ? "s" : ""}</option>)}
+                        {[1, 2, 3, 4].map((p) => <option key={p} value={p}>{p} Player{p > 1 ? "s" : ""}</option>)}
                       </select>
+                      <p className="text-[10px] text-[#ff6b35] font-bold mt-1">
+                        Note: For a single console you can only select up to 4 players.
+                      </p>
                     </div>
 
                     <div className="space-y-4">
@@ -608,22 +626,7 @@ export default function BookSlotPage() {
                         </div>
                       </motion.div>
 
-                      {/* Companions */}
-                      {formData.companions.map((comp, idx) => (
-                        <motion.div
-                          key={idx}
-                          className="bg-white/60 p-6 rounded-2xl border border-[#1A1A1A]/10"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 + idx * 0.06 }}
-                        >
-                          <p className="text-[10px] font-black uppercase text-[#1A1A1A]/50 mb-4 tracking-widest">Player {idx + 2}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <input type="text" placeholder="Name" value={comp.name} onChange={(e) => handleCompanionChange(idx, "name", e.target.value)} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35]/50 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
-                            <input type="tel" placeholder="Phone" value={comp.phone} onChange={(e) => handleCompanionChange(idx, "phone", e.target.value)} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35]/50 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-medium focus:outline-none transition-all duration-300" />
-                          </div>
-                        </motion.div>
-                      ))}
+                      {/* Companions Removed as per request */}
                     </div>
                   </div>
                 )}
@@ -724,5 +727,13 @@ export default function BookSlotPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function BookSlotPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#ff6b35] font-display font-black text-2xl uppercase tracking-widest">Loading...</div>}>
+      <BookSlotContent />
+    </Suspense>
   );
 }

@@ -6,15 +6,37 @@ import Link from "next/link";
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      // Active Section Highlighting
+      const sections = ["home", "facilities", "games", "about", "help"];
+      let current = "home";
+      
+      for (const id of sections) {
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // If the section's top has crossed the middle of the viewport, it is the current active section.
+          // Because the array is ordered, it will correctly pick the lowest visible section.
+          if (rect.top <= window.innerHeight * 0.4) {
+            current = id;
+          }
+        }
+      }
+      
+      setActiveSection(current);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initialize
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -58,27 +80,32 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-10">
 
-            {["Home", "Facilities", "Games", "About Us"].map((item) => {
+            {["Home", "Facilities", "Games", "About Us", "Help"].map((item) => {
 
-              const href =
-                item === "Home"
-                  ? "#home"
-                  : item === "Facilities"
-                    ? "#facilities"
-                    : item === "Games"
-                      ? "#games"
-                      : "#about";
+              const sectionId =
+                item === "Home" ? "home"
+                  : item === "Facilities" ? "facilities"
+                    : item === "Games" ? "games"
+                      : item === "Help" ? "help"
+                        : "about";
+
+              const href = `#${sectionId}`;
+              const isActive = activeSection === sectionId;
 
               return (
                 <Link
                   key={item}
                   href={href}
-                  className="relative text-sm font-black uppercase tracking-[0.25em] text-slate-300 hover:text-[#ff6b35] transition-all duration-300 group"
+                  className={`relative text-sm font-black uppercase tracking-[0.25em] transition-all duration-300 group ${
+                    isActive ? "text-[#ff6b35]" : "text-slate-300 hover:text-[#ff6b35]"
+                  }`}
                 >
 
                   {item}
 
-                  <span className="absolute -bottom-2 left-0 h-[2px] w-0 bg-[#ff6b35] transition-all duration-300 group-hover:w-full shadow-[0_0_12px_rgba(255,107,53,0.7)]"></span>
+                  <span className={`absolute -bottom-2 left-0 h-[2px] bg-[#ff6b35] transition-all duration-300 shadow-[0_0_12px_rgba(255,107,53,0.7)] ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`}></span>
 
                 </Link>
               );
@@ -160,28 +187,33 @@ export default function Navbar() {
 
           <div className="space-y-3">
 
-            {["Home", "Facilities", "Games", "About Us"].map((item) => {
+            {["Home", "Facilities", "Games", "About Us", "Help"].map((item) => {
 
-              const href =
-                item === "Home"
-                  ? "#home"
-                  : item === "Facilities"
-                    ? "#facilities"
-                    : item === "Games"
-                      ? "#games"
-                      : "#about";
+              const sectionId =
+                item === "Home" ? "home"
+                  : item === "Facilities" ? "facilities"
+                    : item === "Games" ? "games"
+                      : item === "Help" ? "help"
+                        : "about";
+
+              const href = `#${sectionId}`;
+              const isActive = activeSection === sectionId;
 
               return (
                 <Link
                   key={item}
                   href={href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="group flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-slate-300 hover:border-[#ff6b35]/30 hover:bg-[#ff6b35]/10 hover:text-white transition-all duration-300"
+                  className={`group flex items-center justify-between rounded-2xl border px-5 py-4 text-sm font-black uppercase tracking-[0.25em] transition-all duration-300 ${
+                    isActive
+                      ? "border-[#ff6b35]/50 bg-[#ff6b35]/20 text-white"
+                      : "border-white/5 bg-white/[0.03] text-slate-300 hover:border-[#ff6b35]/30 hover:bg-[#ff6b35]/10 hover:text-white"
+                  }`}
                 >
 
                   <span>{item}</span>
 
-                  <span className="text-[#ff6b35] group-hover:translate-x-1 transition-transform duration-300">
+                  <span className={`${isActive ? "text-[#ff6b35] translate-x-1" : "text-[#ff6b35] opacity-0 group-hover:opacity-100 group-hover:translate-x-1"} transition-all duration-300`}>
                     →
                   </span>
 

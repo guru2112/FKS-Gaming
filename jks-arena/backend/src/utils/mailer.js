@@ -1,8 +1,9 @@
 // backend/src/utils/mailer.js
+const EmailLog = require("../models/EmailLog");
 
 /**
- * Send an email using the Brevo (formerly Sendinblue) HTTP API.
- * This completely bypasses Render's SMTP port blocking by using Port 443 (HTTPS).
+ * Send an email using the Brevo HTTP API.
+ * This completely bypasses Render's SMTP port blocking by using HTTPS (Port 443).
  */
 async function sendMail(message) {
   const apiKey = process.env.BREVO_API_KEY;
@@ -17,7 +18,6 @@ async function sendMail(message) {
     throw new Error("MAIL_FROM or MAIL_USERNAME must be set for the sender email.");
   }
 
-  // Translate Nodemailer attachments to Brevo format (base64)
   const attachments = message.attachments
     ? message.attachments.map((att) => ({
         name: att.filename,
@@ -45,7 +45,6 @@ async function sendMail(message) {
     headers: {
       "api-key": apiKey,
       "Content-Type": "application/json",
-      Accept: "application/json",
     },
     body: JSON.stringify(payload),
   });
@@ -56,6 +55,17 @@ async function sendMail(message) {
   }
 
   const data = await response.json();
+
+  try {
+    await EmailLog.create({
+      to: message.to,
+      subject: message.subject,
+      status: "sent",
+    });
+  } catch (err) {
+    console.error("Failed to log email:", err);
+  }
+
   return data;
 }
 
@@ -66,20 +76,20 @@ async function verifyConnection() {
   try {
     const apiKey = process.env.BREVO_API_KEY;
     if (!apiKey) {
-      return { ok: false, error: "Missing BREVO_API_KEY environment variable." };
+      return { ok: false, error: "Missing BREVO_API_KEY in environment variables." };
     }
-
-    // Ping the account endpoint to verify the API key
+    
+    // Ping the Brevo account endpoint to verify the API key
     const response = await fetch("https://api.brevo.com/v3/account", {
       method: "GET",
       headers: {
         "api-key": apiKey,
-        Accept: "application/json",
       },
     });
 
     if (!response.ok) {
-      return { ok: false, error: "Invalid BREVO_API_KEY." };
+      const errText = await response.text();
+      return { ok: false, error: `Invalid Brevo API Key. Details: ${response.status} ${errText}` };
     }
 
     return { ok: true };

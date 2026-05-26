@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 
 interface UpcomingHeroCardProps {
@@ -99,7 +100,7 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
             <div className={`mt-auto rounded-2xl px-6 py-5 w-fit shadow-md relative overflow-hidden ${timerBgUrl ? 'bg-[#111] border border-white/10' : 'bg-white border border-[#1A1A1A]/10'}`}>
               {timerBgUrl && (
                 <div className="absolute inset-0">
-                  <img src={timerBgUrl} alt="Timer BG" className="w-full h-full object-cover opacity-90" />
+                  <Image src={timerBgUrl} alt="Timer BG" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-90" />
                   <div className="absolute inset-0 bg-black/20" />
                 </div>
               )}
@@ -133,7 +134,7 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
           <div className={`flex flex-col gap-5 border rounded-3xl p-6 shrink-0 min-w-[200px] justify-center relative overflow-hidden ${detailsBgUrl ? 'bg-[#111] border-white/10' : 'bg-[#FDF8F5] border-[#1A1A1A]/10'}`}>
             {detailsBgUrl && (
               <div className="absolute inset-0">
-                <img src={detailsBgUrl} alt="Details BG" className="w-full h-full object-cover opacity-90" />
+                <Image src={detailsBgUrl} alt="Details BG" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-90" />
                 <div className="absolute inset-0 bg-[#FDF8F5]/10" />
               </div>
             )}

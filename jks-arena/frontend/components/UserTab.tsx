@@ -11,7 +11,7 @@ export default function UsersTab({ users, onRefresh }: UsersTabProps) {
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4 max-h-[450px] overflow-y-auto custom-scrollbar pr-2">
       {users.map((user: any) => (
         <div
           key={user._id}
