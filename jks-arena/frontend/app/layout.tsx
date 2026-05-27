@@ -39,10 +39,10 @@ export async function generateMetadata(): Promise<Metadata> {
   let faviconUrl = "/favicon.ico"; // Default fallback
 
   try {
-    // Assuming backend is running on process.env.NEXT_PUBLIC_API_URL or localhost:5000
-    // But since this is a server component, we need the full URL.
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    const res = await fetch(`${apiUrl}/api/media/logo`, { cache: "no-store" });
+    // Provide a solid production fallback so it doesn't try localhost on Vercel
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://fks-gaming.onrender.com";
+    // Allow static generation by caching for 1 hour instead of 'no-store'
+    const res = await fetch(`${apiUrl}/api/media/logo`, { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
       if (data && data.secure_url) {
