@@ -46,7 +46,7 @@ const allowedOrigins = (() => {
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     // Production Vercel frontend
-    "https://fks-gaming.vercel.app",
+    "https://jks-gaming-arena.vercel.app",
   ]);
 
   // Support additional origins via env (comma-separated)
