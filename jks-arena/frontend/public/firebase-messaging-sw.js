@@ -55,7 +55,7 @@ messaging.onBackgroundMessage(
 
     let logoUrl = "/favicon.ico";
     try {
-      const res = await fetch("https://fks-gaming.onrender.com/api/media/logo");
+      const res = await fetch("/api/media/logo");
       if (res.ok) {
         const data = await res.json();
         if (data && data.secure_url) {

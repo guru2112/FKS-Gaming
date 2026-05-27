@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
 
 import {
   requestNotificationPermission,
@@ -10,7 +9,6 @@ import {
 
 import {
   savePushToken,
-  API_BASE_URL,
 } from "@/lib/auth";
 
 export default function PushNotificationManager() {
@@ -113,9 +111,11 @@ export default function PushNotificationManager() {
                 return;
               }
 
-              // Refresh the in-app notification bell
+              // Skip OS notification when user is already on the page
               if (document.visibilityState === "visible") {
+                // Still refresh the in-app notification bell
                 window.dispatchEvent(new Event("refresh-notifications"));
+                return;
               }
 
               const title =
@@ -128,22 +128,9 @@ export default function PushNotificationManager() {
                   ?.body ||
                 "New notification";
 
-              let logoUrl = "/favicon.ico";
-              try {
-                const res = await fetch(`${API_BASE_URL}/api/media/logo`);
-                if (res.ok) {
-                  const data = await res.json();
-                  if (data && data.secure_url) {
-                    logoUrl = data.secure_url;
-                  }
-                }
-              } catch (err) {
-                console.error("Failed to fetch dynamic logo:", err);
-              }
-
               const options: NotificationOptions = {
                 body,
-                icon: logoUrl,
+                icon: "/favicon.ico",
                 data: payload?.data || {},
               };
 
