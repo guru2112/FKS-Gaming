@@ -6,9 +6,10 @@ import { createPortal } from "react-dom";
 
 interface RecentSessionsTableProps {
   bookings: any[];
+  onReschedule?: (booking: any) => void;
 }
 
-export default function RecentSessionsTable({ bookings }: RecentSessionsTableProps) {
+export default function RecentSessionsTable({ bookings, onReschedule }: RecentSessionsTableProps) {
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [arenaFilter, setArenaFilter] = useState("All Arenas");
   const [viewBooking, setViewBooking] = useState<any | null>(null);
@@ -117,6 +118,15 @@ export default function RecentSessionsTable({ bookings }: RecentSessionsTablePro
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-center gap-2 opacity-100 sm:opacity-50 group-hover:opacity-100 transition-opacity">
+                      {booking.status.toLowerCase() === 'upcoming' && onReschedule && (
+                        <button
+                          onClick={() => onReschedule(booking)}
+                          className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-white hover:bg-black hover:border-black shadow-sm transition-all"
+                          title="Reschedule"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </button>
+                      )}
                       <button
                         onClick={() => setViewBooking(booking)}
                         className="p-2 bg-white border border-black/20 rounded-lg text-slate-500 hover:text-[#ff6b35] hover:border-black shadow-sm transition-all"

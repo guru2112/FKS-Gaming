@@ -7,13 +7,14 @@ import { createPortal } from "react-dom";
 interface UpcomingHeroCardProps {
   booking?: any;
   onCancel?: (bookingId: string) => void;
+  onReschedule?: (booking: any) => void;
   isCancelling?: boolean;
   timerBgUrl?: string;
   detailsBgUrl?: string;
   themeBg?: string;
 }
 
-export default function UpcomingHeroCard({ booking, onCancel, isCancelling, timerBgUrl, detailsBgUrl, themeBg }: UpcomingHeroCardProps) {
+export default function UpcomingHeroCard({ booking, onCancel, onReschedule, isCancelling, timerBgUrl, detailsBgUrl, themeBg }: UpcomingHeroCardProps) {
   const [timeLeft, setTimeLeft] = useState({ hrs: '00', mins: '00', secs: '00' });
   const [showModal, setShowModal] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -155,18 +156,26 @@ export default function UpcomingHeroCard({ booking, onCancel, isCancelling, time
         </div>
 
         {/* Footer */}
-        <div className="flex gap-4 mt-8 relative z-10 pt-6">
+        <div className="flex flex-col sm:flex-row gap-3 mt-8 relative z-10 pt-6">
           <button
             onClick={() => setShowModal(true)}
-            className="flex-1 bg-[#F3EFEC] border border-[#1A1A1A]/10 text-[#1A1A1A] rounded-xl py-3.5 text-[11px] font-black uppercase tracking-widest hover:bg-[#DED5D0] transition-colors"
+            className="flex-1 bg-[#F3EFEC] border border-[#1A1A1A]/10 text-[#1A1A1A] rounded-xl py-3.5 px-3 text-[10px] sm:text-[11px] font-black uppercase tracking-widest hover:bg-[#DED5D0] transition-colors"
           >
             View Details
           </button>
+          {onReschedule && (
+            <button
+              onClick={() => onReschedule(booking)}
+              className="flex-1 bg-white border border-[#1A1A1A]/10 text-[#1A1A1A] rounded-xl py-3.5 px-3 text-[10px] sm:text-[11px] font-black uppercase tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-colors"
+            >
+              Reschedule
+            </button>
+          )}
           {onCancel && (
             <button
               onClick={() => setShowCancelConfirm(true)}
               disabled={isCancelling}
-              className="flex-1 bg-white border border-[#ff6b35] text-[#ff6b35] rounded-xl py-3.5 text-[11px] font-black uppercase tracking-widest hover:bg-[#ff6b35] hover:text-white transition-colors disabled:opacity-50"
+              className="flex-1 bg-white border border-[#ff6b35] text-[#ff6b35] rounded-xl py-3.5 px-3 text-[10px] sm:text-[11px] font-black uppercase tracking-widest hover:bg-[#ff6b35] hover:text-white transition-colors disabled:opacity-50"
             >
               {isCancelling ? "Cancelling..." : "Cancel Booking"}
             </button>

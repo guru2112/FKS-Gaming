@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
 
 /* =========================================================
    🔥 ROUTES
@@ -18,6 +21,18 @@ const reviewRoutes = require("./routes/reviews");
 const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
+
+/* =========================================================
+   🔥 SECURITY & PERFORMANCE
+========================================================= */
+
+// Secure HTTP headers (allow cross-origin resources for serving images)
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
+
+// Compress response bodies
+app.use(compression());
 
 /* =========================================================
    🔥 CORS CONFIGURATION
@@ -116,10 +131,8 @@ app.use(
    🔥 REQUEST LOGGER
 ========================================================= */
 
-app.use((req, res, next) => {
-  console.log(`📌 ${req.method} ${req.originalUrl} — Origin: ${req.headers.origin || "none"}`);
-  next();
-});
+// Use morgan for production-grade logging
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 /* =========================================================
    🔥 HEALTH CHECK

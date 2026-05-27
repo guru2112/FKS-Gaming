@@ -198,6 +198,44 @@ router.get(
 );
 
 // =========================================================
+// 🔥 GET BOOKING AVAILABILITY CHECK
+// =========================================================
+
+router.get(
+  "/bookings/availability-check",
+  authenticate,
+  async (req, res, next) => {
+    try {
+      const { slotStart, durationHours, excludeBookingId } = req.query;
+      if (!slotStart || !durationHours) return res.status(400).json({ message: "Missing slotStart or durationHours" });
+
+      const start = new Date(slotStart);
+      const end = new Date(start.getTime() + Number(durationHours) * 60 * 60 * 1000);
+      const devices = ["PS1", "PS2", "PS3", "SIM1"];
+      const status = {};
+
+      for (const d of devices) {
+        try {
+          await assertDeviceAvailable({
+            device: d,
+            slotStart: start,
+            slotEnd: end,
+            excludeBookingId: excludeBookingId || undefined,
+          });
+          status[d] = "available";
+        } catch (e) {
+          status[d] = "busy";
+        }
+      }
+      
+      res.json({ devices: status });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// =========================================================
 // 🔥 GET BOOKING SCHEDULE
 // =========================================================
 
@@ -809,6 +847,87 @@ router.patch(
 
     }
 
+  }
+);
+
+// =========================================================
+// 🔥 RESCHEDULE BOOKING (user)
+// =========================================================
+
+router.patch(
+  "/bookings/:id/reschedule",
+  authenticate,
+  async (req, res, next) => {
+    try {
+      const booking = await Booking.findOne({
+        _id: req.params.id,
+        userId: req.userId,
+      });
+
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found." });
+      }
+
+      if (booking.status !== "upcoming") {
+        return res.status(400).json({
+          message: "Only upcoming bookings can be rescheduled.",
+        });
+      }
+
+      const { slotStart, durationHours, device } = req.body;
+      if (!slotStart || !durationHours || !device) {
+        return res.status(400).json({ message: "Missing required fields." });
+      }
+
+      const newStart = new Date(slotStart);
+      const newEnd = new Date(newStart.getTime() + Number(durationHours) * 60 * 60 * 1000);
+
+      // Must be at least 30 mins before CURRENT slot start
+      const now = Date.now();
+      const cutoff = new Date(booking.slotStart).getTime() - 30 * 60 * 1000;
+      if (now >= cutoff) {
+        return res.status(400).json({
+          message: "Too late to reschedule. You can only reschedule up to 30 minutes before your session.",
+        });
+      }
+
+      try {
+        await assertDeviceAvailable({
+          device,
+          slotStart: newStart,
+          slotEnd: newEnd,
+          excludeBookingId: booking._id,
+        });
+      } catch (err) {
+        if (err && err.status === 409) return res.status(409).json({ message: err.message });
+        throw err;
+      }
+
+      booking.slotStart = newStart;
+      booking.slotEnd = newEnd;
+      booking.expiryTime = newEnd;
+      booking.durationHours = Number(durationHours);
+      booking.device = device;
+
+      if (booking.perHeadRate) {
+        const newRate = DEVICE_RATES[device] || 60;
+        booking.perHeadRate = newRate;
+        const rawTotal = Number(booking.players || 1) * newRate * booking.durationHours;
+        booking.totalPrice = Math.round(rawTotal);
+        
+        const paid = Number(booking.amountPaid || 0);
+        booking.paymentStatus = paid >= booking.totalPrice ? "paid" : "partial";
+      }
+
+      await booking.save();
+
+      return res.json({
+        booking,
+        message: "Booking rescheduled successfully.",
+      });
+    } catch (err) {
+      return next(err);
+    }
   }
 );
 

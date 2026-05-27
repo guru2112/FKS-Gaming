@@ -48,7 +48,7 @@ export default function Header({
   }, [isDropdownOpen]);
 
   return (
-    <header className="flex items-center justify-between w-full">
+    <header className="flex items-center justify-between w-full md:bg-transparent bg-[#1A1A1A] md:px-0 px-4 md:py-0 py-3 md:rounded-none rounded-2xl shadow-lg md:shadow-none">
       {/* ===================================================== */}
       {/* LEFT SIDE */}
       {/* ===================================================== */}
@@ -69,8 +69,8 @@ export default function Header({
 
         {/* MOBILE LOGO */}
         <div className="md:hidden">
-          <h1 className={`font-display text-2xl font-black tracking-wide ${hasTopbarBg ? 'drop-shadow-md' : ''}`}>
-            <span className={hasTopbarBg ? 'text-white' : 'text-[#1A1A1A]'}>JKS</span>
+          <h1 className="font-display text-xl font-black tracking-wide">
+            <span className="text-white">JKS</span>
             <span className="text-[#ff6b35]"> ARENA</span>
           </h1>
         </div>
@@ -79,19 +79,19 @@ export default function Header({
       {/* ===================================================== */}
       {/* MOBILE RIGHT SIDE */}
       {/* ===================================================== */}
-      <div className="md:hidden flex items-center gap-3 flex-row-reverse">
+      <div className="md:hidden flex items-center gap-2 flex-row-reverse">
         {/* MENU BUTTON */}
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className={`flex items-center justify-center w-11 h-11 rounded-2xl shadow-sm transition-all duration-300 ${hasTopbarBg ? 'border border-white/20 bg-white/10 text-white hover:bg-white/20' : 'border border-[#ff6b35]/20 bg-white text-slate-500 hover:text-[#ff6b35] hover:border-[#ff6b35]/40'}`}
+          className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
         {/* NOTIFICATION BELL (mobile) */}
-        <div className="md:hidden">
+        <div className="md:hidden scale-90">
           <NotificationBell active={isMobile} />
         </div>
 
@@ -99,17 +99,17 @@ export default function Header({
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`group flex items-center gap-3 rounded-2xl px-3 py-2 shadow-sm transition-all duration-300 ${hasTopbarBg ? 'border border-white/20 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_4px_15px_rgba(255,107,53,0.06)]'}`}
+            className="group flex items-center gap-2 rounded-xl px-2 py-1.5 border border-white/10 bg-white/5 transition-all"
           >
             {/* AVATAR */}
-            <div className="relative flex h-10 w-10 shrink-0 overflow-hidden items-center justify-center rounded-full bg-[#FDF8F5] border-2 border-[#ff6b35] text-xs font-black text-[#ff6b35]">
+            <div className="relative flex h-6 w-6 shrink-0 overflow-hidden items-center justify-center rounded-full bg-[#1A1A1A] border border-[#ff6b35] text-[10px] font-black text-[#ff6b35]">
               {profile?.avatarUrl ? (
                 <Image
                   key={profile.avatarUrl}
                   src={profile.avatarUrl}
                   alt="Avatar"
                   fill
-                  sizes="40px"
+                  sizes="24px"
                   className="object-cover"
                 />
               ) : (
@@ -118,12 +118,9 @@ export default function Header({
             </div>
 
             {/* USER DETAILS */}
-            <div className="flex flex-col min-w-0 text-left">
-              <p className={`text-[11px] font-black uppercase tracking-[0.08em] leading-none truncate max-w-[90px] ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
-                {profile?.name || "Player"}
-              </p>
-              <p className={`text-[10px] mt-1 truncate max-w-[90px] hidden md:block ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-slate-500'}`}>
-                {profile?.email || "player@jksarena.com"}
+            <div className="flex flex-col min-w-0 text-left pr-1">
+              <p className="text-[9px] font-black uppercase tracking-wider leading-none text-white truncate max-w-[60px]">
+                {profile?.name?.split(" ")[0] || "Player"}
               </p>
             </div>
           </button>

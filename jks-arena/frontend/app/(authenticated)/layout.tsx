@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { type Profile, API_BASE_URL } from "@/lib/auth";
-import GamesSection from "@/components/GamesSection";
-import BottomNav from "@/components/dashboard/BottomNav";
+
 import Sidebar from "@/components/dashboard/Sidebar";
 import MobileMenu from "@/components/dashboard/MobileMenu";
 import Header from "@/components/dashboard/Header";
+import BottomNav from "@/components/dashboard/BottomNav";
 import { getCachedThemeColor, getDynamicBgColor } from "@/lib/theme";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
@@ -20,9 +21,22 @@ const navItems = [
   { name: "Help & Support", href: "/help-support" },
 ];
 
-export default function GamesPage() {
+function AuthenticatedLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const pathname = usePathname();
+
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    if (typeof window === "undefined") return null;
+    const savedProfile = localStorage.getItem("profile");
+    if (!savedProfile) return null;
+    try {
+      return JSON.parse(savedProfile) as Profile;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  });
+
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dashboardBg, setDashboardBg] = useState<Record<string, string>>({});
@@ -30,7 +44,10 @@ export default function GamesPage() {
 
   // Dynamic theme color from topbar image
   const applyTheme = useCallback((topbarUrl: string | undefined | null) => {
-    if (!topbarUrl) { setThemeBg(""); return; }
+    if (!topbarUrl) {
+      setThemeBg("");
+      return;
+    }
     const cached = getCachedThemeColor(topbarUrl);
     if (cached) {
       setThemeBg(cached);
@@ -52,25 +69,46 @@ export default function GamesPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const savedProfile = localStorage.getItem("profile");
-    if (savedProfile) {
-      try {
-        setProfile(JSON.parse(savedProfile));
-      } catch (err) {
-        console.error(err);
-      }
-    }
 
     const token = localStorage.getItem("auth_token");
+    const role = localStorage.getItem("auth_role");
+
     if (!token) {
       router.push("/login");
       return;
     }
 
+    if (role === "admin") {
+      router.push("/admin");
+      return;
+    }
+
+    // Refresh profile slightly asynchronously so it doesn't block initial render
+    async function refreshProfile() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user/me?t=${Date.now()}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        });
+        if (response.ok) {
+          const profileData = await response.json();
+          localStorage.setItem("profile", JSON.stringify(profileData));
+          setProfile(profileData);
+        }
+      } catch (err) {
+        console.error("Failed to refresh profile background:", err);
+      }
+    }
+    refreshProfile();
+
     setIsLoading(false);
   }, [router]);
 
-  // Fetch dashboard backgrounds (topbar, sidebar, etc.)
+  // Fetch dashboard backgrounds
   useEffect(() => {
     async function fetchDashboardBg() {
       try {
@@ -97,29 +135,37 @@ export default function GamesPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("profile");
-    localStorage.removeItem("auth_role");
+    localStorage.clear();
     router.push("/login");
   };
 
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#FFF4E6]">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35]" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35]" />
+          <p className="font-display text-sm uppercase tracking-widest text-[#ff6b35]">Loading Profile...</p>
+        </div>
       </div>
     );
   }
 
   const hasTopbarBg = !!(profile?.topbarUrl || dashboardBg["Topbar"]);
+  
+  let pageTitle = "Dashboard";
+  if (pathname.includes("/book")) pageTitle = "Book Slot";
+  else if (pathname.includes("/history")) pageTitle = "My Sessions";
+  else if (pathname.includes("/games")) pageTitle = "Games Library";
+  else if (pathname.includes("/settings")) pageTitle = "Settings";
+  else if (pathname.includes("/help-support")) pageTitle = "Help & Support";
 
   return (
     <div
       className="flex h-screen w-full overflow-hidden text-[#1A1A1A] selection:bg-[#ff6b35] selection:text-white relative"
       style={{ backgroundColor: themeBg || "#FFF4E6" }}
     >
+      <PushNotificationManager />
 
-      {/* CSS Animations */}
       <style>{`
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -151,23 +197,22 @@ export default function GamesPage() {
         />
       </div>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="flex flex-col w-full md:w-[80%] h-full relative min-w-0 z-10">
-
-        {/* Header Area (with optional topbar bg) */}
+        
+        {/* Header Area */}
         <div
           className={`shrink-0 w-full backdrop-blur-xl relative overflow-hidden md:min-h-0 md:rounded-none ${hasTopbarBg ? 'border-b border-white/10' : 'border-b border-[#ff6b35]/20'}`}
           style={!hasTopbarBg ? { backgroundColor: themeBg ? `${themeBg}e6` : "#FFF4E6" } : undefined}
         >
-          {/* Topbar Background Image */}
-          {(profile?.topbarUrl || dashboardBg["Topbar"]) && (
+          {hasTopbarBg && (
             <div className="absolute inset-0 z-0 overflow-hidden">
-              <Image src={(profile?.topbarUrl || dashboardBg["Topbar"])!} alt="Topbar BG" fill sizes="100vw" className="object-cover opacity-95 animate-topbar-scroll" />
+              <Image src={(profile?.topbarUrl || dashboardBg["Topbar"])!} alt="Topbar BG" fill sizes="100vw" className="object-cover opacity-95" />
               <div className="absolute inset-0 bg-[#FFF4E6]/15" />
             </div>
           )}
 
-          {/* Mobile Header */}
+          {/* Mobile Header + Title */}
           <div className="relative z-10 w-full flex flex-col pb-6 md:pb-0 md:min-h-0 md:hidden">
             <div className="px-5 pt-5">
               <Header
@@ -178,9 +223,27 @@ export default function GamesPage() {
                 hasTopbarBg={hasTopbarBg}
               />
             </div>
+            
+            {/* Contextual Title instead of Welcome Back everywhere */}
             <div className="px-5 pt-4">
-              <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#ff6b35]">JKS Arena</p>
-              <h1 className={`font-display text-4xl font-black tracking-tight leading-none ${hasTopbarBg ? "text-white drop-shadow-lg" : "text-[#1A1A1A]"}`}>Games Library</h1>
+              {pathname === "/dashboard" ? (
+                <>
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#ff6b35] mb-1">Welcome back</p>
+                  <h2 className={`font-display text-4xl font-black tracking-tight leading-none ${hasTopbarBg ? "text-white drop-shadow-lg" : "text-[#1A1A1A]"}`}>
+                    {profile?.name?.split(" ")[0] || "Player"}
+                  </h2>
+                  <p className={`mt-2 text-sm font-bold tracking-[0.18em] uppercase leading-relaxed ${hasTopbarBg ? "text-white drop-shadow-md" : "text-slate-500"}`}>
+                    <span className="text-[#ff6b35]">JKS Arena</span> • Ready for your<br />next gaming session
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#ff6b35]">JKS Arena</p>
+                  <h1 className={`font-display text-4xl font-black tracking-tight leading-none ${hasTopbarBg ? "text-white drop-shadow-lg" : "text-[#1A1A1A]"}`}>
+                    {pageTitle}
+                  </h1>
+                </>
+              )}
             </div>
           </div>
 
@@ -196,11 +259,9 @@ export default function GamesPage() {
           </div>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable Page Content */}
         <div className="flex-1 overflow-y-auto hide-scrollbar">
-          <div className="px-4 md:px-6 py-6 max-w-[1200px] mx-auto pb-24 md:pb-6">
-            <GamesSection title="All Games" />
-          </div>
+          {children}
         </div>
 
         {/* Mobile BottomNav */}
@@ -210,5 +271,19 @@ export default function GamesPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#FFF4E6]">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#ff6b35]/20 border-t-[#ff6b35]" />
+        </div>
+      }
+    >
+      <AuthenticatedLayoutContent>{children}</AuthenticatedLayoutContent>
+    </Suspense>
   );
 }

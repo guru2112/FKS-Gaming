@@ -35,7 +35,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [deviceFilter, setDeviceFilter] = useState("ALL");
-  const [dateFilter, setDateFilter] = useState(() => new Date().toLocaleDateString("en-CA"));
+  const [dateFilter, setDateFilter] = useState("");
 
   // Add Payment modal
   const [addPaymentBooking, setAddPaymentBooking] = useState<any | null>(null);
@@ -73,6 +73,11 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
       const payments = b.payments || [];
       totalCash += payments.filter((p: any) => p.method === "cash").reduce((s: number, p: any) => s + (p.amount || 0), 0);
       totalOnline += payments.filter((p: any) => p.method === "online").reduce((s: number, p: any) => s + (p.amount || 0), 0);
+      
+      if (payments.length === 0 && b.amountPaid > 0) {
+        if (b.paymentMethod === "online") totalOnline += b.amountPaid;
+        else totalCash += b.amountPaid;
+      }
     });
     return { totalCash, totalOnline, totalRevenue: totalCash + totalOnline };
   }, [filteredBookings]);
@@ -81,7 +86,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
     setSearchQuery("");
     setStatusFilter("ALL");
     setDeviceFilter("ALL");
-    setDateFilter(new Date().toLocaleDateString("en-CA"));
+    setDateFilter("");
   };
 
   const tableMaxHeight = TABLE_HEADER_HEIGHT_PX + TABLE_VISIBLE_ROWS * TABLE_ROW_HEIGHT_PX;
