@@ -10,7 +10,6 @@ import MobileMenu from "@/components/dashboard/MobileMenu";
 import Header from "@/components/dashboard/Header";
 import BottomNav from "@/components/dashboard/BottomNav";
 import { getCachedThemeColor, getDynamicBgColor } from "@/lib/theme";
-import PushNotificationManager from "@/components/PushNotificationManager";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
@@ -164,7 +163,6 @@ function AuthenticatedLayoutContent({ children }: { children: React.ReactNode })
       className="flex h-screen w-full overflow-hidden text-[#1A1A1A] selection:bg-[#ff6b35] selection:text-white relative"
       style={{ backgroundColor: themeBg || "#FFF4E6" }}
     >
-      <PushNotificationManager />
 
       <style>{`
         .hide-scrollbar::-webkit-scrollbar { display: none; }

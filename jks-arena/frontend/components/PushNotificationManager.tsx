@@ -113,17 +113,9 @@ export default function PushNotificationManager() {
                 return;
               }
 
-              // Skip OS notification when user is already on the page
+              // Refresh the in-app notification bell
               if (document.visibilityState === "visible") {
-                // Still refresh the in-app notification bell
                 window.dispatchEvent(new Event("refresh-notifications"));
-                
-                // Show an in-app toast for the notification
-                const title = payload?.notification?.title || "JKS Arena";
-                const body = payload?.notification?.body || "New notification";
-                toast.info(title, { description: body });
-                
-                return;
               }
 
               const title =

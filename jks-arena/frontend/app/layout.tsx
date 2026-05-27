@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 
 import { Toaster } from "sonner";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 import "./globals.css";
 
@@ -85,6 +86,8 @@ export default function RootLayout({
     >
 
       <body className="min-h-full flex flex-col text-slate-900">
+
+        <PushNotificationManager />
 
         {children}
 
