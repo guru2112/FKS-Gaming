@@ -128,9 +128,22 @@ export default function PushNotificationManager() {
                   ?.body ||
                 "New notification";
 
+              let logoUrl = "/favicon.ico";
+              try {
+                const res = await fetch(`${API_BASE_URL}/api/media/logo`);
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data && data.secure_url) {
+                    logoUrl = data.secure_url;
+                  }
+                }
+              } catch (err) {
+                console.error("Failed to fetch dynamic logo:", err);
+              }
+
               const options: NotificationOptions = {
                 body,
-                icon: `${API_BASE_URL}/api/media/logo`,
+                icon: logoUrl,
                 data: payload?.data || {},
               };
 
