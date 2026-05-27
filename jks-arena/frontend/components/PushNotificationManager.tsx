@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 import {
   requestNotificationPermission,
@@ -9,6 +10,7 @@ import {
 
 import {
   savePushToken,
+  API_BASE_URL,
 } from "@/lib/auth";
 
 export default function PushNotificationManager() {
@@ -115,6 +117,12 @@ export default function PushNotificationManager() {
               if (document.visibilityState === "visible") {
                 // Still refresh the in-app notification bell
                 window.dispatchEvent(new Event("refresh-notifications"));
+                
+                // Show an in-app toast for the notification
+                const title = payload?.notification?.title || "JKS Arena";
+                const body = payload?.notification?.body || "New notification";
+                toast.info(title, { description: body });
+                
                 return;
               }
 
@@ -130,7 +138,7 @@ export default function PushNotificationManager() {
 
               const options: NotificationOptions = {
                 body,
-                icon: "/favicon.ico",
+                icon: `${API_BASE_URL}/api/media/logo`,
                 data: payload?.data || {},
               };
 

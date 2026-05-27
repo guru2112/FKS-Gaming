@@ -31,7 +31,7 @@ function startCronJobs() {
         if (!booking.userId) continue;
         const user = booking.userId;
 
-        const timeString = new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeString = new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
         
         const title = "🎮 Session Starting Soon!";
         const message = `Hey ${user.name.split(" ")[0]}, your gaming session for ${booking.device} starts at ${timeString}. Get ready to dominate!`;

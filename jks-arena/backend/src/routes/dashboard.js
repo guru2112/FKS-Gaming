@@ -677,7 +677,7 @@ router.post(
                     <!-- Action -->
                     <div style="margin-top: 40px; text-align: center;">
                       <p style="color: #a0a0a0; font-size: 14px; margin-bottom: 15px;">Please present your QR Pass upon arrival at the arena.</p>
-                      <a href="${qrViewUrl}" style="display: inline-block; padding: 14px 30px; background: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%); color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);">
+                      <a href="${qrViewUrl}" clicktracking="off" style="display: inline-block; padding: 14px 30px; background: linear-gradient(135deg, #ff4500 0%, #ff8c00 100%); color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 8px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);">
                         View Your QR Pass
                       </a>
                     </div>
