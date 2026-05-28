@@ -466,7 +466,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                   <Pie data={data.paymentMethodData} innerRadius="55%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
                     {data.paymentMethodData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                   </Pie>
-                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: string) => [`₹${Number(v).toLocaleString()}`, name]} />
+                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: any) => [`₹${Number(v).toLocaleString()}`, String(name)]} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -525,7 +525,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                   <Pie data={data.deviceData} innerRadius="50%" outerRadius="78%" paddingAngle={4} dataKey="value" stroke="none">
                     {data.deviceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                   </Pie>
-                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: number, name: string) => [`${v} hrs`, name]} />
+                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: any) => [`${Number(v)} hrs`, String(name)]} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
