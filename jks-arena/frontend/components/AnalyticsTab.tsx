@@ -241,7 +241,17 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
 
     // Top Games
     const gamesMap: Record<string, number> = {};
-    currentBookings.forEach(b => { const g = b.game || "General Gaming"; gamesMap[g] = (gamesMap[g] || 0) + (b.durationHours || 1); });
+    currentBookings.forEach(b => { 
+      const g = b.game || "General Gaming";
+      const gList = g.split(",").map((s: string) => s.trim()).filter(Boolean);
+      if (gList.length === 0) {
+        gamesMap["General Gaming"] = (gamesMap["General Gaming"] || 0) + (b.durationHours || 1);
+      } else {
+        gList.forEach((gameStr: string) => {
+          gamesMap[gameStr] = (gamesMap[gameStr] || 0) + (b.durationHours || 1);
+        });
+      }
+    });
     const topGames = Object.entries(gamesMap).map(([name, hours]) => ({
       name, hours, popularity: Math.min(100, Math.round((hours / Math.max(1, totalGamingHours)) * 100))
     })).sort((a, b) => b.hours - a.hours).slice(0, 5);
