@@ -450,7 +450,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "#94a3b8" }} dy={4} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "#94a3b8" }} tickFormatter={(v) => `₹${v >= 1000 ? `${v / 1000}k` : v}`} />
-                <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: number) => [`₹${v.toLocaleString()}`, "Revenue"]} />
+                <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any) => [`₹${Number(v).toLocaleString()}`, "Revenue"]} />
                 <Area type="monotone" dataKey="value" stroke="#ff6b35" strokeWidth={2.5} fillOpacity={1} fill="url(#revGrad)" dot={{ r: 3, fill: "#ff6b35", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }} />
               </AreaChart>
             </ResponsiveContainer>
@@ -466,7 +466,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                   <Pie data={data.paymentMethodData} innerRadius="55%" outerRadius="80%" paddingAngle={4} dataKey="value" stroke="none">
                     {data.paymentMethodData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                   </Pie>
-                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: number, name: string) => [`₹${v.toLocaleString()}`, name]} />
+                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: string) => [`₹${Number(v).toLocaleString()}`, name]} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
