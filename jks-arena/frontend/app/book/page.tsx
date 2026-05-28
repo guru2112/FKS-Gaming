@@ -176,6 +176,7 @@ function BookSlotContent() {
     if (step === 1 && !formData.date) return setError("Please select a date.");
     if (step === 3) {
       if (!formData.time) return setError("Please select a start time.");
+      if (formData.games.length === 0) return setError("Please select at least one game.");
       if (!checkAvailability()) return;
     }
     goStep(step + 1);
@@ -650,7 +651,7 @@ function BookSlotContent() {
                     </div>
 
                     <div className="space-y-3">
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Select Games (Optional)</label>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Select Games</label>
                       <GameMultiSelect 
                         selectedGames={formData.games}
                         onChange={(games) => setFormData({ ...formData, games })}

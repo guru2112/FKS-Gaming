@@ -50,6 +50,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
     setError(null);
 
     if (!device) { setError("Select a device."); return; }
+    if (games.length === 0) { setError("Please select at least one game."); return; }
     if (!name.trim()) { setError("Customer name is required."); return; }
     if (!phone.trim()) { setError("Phone number is required."); return; }
     if (duration === null) { setError("Duration is required."); return; }
@@ -189,7 +190,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
 
       {/* Games Selection */}
       <div className="mb-5">
-        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games (Optional)</label>
+        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games</label>
         <GameMultiSelect 
           selectedGames={games}
           onChange={setGames}

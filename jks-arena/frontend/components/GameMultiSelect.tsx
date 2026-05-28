@@ -17,13 +17,10 @@ export default function GameMultiSelect({ selectedGames, onChange, disabled }: G
   useEffect(() => {
     async function fetchGames() {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/media`);
+        const res = await fetch(`${API_BASE_URL}/api/games`);
         const data = await res.json();
-        if (data.items) {
-          const gameNames = data.items
-            .filter((item: any) => item.category === "Games")
-            .map((item: any) => item.gameName)
-            .filter((val: string, index: number, self: string[]) => self.indexOf(val) === index);
+        if (data && Array.isArray(data)) {
+          const gameNames = data.map((item: any) => item.title);
           setGames(gameNames);
         }
       } catch (err) {
@@ -62,7 +59,7 @@ export default function GameMultiSelect({ selectedGames, onChange, disabled }: G
         <span className={selectedGames.length > 0 ? "text-[#1A1A1A]" : "text-slate-400 font-medium"}>
           {selectedGames.length > 0 
             ? selectedGames.join(", ") 
-            : hasGames ? "Select Games (Optional)" : "Loading games..."}
+            : hasGames ? "Select Games" : "Loading games..."}
         </span>
         <svg className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#ff6b35]" : "text-slate-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
       </div>
