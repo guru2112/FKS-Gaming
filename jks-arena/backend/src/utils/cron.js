@@ -31,10 +31,15 @@ function startCronJobs() {
         if (!booking.userId) continue;
         const user = booking.userId;
 
+        const diffMs = new Date(booking.slotStart).getTime() - now.getTime();
+        let diffMins = Math.round(diffMs / 60000);
+        if (diffMins < 1) diffMins = 1;
+        const timeRemainingText = diffMins === 1 ? "1 minute" : `${diffMins} minutes`;
+
         const timeString = new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
         
         const title = "🎮 Session Starting Soon!";
-        const message = `Hey ${user.name.split(" ")[0]}, your gaming session for ${booking.device} starts at ${timeString}. Get ready to dominate!`;
+        const message = `Hey ${user.name.split(" ")[0]}, your gaming session for ${booking.device} starts in ${timeRemainingText} at ${timeString}. Get ready to dominate!`;
 
         // 1. In-App Notification
         await Notification.create({
@@ -42,7 +47,7 @@ function startCronJobs() {
           title,
           message,
           type: "reminder",
-          link: "/history",
+          link: "/dashboard",
         });
 
         // 2. Push Notification
@@ -50,7 +55,7 @@ function startCronJobs() {
           await sendPushToUser(user._id, {
             title,
             body: message,
-            data: { url: "/history" }
+            data: { url: "/dashboard" }
           });
         }
 
@@ -66,7 +71,7 @@ function startCronJobs() {
                 <h2 style="margin-top: 5px; font-size: 22px;">Your session is starting soon! 🎮</h2>
                 <p style="color: #cccccc; line-height: 1.6; font-size: 15px;">
                   Hi ${user.name.split(" ")[0]},<br><br>
-                  This is a quick reminder that your premium gaming session at JKS ARENA is starting in 30 minutes. 
+                  This is a quick reminder that your premium gaming session at JKS ARENA is starting in ${timeRemainingText}. 
                   Make sure you are at the arena slightly early to get settled in!
                 </p>
                 <div style="background-color: #1a1a1a; padding: 15px; border-radius: 8px; margin: 25px 0; border: 1px solid #333;">
@@ -75,7 +80,7 @@ function startCronJobs() {
                   <p style="margin: 0; color: #aaa; font-size: 12px; text-transform: uppercase;">Start Time</p>
                   <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #ff6b35;">${timeString}</p>
                 </div>
-                <a href="https://jks-arena.com/history" style="display: inline-block; background-color: #ff6b35; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">View Booking Details</a>
+                <a href="${process.env.FRONTEND_URL || 'https://jks-gaming-arena.vercel.app'}/dashboard" style="display: inline-block; background-color: #ff6b35; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">View Booking Details</a>
               </div>
               <div style="background-color: #111; padding: 20px; text-align: center; border-top: 1px solid #333;">
                 <p style="margin: 0; color: #666; font-size: 12px;">© ${new Date().getFullYear()} JKS ARENA. All rights reserved.</p>
@@ -86,7 +91,7 @@ function startCronJobs() {
           await sendMail({
             from: '"JKS ARENA" <' + process.env.MAIL_USERNAME + '>',
             to: user.email,
-            subject: "Your Gaming Session Starts in 30 Minutes! 🎮",
+            subject: `Your Gaming Session Starts in ${timeRemainingText}! 🎮`,
             html: emailHtml,
           }).catch(err => console.error("Email reminder failed:", err));
         }
