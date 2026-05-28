@@ -809,19 +809,16 @@ router.patch(
 
       }
 
-      // Must be at least 30 minutes before slot start
+      // Must be before slot start
       const now = Date.now();
-      const cutoff =
-        new Date(booking.slotStart).getTime() -
-        30 * 60 * 1000;
+      const cutoff = new Date(booking.slotStart).getTime(); // 0 mins cutoff
 
       if (now >= cutoff) {
-
         return res
           .status(400)
           .json({
             message:
-              "Too late to cancel. You can only cancel up to 30 minutes before your session.",
+              "Too late to cancel. You can only cancel before your session starts.",
           });
 
       }
@@ -876,12 +873,12 @@ router.patch(
       const newStart = new Date(slotStart);
       const newEnd = new Date(newStart.getTime() + Number(durationHours) * 60 * 60 * 1000);
 
-      // Must be at least 30 mins before CURRENT slot start
+      // Must be at least 10 mins before CURRENT slot start
       const now = Date.now();
-      const cutoff = new Date(booking.slotStart).getTime() - 30 * 60 * 1000;
+      const cutoff = new Date(booking.slotStart).getTime() - 10 * 60 * 1000;
       if (now >= cutoff) {
         return res.status(400).json({
-          message: "Too late to reschedule. You can only reschedule up to 30 minutes before your session.",
+          message: "Too late to reschedule. You can only reschedule up to 10 minutes before your session.",
         });
       }
 

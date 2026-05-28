@@ -10,7 +10,7 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   { question: "How do I book a gaming slot?", answer: "Go to the 'Book Slot' section in your dashboard. Select your preferred date, check rig availability, choose your duration, and confirm your players." },
-  { question: "Can I cancel or reschedule my booking?", answer: "Yes, you can cancel any upcoming session directly from your 'Upcoming Session' card. Currently, we allow cancellations up to 30 minutes before the start time." },
+  { question: "Can I cancel or reschedule my booking?", answer: "Yes, you can cancel any upcoming session directly from your 'Upcoming Session' card. You can cancel right up to the start time, or reschedule up to 10 minutes before the start time." },
   { question: "What hardware/consoles are available?", answer: "We feature high-end PS5 Digital Edition consoles and a professional Racing Simulator equipped with a Logitech G29 wheel for the ultimate experience." },
   { question: "How many players can I bring with me?", answer: "Each PS5 slot allows for up to 4 players (Host + 3 Companions) for multiplayer titles. For Racing Simulators, it is strictly 1 player per rig to ensure safety." },
   { question: "Do you offer food and drinks in the Arena?", answer: "Yes! We have a dedicated cafe area serving snacks and beverages. Note that food and open drinks are not allowed near the gaming rigs." },
@@ -19,8 +19,8 @@ const faqs: FAQItem[] = [
 
 const policies = {
   cancellations: `Cancellation & Reschedule Policy
-1. Cancellations made 30 minutes or more before the scheduled booking time are fully allowed.
-2. Cancellations made less than 30 minutes before the scheduled booking time may be restricted.
+1. Cancellations made before the scheduled booking time are fully allowed.
+2. Rescheduling must be done at least 10 minutes before the session starts.
 3. No-shows will result in the booking being forfeited.
 4. In the rare event of hardware failure or power outage on our end, a free reschedule will be provided.`,
   terms: `Terms & Conditions
