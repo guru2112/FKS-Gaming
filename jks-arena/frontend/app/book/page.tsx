@@ -364,7 +364,7 @@ function BookSlotContent() {
                     const token = localStorage.getItem("auth_token");
                     if (token && profile) {
                       const { updateProfile } = await import("@/lib/auth");
-                      const res = await updateProfile({ ...profile, phone: tempPhone }, token);
+                      const res = (await updateProfile({ ...profile, phone: tempPhone }, token)) as any;
                       setProfile(res.user);
                       setFormData(prev => ({ ...prev, userPhone: tempPhone }));
                       setShowPhoneModal(false);
