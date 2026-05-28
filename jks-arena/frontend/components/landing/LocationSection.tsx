@@ -44,7 +44,7 @@ export default function LocationSection() {
 
         {/* GRID */}
 
-        <div className="grid lg:grid-cols-2 gap-12 items-stretch min-h-[450px]">
+        <div className="grid lg:grid-cols-2 gap-12 items-stretch min-h-[300px] lg:min-h-[380px]">
 
           {/* LEFT CARD */}
 
@@ -159,14 +159,14 @@ export default function LocationSection() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="flex h-full w-full min-h-[450px]"
+            className="flex h-full w-full min-h-[300px] lg:min-h-[380px]"
           >
 
             <a
               href={mapRedirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-full min-h-[450px] rounded-[40px] overflow-hidden border border-white/15 bg-black/30 group relative shadow-2xl block cursor-pointer"
+              className="w-full h-full min-h-[300px] lg:min-h-[380px] rounded-[40px] overflow-hidden border border-white/15 bg-black/30 group relative shadow-2xl block cursor-pointer"
             >
 
               {/* MAP */}

@@ -120,7 +120,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.8,
   },
   forza: {
-    players: "1–6 Players",
+    players: "1 Player (Simulator)",
     gameType: "Open World Racing",
     bestFor: "Car Lovers & Free Roam Fun",
     specialFeature: "Huge Open World & Supercar Collection",
@@ -128,7 +128,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   forzahorizon5: {
-    players: "1–6 Players",
+    players: "1 Player (Simulator)",
     gameType: "Open World Racing",
     bestFor: "Car Lovers & Free Roam Fun",
     specialFeature: "Huge Open World & Supercar Collection",
@@ -136,7 +136,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   forza_horizon_5: {
-    players: "1–6 Players",
+    players: "1 Player (Simulator)",
     gameType: "Open World Racing",
     bestFor: "Car Lovers & Free Roam Fun",
     specialFeature: "Huge Open World & Supercar Collection",
@@ -144,7 +144,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   forza_horizon: {
-    players: "1–6 Players",
+    players: "1 Player (Simulator)",
     gameType: "Open World Racing",
     bestFor: "Car Lovers & Free Roam Fun",
     specialFeature: "Huge Open World & Supercar Collection",
@@ -192,7 +192,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   gtav: {
-    players: "1–30 Players Online",
+    players: "1-30 Players",
     gameType: "Open World / Action",
     bestFor: "Exploration & Fun Activities",
     specialFeature: "Open City, Cars, Missions & Online Chaos",
@@ -200,7 +200,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   gta_v: {
-    players: "1–30 Players Online",
+    players: "1-30 Players",
     gameType: "Open World / Action",
     bestFor: "Exploration & Fun Activities",
     specialFeature: "Open City, Cars, Missions & Online Chaos",
@@ -208,7 +208,7 @@ export const GAME_DETAILS_MAP: Record<string, GameDetails> = {
     rating: 4.9,
   },
   gta: {
-    players: "1–30 Players Online",
+    players: "1-30 Players",
     gameType: "Open World / Action",
     bestFor: "Exploration & Fun Activities",
     specialFeature: "Open City, Cars, Missions & Online Chaos",

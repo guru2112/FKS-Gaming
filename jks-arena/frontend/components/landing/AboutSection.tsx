@@ -141,43 +141,32 @@ export default function AboutSection() {
     {/* STATS */}
 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative z-10">
-
-      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
-
-        <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
-          PS5
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300 flex flex-col justify-center min-h-[160px]">
+        <h3 className="text-2xl font-black text-[#ff6b35] mb-3 uppercase">
+          PS5 Gaming
         </h3>
-
-        <p className="text-sm uppercase tracking-[0.25em] text-white font-bold">
-          Gaming Setup
+        <p className="text-xs text-white/80 font-semibold leading-relaxed">
+          Experience high-end 4K gaming on the latest PlayStation 5 consoles with premium gear.
         </p>
-
       </div>
 
-      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
-
-        <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
-          SIM
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300 flex flex-col justify-center min-h-[160px]">
+        <h3 className="text-2xl font-black text-[#ff6b35] mb-3 uppercase">
+          SIM Racing
         </h3>
-
-        <p className="text-sm uppercase tracking-[0.25em] text-white font-bold">
-          Racing Arena
+        <p className="text-xs text-white/80 font-semibold leading-relaxed">
+          Feel the thrill of the track in our immersive professional-grade SIM racing rigs.
         </p>
-
       </div>
 
-      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300">
-
-        <h3 className="text-4xl font-black text-[#ff6b35] mb-2">
-          VIP
+      <div className="rounded-3xl glass-panel-hover border border-white/15 bg-white/[0.05] p-6 text-center backdrop-blur-xl transition-all duration-300 flex flex-col justify-center min-h-[160px]">
+        <h3 className="text-2xl font-black text-[#ff6b35] mb-3 uppercase">
+          VIP Comfort
         </h3>
-
-        <p className="text-sm uppercase tracking-[0.25em] text-white font-bold">
-          Lounge Seating
+        <p className="text-xs text-white/80 font-semibold leading-relaxed">
+          Relax with your squad in our ultra-comfortable lounge seating while you play.
         </p>
-
       </div>
-
     </div>
 
     {/* DIVIDER */}

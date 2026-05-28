@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Profile } from "@/lib/auth";
 import NotificationBell from "@/components/dashboard/NotificationBell";
@@ -96,8 +97,9 @@ export default function Header({
         </div>
 
         {/* PROFILE DROPDOWN */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative">
           <button
+            ref={dropdownRef}
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="group flex items-center gap-2 rounded-xl px-2 py-1.5 border border-white/10 bg-white/5 transition-all"
           >
@@ -126,8 +128,14 @@ export default function Header({
           </button>
 
           {/* DROPDOWN MENU */}
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-3 w-52 overflow-hidden rounded-2xl border border-[#ff6b35]/20 bg-white/95 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 animate-in fade-in slide-in-from-top-2">
+          {isDropdownOpen && createPortal(
+            <div 
+              className="fixed mt-3 w-52 overflow-hidden rounded-2xl border border-[#ff6b35]/20 bg-white/95 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-[300] animate-in fade-in slide-in-from-top-2"
+              style={{
+                top: dropdownRef.current ? dropdownRef.current.getBoundingClientRect().bottom : 80,
+                right: 20
+              }}
+            >
               <a
                 href="/settings"
                 className="flex w-full items-center gap-3 px-4 py-4 text-left text-sm font-bold text-[#1A1A1A] hover:bg-[#ff6b35]/5 hover:text-[#ff6b35] transition-all duration-300"
@@ -146,7 +154,8 @@ export default function Header({
                 </svg>
                 Logout
               </button>
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       </div>

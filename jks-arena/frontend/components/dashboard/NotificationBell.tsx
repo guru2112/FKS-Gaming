@@ -84,6 +84,7 @@ export default function NotificationBell({ active = true }: { active?: boolean }
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
   const router = useRouter();
 
   const token =
@@ -151,11 +152,11 @@ export default function NotificationBell({ active = true }: { active?: boolean }
   }
 
   function handleClick(item: NotificationItem) {
-    handleRead(item._id);
-    if (item.link) {
-      setIsOpen(false);
-      router.push(item.link);
+    if (!item.isRead) {
+      handleRead(item._id);
     }
+    setSelectedNotification(item);
+    setIsOpen(false);
   }
 
   // ─── MARK ALL READ ───────────────────────────────────
@@ -206,6 +207,42 @@ export default function NotificationBell({ active = true }: { active?: boolean }
           </div>
         )}
       </button>
+
+      {/* NOTIFICATION DETAILS MODAL */}
+      {selectedNotification && mounted && createPortal(
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+            <button 
+              onClick={() => setSelectedNotification(null)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-black hover:bg-slate-200 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div className="flex items-center gap-4 mb-4">
+              {getTypeIcon(selectedNotification.type)}
+              <div>
+                <h3 className="text-lg font-black text-[#1A1A1A]">{selectedNotification.title}</h3>
+                <p className="text-[10px] text-slate-400 font-bold tracking-wider">{timeAgo(selectedNotification.createdAt)}</p>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 leading-relaxed mb-6">
+              {selectedNotification.message}
+            </p>
+            {selectedNotification.link && (
+              <button 
+                onClick={() => {
+                  setSelectedNotification(null);
+                  router.push(selectedNotification.link!);
+                }}
+                className="w-full py-3 rounded-xl bg-[#ff6b35] text-white text-xs font-black uppercase tracking-widest hover:bg-[#e55a2b] transition-colors"
+              >
+                Go to Action
+              </button>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* DROPDOWN */}
       {isOpen && mounted && createPortal(

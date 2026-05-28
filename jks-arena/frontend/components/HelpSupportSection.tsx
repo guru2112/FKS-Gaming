@@ -18,17 +18,16 @@ const faqs: FAQItem[] = [
 ];
 
 const policies = {
-  refunds: `Refund & Cancellation Policy
-1. Cancellations made 30 minutes or more before the scheduled booking time are eligible for a full refund.
-2. Cancellations made less than 30 minutes before the scheduled booking time will incur a 50% cancellation fee.
-3. No-shows are not eligible for a refund.
-4. In the rare event of hardware failure or power outage on our end, a full refund or a free reschedule will be provided.
-5. Refunds will be credited to the original payment method within 5-7 business days.`,
+  cancellations: `Cancellation & Reschedule Policy
+1. Cancellations made 30 minutes or more before the scheduled booking time are fully allowed.
+2. Cancellations made less than 30 minutes before the scheduled booking time may be restricted.
+3. No-shows will result in the booking being forfeited.
+4. In the rare event of hardware failure or power outage on our end, a free reschedule will be provided.`,
   terms: `Terms & Conditions
 1. Users must be 16 years of age or older to book a session independently. Minors must be accompanied by an adult.
 2. Any physical damage to the consoles, controllers, monitors, or simulator equipment due to negligence or rage will be billed to the registered user's account.
 3. Outside food and beverages are strictly prohibited near the gaming stations.
-4. JKS Arena reserves the right to terminate a session without refund if a user is found to be disruptive, abusive to staff, or violating our community guidelines.
+4. JKS Arena reserves the right to terminate a session immediately if a user is found to be disruptive, abusive to staff, or violating our community guidelines.
 5. Account sharing is not permitted. Only the registered user and their designated guests may occupy the booked station.`
 };
 
@@ -138,7 +137,8 @@ export default function HelpSupportSection({ isDark = false }: { isDark?: boolea
                 </div>
                 <div className={`rounded-2xl p-5 border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-black/5'}`}>
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[#ff6b35] font-black mb-1">Phone / WhatsApp</p>
-                  <p className="text-sm font-black">+91 98765 43210</p>
+                  <p className="text-sm font-black">+91 93264 64645</p>
+                  <p className="text-sm font-black">+91 91523 03009</p>
                 </div>
                 <div className={`rounded-2xl p-5 border ${isDark ? 'bg-black/20 border-white/5' : 'bg-slate-50 border-black/5'}`}>
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[#ff6b35] font-black mb-1">Visit Us</p>
@@ -162,7 +162,7 @@ export default function HelpSupportSection({ isDark = false }: { isDark?: boolea
                       <option value="">Select Topic...</option>
                       <option value="Hardware">Hardware / Rig Issue</option>
                       <option value="Booking">Booking / Cancellation</option>
-                      <option value="Payment">Payment / Refund</option>
+                      <option value="Reschedule">Booking Reschedule</option>
                       <option value="Other">Other</option>
                     </select>
                   </div>
@@ -187,9 +187,9 @@ export default function HelpSupportSection({ isDark = false }: { isDark?: boolea
               <div className="w-12 h-12 bg-[#ff6b35]/10 rounded-xl flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
               </div>
-              <h3 className="text-xl font-black uppercase tracking-tight mb-4">Refunds & Cancellations</h3>
+              <h3 className="text-xl font-black uppercase tracking-tight mb-4">Cancellations & Rescheduling</h3>
               <div className={`text-sm font-medium space-y-3 leading-relaxed whitespace-pre-line ${textMuted}`}>
-                {policies.refunds.split('\n').slice(1).join('\n')}
+                {policies.cancellations.split('\n').slice(1).join('\n')}
               </div>
             </div>
 

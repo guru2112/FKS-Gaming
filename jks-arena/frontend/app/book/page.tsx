@@ -40,6 +40,9 @@ function BookSlotContent() {
   const [error, setError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [tempPhone, setTempPhone] = useState("");
+  const [savingPhone, setSavingPhone] = useState(false);
 
   // Background
   const [desktopImages, setDesktopImages] = useState<string[]>([]);
@@ -81,6 +84,9 @@ function BookSlotContent() {
           userName: data.name || prev.userName,
           userPhone: data.phone || prev.userPhone
         }));
+        if (!data.phone) {
+          setShowPhoneModal(true);
+        }
       }).catch(console.error);
     }
   }, []);
@@ -324,6 +330,61 @@ function BookSlotContent() {
         <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-tr from-[#ff6b35]/10 via-[#ff4500]/3 to-transparent blur-[120px] rounded-full pointer-events-none z-30"></div>
       </div>
 
+      {/* PHONE NUMBER MODAL */}
+      <AnimatePresence>
+        {showPhoneModal && (
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl relative"
+            >
+              <button onClick={() => setShowPhoneModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-black">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+              <div className="w-12 h-12 rounded-xl bg-[#ff6b35]/10 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+              </div>
+              <h3 className="text-xl font-black uppercase text-[#1A1A1A] mb-2">Phone Required</h3>
+              <p className="text-xs text-slate-500 mb-6 font-medium leading-relaxed">Please save your WhatsApp number to your profile before booking. This helps us send you your booking QR pass.</p>
+              
+              <input 
+                type="tel" 
+                placeholder="+91 9876543210" 
+                value={tempPhone}
+                onChange={(e) => setTempPhone(e.target.value)}
+                className="w-full bg-[#FDF8F5] border border-[#1A1A1A]/15 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-black focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 mb-4 transition-all" 
+              />
+              <button 
+                onClick={async () => {
+                  if (!tempPhone) return;
+                  setSavingPhone(true);
+                  try {
+                    const token = localStorage.getItem("auth_token");
+                    if (token && profile) {
+                      const { updateProfile } = await import("@/lib/auth");
+                      const res = await updateProfile({ ...profile, phone: tempPhone }, token);
+                      setProfile(res.user);
+                      setFormData(prev => ({ ...prev, userPhone: tempPhone }));
+                      setShowPhoneModal(false);
+                    }
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    setSavingPhone(false);
+                  }
+                }}
+                disabled={savingPhone || !tempPhone}
+                className="w-full py-3 rounded-xl bg-[#ff6b35] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#e55a2b] transition-all duration-300 disabled:opacity-50 shadow-[0_4px_15px_rgba(255,107,53,0.3)] hover:shadow-[0_6px_20px_rgba(255,107,53,0.4)]"
+              >
+                {savingPhone ? "Saving..." : "Save Number"}
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* ═══════════════════════════════════════════════════════════════
           CONFETTI PARTICLES
       ═══════════════════════════════════════════════════════════════ */}
@@ -372,11 +433,11 @@ function BookSlotContent() {
 
         {/* Title with glitch */}
         <div className="mb-4 md:mb-6">
-          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tight leading-[0.9] flex items-center whitespace-nowrap">
-            <span className="text-[#1A1A1A] mr-4 glitch-text">Reserve</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff6b35] to-[#ff4500]">A Rig</span>
+          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tight leading-[0.9] flex items-center flex-wrap">
+            <span className="text-[#1A1A1A] mr-3 md:mr-4 glitch-text mb-1 md:mb-0">BOOK YOUR</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff6b35] to-[#ff4500]">SESSION</span>
           </h1>
-          <p className="mt-2 md:mt-3 text-xs sm:text-sm text-[#1A1A1A]/60 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+          <p className="mt-2 md:mt-3 text-xs sm:text-sm text-[#1A1A1A]/60 font-medium overflow-hidden text-ellipsis">
             Book your favorite console and enjoy the ultimate gaming experience.
           </p>
         </div>
@@ -705,9 +766,9 @@ function BookSlotContent() {
       ═══════════════════════════════════════════════════════════════ */}
       <div className="flex flex-col md:flex-row w-full gap-4 max-w-[800px] mx-auto relative z-10 mt-6 md:mt-8">
         {[
-          { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Secure Booking", sub: "100% Safe & Secure" },
-          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Instant Confirm", sub: "Quick & Easy Booking" },
-          { icon: "M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" },
+          { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Instant Confirmation", sub: "Book and play immediately" },
+          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Secure Payments", sub: "100% safe transactions" },
+          { icon: "M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z", label: "Flexible Rescheduling", sub: "Change your slot anytime" },
         ].map((badge, i) => (
           <motion.div
             key={i}

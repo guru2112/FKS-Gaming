@@ -106,8 +106,8 @@ export default function Sidebar({ profile, getInitials, handleLogout, bgUrl }: S
           </div>
           <div className="overflow-hidden">
             <p className="text-sm font-bold text-white truncate">{profile?.name || "Player"}</p>
-            <p className="text-[10px] font-bold tracking-wide text-white/70 mt-0.5">
-              <span className="text-[#ff6b35]">Level 7</span> Gamer
+            <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest truncate">
+              Gamer
             </p>
           </div>
         </div>

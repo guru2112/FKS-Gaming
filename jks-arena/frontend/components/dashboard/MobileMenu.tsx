@@ -125,8 +125,8 @@ export default function MobileMenu({
             </div>
             <div>
               <p className="text-sm font-bold text-[#1A1A1A]">{profile?.name || "Player"}</p>
-              <p className="text-[10px] text-slate-500">
-                <span className="text-[#ff6b35] font-bold">Level 7</span> Gamer
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest truncate">
+                Gamer
               </p>
             </div>
           </div>
