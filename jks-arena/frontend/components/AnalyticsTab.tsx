@@ -176,7 +176,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
     const deviceMap: Record<string, number> = {};
     currentBookings.forEach((b) => { if (b.device) { deviceMap[b.device] = (deviceMap[b.device] || 0) + (b.durationHours || 1); } });
     const deviceColors = ["#ff6b35", "#ff8c61", "#ffa382", "#2D3748"];
-    const deviceData = Object.entries(deviceMap).map(([name, value], i) => ({ name: name.toUpperCase(), value, fill: deviceColors[i % deviceColors.length] }));
+    const deviceData = Object.entries(deviceMap).map(([name, value], i) => ({ name: name.toUpperCase(), value: Number(value.toFixed(2)), fill: deviceColors[i % deviceColors.length] }));
 
     // Payment Method
     const paymentMap: Record<string, number> = {};
@@ -217,10 +217,11 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
     const peakHoursData = [10, 12, 14, 16, 18, 20, 22].map((h) => ({ time: `${h > 12 ? h - 12 : h}${h >= 12 ? "PM" : "AM"}`, users: hoursMap[h] || 0 }));
 
     // Revenue Timeline
-    const revenueMap: Record<string, number> = {};
+    const revenueMap: Record<string, { value: number; timestamp: number }> = {};
     currentBookings.forEach((b) => {
       if (b.status === "completed" || b.status === "active") {
-        const dateStr = new Date(b.slotStart || b.inTime || new Date()).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        const d = new Date(b.slotStart || b.inTime || new Date());
+        const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
         const p = b.payments || [];
         let rev = 0;
         if (p.length > 0) {
@@ -234,10 +235,16 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
            const match = paymentFilter === "all" || (paymentFilter === "cash" && isCash) || (paymentFilter === "online" && !isCash);
            rev = match ? (b.amountPaid || 0) : 0;
         }
-        revenueMap[dateStr] = (revenueMap[dateStr] || 0) + rev;
+        if (!revenueMap[dateStr]) revenueMap[dateStr] = { value: 0, timestamp: d.setHours(0,0,0,0) };
+        revenueMap[dateStr].value += rev;
       }
     });
-    const revenueData = Object.keys(revenueMap).length > 0 ? Object.entries(revenueMap).slice(-7).map(([name, value]) => ({ name, value })) : [{ name: "No Data", value: 0 }];
+    const revenueData = Object.keys(revenueMap).length > 0 
+      ? Object.values(revenueMap)
+          .sort((a, b) => a.timestamp - b.timestamp) // oldest on left, newest on right
+          .slice(-7)
+          .map(item => ({ name: new Date(item.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" }), value: item.value }))
+      : [{ name: "No Data", value: 0 }];
 
     // Top Games
     const gamesMap: Record<string, number> = {};
@@ -253,7 +260,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
       }
     });
     const topGames = Object.entries(gamesMap).map(([name, hours]) => ({
-      name, hours, popularity: Math.min(100, Math.round((hours / Math.max(1, totalGamingHours)) * 100))
+      name, hours: Number(hours.toFixed(2)), popularity: Math.min(100, Math.round((hours / Math.max(1, totalGamingHours)) * 100))
     })).sort((a, b) => b.hours - a.hours).slice(0, 5);
 
     return {
