@@ -26,7 +26,15 @@ export default function HistoryPage() {
   };
 
   useEffect(() => {
+    // Initial load
     loadData();
+
+    // 5-second background polling
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleRescheduleSuccess = () => {

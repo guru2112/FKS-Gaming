@@ -12,7 +12,7 @@ export function useAdmin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (showLoading = true) => {
     const token = getToken();
 
     if (!token) {
@@ -21,7 +21,7 @@ export function useAdmin() {
       return;
     }
 
-    setIsLoading(true);
+    if (showLoading) setIsLoading(true);
     setError(null);
 
     try {
@@ -45,15 +45,20 @@ export function useAdmin() {
       console.error("Admin fetch error:", msg);
       setError(msg);
     } finally {
-      setIsLoading(false);
+      if (showLoading) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      void fetchData();
-    }, 0);
-    return () => clearTimeout(timeout);
+    // Initial load
+    void fetchData(true);
+
+    // 5-second background polling
+    const interval = setInterval(() => {
+      void fetchData(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [fetchData]);
 
   return {

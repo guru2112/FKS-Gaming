@@ -76,7 +76,15 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    // Initial load
     loadData();
+
+    // 5-second background polling
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [router]);
 
   useEffect(() => {
