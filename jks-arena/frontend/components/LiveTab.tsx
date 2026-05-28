@@ -124,9 +124,9 @@ export default function LiveTab() {
           if (!activeSession) {
             // Rig is Empty (Dark Theme)
             return (
-              <div key={device} className="rounded-3xl border border-dashed border-slate-200 bg-white/70 backdrop-blur-sm p-6 flex flex-col items-center justify-center min-h-[250px] shadow-sm">
-                <p className="text-xl font-black text-slate-700 uppercase tracking-widest">{device}</p>
-                <p className="text-[10px] font-bold text-green-600 uppercase tracking-widest mt-2">Available</p>
+              <div key={device} className="rounded-2xl border border-dashed border-slate-200 bg-white/70 backdrop-blur-sm p-4 flex flex-col items-center justify-center min-h-[180px] shadow-sm">
+                <p className="text-lg font-black text-slate-700 uppercase tracking-widest">{device}</p>
+                <p className="text-[10px] font-bold text-green-600 uppercase tracking-widest mt-1">Available</p>
               </div>
             );
           }
@@ -154,10 +154,10 @@ export default function LiveTab() {
           }
 
           return (
-            <div key={device} className={`rounded-3xl border p-6 flex flex-col justify-between min-h-[250px] transition-colors shadow-sm ${cardColor}`}>
+            <div key={device} className={`rounded-2xl border p-4 flex flex-col justify-between min-h-[180px] transition-colors shadow-sm ${cardColor}`}>
               <div>
-                <div className="flex justify-between items-start mb-4">
-                  <span className="px-3 py-1 bg-black/5 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="px-2 py-1 bg-black/5 text-slate-700 text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {device}
                   </span>
                   <span className="flex h-3 w-3 relative">
@@ -166,21 +166,21 @@ export default function LiveTab() {
                   </span>
                 </div>
 
-                <h3 className="font-bold text-[#1A1A1A] text-lg line-clamp-1">{activeSession.userName}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mt-1">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {activeSession.durationHours} Hr Session</p>
+                <h3 className="font-bold text-[#1A1A1A] text-base line-clamp-1">{activeSession.userName}</h3>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-0.5">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {activeSession.durationHours} Hr Session</p>
               </div>
 
-              <div className="mt-6 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-1">
+              <div className="mt-4 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-1">
                   {time.isExpired ? "Time Up!" : "Time Remaining"}
                 </p>
-                <p className={`font-display text-4xl tabular-nums tracking-tight drop-shadow-md ${timerColor}`}>
+                <p className={`font-display text-3xl tabular-nums tracking-tight drop-shadow-md ${timerColor}`}>
                   {time.text}
                 </p>
               </div>
 
               {/* Extend Time Section */}
-              <div className="mt-4 relative">
+              <div className="mt-3 relative">
                 <button
                   onClick={() => setExtendOpen(isDropdownOpen ? null : activeSession._id)}
                   style={clipPathStyle}
@@ -212,7 +212,7 @@ export default function LiveTab() {
               <button
                 onClick={() => handleEndSession(activeSession._id)}
                 style={clipPathStyle}
-                className={`mt-2 w-full py-4 text-xs font-black uppercase tracking-widest transition-all ${
+                className={`mt-2 w-full py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
                   time.isExpired
                     ? "bg-red-600 text-white hover:bg-red-700 shadow-[0_0_15px_rgba(239,68,68,0.25)]"
                     : "bg-[#ff6b35] text-white hover:brightness-95 shadow-[0_0_15px_rgba(255,107,53,0.20)]"
@@ -226,14 +226,14 @@ export default function LiveTab() {
       </div>
 
       {/* Walk-In Form + Today's Slots side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Quick Walk-In Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-4">
           <QuickStartWalkIn occupiedDevices={occupiedDevices} onStarted={() => { fetchLiveRigs(); fetchTodayBookings(); }} />
         </div>
 
         {/* Today's Slots Table */}
-        <div className="lg:col-span-3 bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden flex flex-col">
+        <div className="lg:col-span-8 bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden flex flex-col">
           <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between shrink-0">
             <div>
               <h3 className="font-display text-lg font-black uppercase text-[#1A1A1A] tracking-wide">Today&apos;s Slots</h3>
@@ -250,6 +250,7 @@ export default function LiveTab() {
                   <th className="px-3 py-3 font-black text-center w-[60px]">SIM</th>
                   <th className="px-4 py-3 font-black">Customer</th>
                   <th className="px-4 py-3 font-black">Phone</th>
+                  <th className="px-4 py-3 font-black">Duration</th>
                   <th className="px-4 py-3 font-black text-right">Action</th>
                 </tr>
               </thead>
@@ -282,6 +283,9 @@ export default function LiveTab() {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <p className="text-xs font-bold text-slate-600">{b.userContact}</p>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <p className="text-xs font-bold text-slate-600">{b.durationHours} hr</p>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <button

@@ -37,7 +37,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [players, setPlayers] = useState(1);
-  const [duration, setDuration] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number | null>(1);
   const [games, setGames] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,32 +104,30 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
         </div>
       )}
 
-      {/* Device Selection */}
-      <div className="mb-5">
-        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2.5">Select Device</label>
-        <div className="grid grid-cols-4 gap-3">
-          {DEVICES.map((d) => {
-            const isOccupied = occupiedDevices.includes(d);
-            const isSelected = device === d;
-            return (
-              <button
-                key={d}
-                disabled={isOccupied}
-                onClick={() => setDevice(d)}
-                style={clipPathStyle}
-                className={`py-3.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
-                  isOccupied
-                    ? "bg-slate-100 text-slate-400 border border-dashed border-slate-200 cursor-not-allowed"
-                    : isSelected
-                      ? "bg-[#ff6b35] text-white shadow-[0_0_15px_rgba(255,107,53,0.25)]"
-                      : "bg-slate-50 text-slate-700 border border-black/5 hover:border-[#ff6b35]/30 hover:text-[#ff6b35]"
-                }`}
-              >
-                {d}
-                {isOccupied && <span className="block text-[8px] mt-0.5">Busy</span>}
-              </button>
-            );
-          })}
+      {/* Device & Games Selection */}
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Device</label>
+          <select 
+            value={device || ""} 
+            onChange={(e) => setDevice(e.target.value)}
+            className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 rounded-xl px-5 py-4 text-sm text-[#1A1A1A] font-bold outline-none focus:border-[#ff6b35] transition-all duration-300 cursor-pointer"
+          >
+            <option value="" disabled>Select Device</option>
+            {DEVICES.map(d => (
+              <option key={d} value={d} disabled={occupiedDevices.includes(d)}>
+                {d} {occupiedDevices.includes(d) ? "(Busy)" : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games</label>
+          <GameMultiSelect 
+            selectedGames={games}
+            onChange={setGames}
+          />
         </div>
       </div>
 
@@ -188,14 +186,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
         </div>
       </div>
 
-      {/* Games Selection */}
-      <div className="mb-5">
-        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games</label>
-        <GameMultiSelect 
-          selectedGames={games}
-          onChange={setGames}
-        />
-      </div>
+
 
       {/* Price Estimate */}
       {device && (
@@ -213,6 +204,17 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
             Open-ended • ₹{selectedRate}/hr/player
           </span>
           <span className="font-display text-sm font-bold text-slate-500">Bill on end</span>
+        </div>
+      )}
+
+      {/* Simulator Notice */}
+      {(device === "SIM1" || games.some(g => ["ForzaHorizon-5", "F1-25", "SnowRunner"].includes(g))) && (
+        <div className="mb-5 rounded-xl bg-blue-50 border border-blue-200 p-3 flex gap-3 items-start">
+          <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide leading-relaxed">
+            <span className="text-blue-900 font-black block mb-0.5">Simulator Notice:</span>
+            ForzaHorizon-5, F1-25, and SnowRunner are only for the driving simulator. At a time only 1 player can play, but you can switch in between with your friends.
+          </p>
         </div>
       )}
 

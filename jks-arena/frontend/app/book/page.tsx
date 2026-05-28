@@ -44,6 +44,7 @@ function BookSlotContent() {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [tempPhone, setTempPhone] = useState("");
   const [savingPhone, setSavingPhone] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Background
   const [desktopImages, setDesktopImages] = useState<string[]>([]);
@@ -177,6 +178,13 @@ function BookSlotContent() {
     if (step === 3) {
       if (!formData.time) return setError("Please select a start time.");
       if (formData.games.length === 0) return setError("Please select at least one game.");
+      
+      const drivingGames = ["ForzaHorizon-5", "F1-25", "SnowRunner"];
+      const hasDrivingGame = formData.games.some(g => drivingGames.includes(g));
+      if (hasDrivingGame && formData.device !== "SIM1") {
+        return setError("ForzaHorizon-5, F1-25, and SnowRunner require the Simulator device. Please change your console selection to Simulator or remove the driving games.");
+      }
+
       if (!checkAvailability()) return;
     }
     goStep(step + 1);
@@ -198,9 +206,14 @@ function BookSlotContent() {
   };
 
   // ── Submit ────────────────────────────────────────────────────────
-  const handleSubmit = async () => {
+  const handlePreSubmit = () => {
     setError(null);
     if (!formData.userName || !formData.userPhone) return setError("Provide your name and contact.");
+    setShowConfirmModal(true);
+  };
+
+  const handleFinalSubmit = async () => {
+    setShowConfirmModal(false);
     setIsLoading(true);
     try {
       const startDateTime = new Date(`${formData.date}T${formData.time}`);
@@ -516,7 +529,7 @@ function BookSlotContent() {
             )}
           </AnimatePresence>
 
-          <div className="min-h-[250px] relative overflow-hidden">
+          <div className="min-h-[250px] relative">
             <AnimatePresence mode="wait" custom={stepDir}>
               <motion.div
                 key={step}
@@ -700,6 +713,18 @@ function BookSlotContent() {
                       </motion.div>
 
                       {/* Companions Removed as per request */}
+                      
+                      {/* Simulator Notice */}
+                      {(formData.device === "SIM1" || formData.games.some(g => ["ForzaHorizon-5", "F1-25", "SnowRunner"].includes(g))) && (
+                        <div className="mt-6 rounded-xl bg-blue-50 border border-blue-200 p-4 flex gap-3 items-start relative overflow-hidden">
+                          <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
+                          <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide leading-relaxed">
+                            <span className="text-blue-900 font-black block mb-0.5">Simulator Notice:</span>
+                            ForzaHorizon-5, F1-25, and SnowRunner are only for the driving simulator. At a time only 1 player can play, but you can switch in between with your friends.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -742,7 +767,7 @@ function BookSlotContent() {
               </motion.button>
             ) : (
               <motion.button
-                onClick={handleSubmit}
+                onClick={handlePreSubmit}
                 disabled={isLoading}
                 whileHover={!isLoading ? { scale: 1.05 } : {}}
                 whileTap={!isLoading ? { scale: 0.96 } : {}}
@@ -769,9 +794,43 @@ function BookSlotContent() {
               </motion.button>
             )}
           </div>
-
         </div>
       </div>
+
+      <AnimatePresence>
+        {showConfirmModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowConfirmModal(false)} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white rounded-3xl p-6 md:p-8 w-full max-w-sm shadow-2xl border border-black/10 z-10">
+              <h3 className="text-xl font-display font-black uppercase text-[#1A1A1A] mb-6 tracking-wide text-center">Confirm Booking</h3>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center pb-4 border-b border-black/10">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Device Rate (1 hr)</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">₹{formData.device === "SIM1" ? 100 : 60}</span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-black/10">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Players</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">x {formData.players}</span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-black/10">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Duration</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">x {formData.durationHours} hr</span>
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-sm font-black text-[#ff6b35] uppercase tracking-wider">Total Amount</span>
+                  <span className="text-3xl font-display font-black text-[#ff6b35]">₹{formData.players * (formData.device === "SIM1" ? 100 : 60) * formData.durationHours}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setShowConfirmModal(false)} className="flex-1 py-4 rounded-xl bg-black/5 text-[#1A1A1A] text-[11px] font-black uppercase tracking-widest hover:bg-black/10 transition-all">Cancel</button>
+                <button onClick={handleFinalSubmit} className="flex-1 py-4 rounded-xl bg-[#ff6b35] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#e55a2b] transition-all shadow-[0_4px_15px_rgba(255,107,53,0.3)] hover:shadow-[0_6px_20px_rgba(255,107,53,0.4)]">Confirm Total</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ═══════════════════════════════════════════════════════════════
           FOOTER BADGES with shimmer

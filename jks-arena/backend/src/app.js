@@ -17,6 +17,7 @@ const notificationRoutes = require("./routes/notifications");
 const pushRoutes = require("./routes/push");
 const userRoutes = require("./routes/user");
 const reviewRoutes = require("./routes/reviews");
+const gamesRoutes = require("./routes/games");
 
 const { errorHandler } = require("./middleware/errorHandler");
 
@@ -177,6 +178,9 @@ app.use("/api/admin", adminRoutes);
 
 // Media (Cloudinary)
 app.use("/api/media", mediaRoutes);
+
+// Games
+app.use("/api/games", gamesRoutes);
 
 // Notifications
 app.use("/api/notifications", notificationRoutes);

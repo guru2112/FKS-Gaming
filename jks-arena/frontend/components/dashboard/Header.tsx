@@ -56,14 +56,14 @@ export default function Header({
       <div className="flex items-center">
         {/* DESKTOP WELCOME */}
         <div className="hidden md:block">
-          <h1 className={`font-display text-3xl sm:text-4xl tracking-tight ${hasTopbarBg ? 'text-white drop-shadow-lg' : 'text-[#1A1A1A]'}`}>
+          <h1 className={`font-display text-2xl sm:text-3xl tracking-tight ${hasTopbarBg ? 'text-white drop-shadow-lg' : 'text-[#1A1A1A]'}`}>
             Welcome back,{" "}
             <span className="text-[#ff6b35]">
               {profile?.name?.split(" ")[0] || "Player"}
             </span>{" "}
             👋
           </h1>
-          <p className={`mt-2 text-xs font-bold tracking-[0.18em] uppercase ${hasTopbarBg ? 'text-white drop-shadow-md' : 'text-slate-500'}`}>
+          <p className={`mt-1 text-[10px] font-bold tracking-[0.18em] uppercase ${hasTopbarBg ? 'text-white drop-shadow-md' : 'text-slate-500'}`}>
             <span className="text-[#ff6b35]">JKS Arena</span> • Ready for your next gaming session
           </p>
         </div>
@@ -167,20 +167,20 @@ export default function Header({
         <NotificationBell active={!isMobile} />
 
         {/* PROFILE CARD */}
-        <div className={`group flex items-center gap-4 rounded-3xl px-4 py-3 hover:border-[#ff6b35]/40 transition-all duration-300 ${hasTopbarBg ? 'border border-white/15 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_8px_30px_rgba(255,107,53,0.08)]'}`}>
+        <div className={`group flex items-center gap-3 rounded-2xl px-3 py-2 hover:border-[#ff6b35]/40 transition-all duration-300 ${hasTopbarBg ? 'border border-white/15 bg-white/10' : 'border border-[#ff6b35]/15 bg-white shadow-[0_4px_15px_rgba(255,107,53,0.05)]'}`}>
           {/* AVATAR */}
           <div className="relative">
             {/* GLOW */}
-            <div className="absolute inset-0 rounded-full bg-[#ff6b35]/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 rounded-full bg-[#ff6b35]/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-            <div className="relative flex h-14 w-14 overflow-hidden items-center justify-center rounded-full bg-white border-2 border-[#ff6b35] text-sm font-black text-[#ff6b35] shadow-sm">
+            <div className="relative flex h-10 w-10 overflow-hidden items-center justify-center rounded-full bg-white border-2 border-[#ff6b35] text-xs font-black text-[#ff6b35] shadow-sm">
               {profile?.avatarUrl ? (
                 <Image
                   key={profile.avatarUrl}
                   src={profile.avatarUrl}
                   alt="Avatar"
                   fill
-                  sizes="56px"
+                  sizes="40px"
                   className="object-cover"
                 />
               ) : (
@@ -196,10 +196,10 @@ export default function Header({
 
           {/* USER DETAILS */}
           <div className="flex flex-col">
-            <p className={`text-sm font-black uppercase tracking-[0.08em] leading-none ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
+            <p className={`text-xs font-black uppercase tracking-[0.08em] leading-none ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-[#1A1A1A]'}`}>
               {profile?.name || "Player"}
             </p>
-            <p className={`text-xs mt-1 tracking-wide ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-slate-500'}`}>
+            <p className={`text-[10px] mt-0.5 tracking-wide ${hasTopbarBg ? 'text-white drop-shadow-sm' : 'text-slate-500'}`}>
               {profile?.email || "player@jksarena.com"}
             </p>
           </div>

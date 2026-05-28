@@ -21,11 +21,9 @@ const { startCronJobs } = require("./utils/cron");
 
 const dashboardRoutes = require("./routes/dashboard");
 const adminRoutes = require("./routes/admin");
-const gamesRoutes = require("./routes/games");
 
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/games", gamesRoutes);
 
 // ✅ Verify critical env vars on startup
 const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];

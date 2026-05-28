@@ -1,45 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const Game = require("../models/Game");
+const { requireAdmin } = require("../middleware/auth");
 
-// Default games to seed if collection is empty
-const DEFAULT_GAMES = [
-  "FIFA 24",
-  "FIFA 25",
-  "Tekken 8",
-  "GTA V",
-  "Call of Duty",
-  "Mortal Kombat 1",
-  "WWE 2K24",
-  "Forza Horizon 5"
-];
-
-// Seed games if empty
-async function seedGames() {
-  try {
-    const count = await Game.countDocuments();
-    if (count === 0) {
-      console.log("🌱 Seeding default games...");
-      const gamesToInsert = DEFAULT_GAMES.map(title => ({ title, isActive: true }));
-      await Game.insertMany(gamesToInsert);
-      console.log("✅ Default games seeded successfully.");
-    }
-  } catch (err) {
-    console.error("❌ Error seeding games:", err);
-  }
-}
-
-// Call seed function on load
-seedGames();
-
-// GET /api/games
+// Public route to get all games
 router.get("/", async (req, res) => {
   try {
-    const games = await Game.find({ isActive: true }).sort({ title: 1 });
+    const games = await Game.find().sort({ title: 1 });
     res.json(games);
   } catch (err) {
-    console.error("Error fetching games:", err);
-    res.status(500).json({ error: "Failed to fetch games" });
+    res.status(500).json({ message: "Failed to fetch games", error: err.message });
+  }
+});
+
+// Admin route to add a game manually
+router.post("/", requireAdmin, async (req, res) => {
+  try {
+    const { title } = req.body;
+    if (!title) return res.status(400).json({ message: "Title is required" });
+
+    // Normalize string: remove spaces, hyphens, and convert to lowercase for comparison
+    const normalize = (str) => str.toLowerCase().replace(/[\s-]/g, "");
+    const normalizedTitle = normalize(title);
+    
+    const allGames = await Game.find();
+    const exists = allGames.find(g => normalize(g.title) === normalizedTitle);
+    
+    if (exists) return res.status(400).json({ message: "Game already exists" });
+    const game = await Game.create({ title });
+    res.status(201).json(game);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create game", error: err.message });
+  }
+});
+
+router.delete("/:id", requireAdmin, async (req, res) => {
+  try {
+    const game = await Game.findById(req.params.id);
+    if (!game) return res.status(404).json({ message: "Game not found" });
+    await Game.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Delete failed", error: err.message });
   }
 });
 

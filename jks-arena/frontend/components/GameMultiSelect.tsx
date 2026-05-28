@@ -53,15 +53,15 @@ export default function GameMultiSelect({ selectedGames, onChange, disabled }: G
   return (
     <div className="relative" ref={dropdownRef}>
       <div 
-        className={`w-full bg-white/80 border border-[#1A1A1A]/10 rounded-xl px-5 py-4 text-[#1A1A1A] font-bold cursor-pointer flex justify-between items-center transition-all duration-300 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#ff6b35]'} ${isOpen ? 'border-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.25)]' : ''}`}
+        className={`w-full bg-white/80 border border-[#1A1A1A]/10 rounded-xl px-5 py-4 text-[#1A1A1A] font-bold cursor-pointer flex justify-between items-center transition-all duration-300 overflow-hidden ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#ff6b35]'} ${isOpen ? 'border-[#ff6b35] shadow-[0_0_20px_rgba(255,107,53,0.25)]' : ''}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
-        <span className={selectedGames.length > 0 ? "text-[#1A1A1A]" : "text-slate-400 font-medium"}>
+        <span className={`truncate pr-3 ${selectedGames.length > 0 ? "text-[#1A1A1A]" : "text-slate-400 font-medium"}`}>
           {selectedGames.length > 0 
             ? selectedGames.join(", ") 
             : hasGames ? "Select Games" : "Loading games..."}
         </span>
-        <svg className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#ff6b35]" : "text-slate-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        <svg className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#ff6b35]" : "text-slate-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
       </div>
 
       {isOpen && hasGames && (

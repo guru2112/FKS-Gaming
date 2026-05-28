@@ -34,25 +34,25 @@ export default function DurationPicker({ value, onChange, theme = "light" }: Dur
   const colonClass = isDark ? "text-white" : "text-[#1A1A1A]";
 
   const Stepper = ({ val, label, onUp, onDown, format }: { val: number, label: string, onUp: () => void, onDown: () => void, format?: boolean }) => (
-    <div className={`flex-1 relative flex items-center justify-between rounded-xl border ${bgClass} overflow-hidden`}>
-      <div className="flex flex-col items-center pl-4 py-3">
-        <span className="text-xl font-black">{format ? String(val).padStart(2, '0') : val}</span>
-        <span className={`text-[9px] font-bold mt-0.5 ${labelClass}`}>{label}</span>
+    <div className={`flex-1 grid grid-cols-[1fr_auto] items-stretch rounded-xl border ${bgClass} overflow-hidden`}>
+      <div className="flex flex-col items-center justify-center py-2.5">
+        <span className="text-xl font-black leading-none">{format ? String(val).padStart(2, '0') : val}</span>
+        <span className={`text-[9px] font-bold mt-1 leading-none ${labelClass}`}>{label}</span>
       </div>
-      <div className={`flex flex-col border-l ${isDark ? "border-white/10" : "border-black/10"} h-full`}>
+      <div className={`flex flex-col border-l ${isDark ? "border-white/10" : "border-black/10"}`}>
         <button 
           onClick={(e) => { e.preventDefault(); onUp(); }} 
-          className={`flex-1 px-3 flex items-center justify-center transition-colors border-b ${isDark ? "border-white/10" : "border-black/10"} ${hoverClass}`}
+          className={`flex-1 px-2.5 flex items-center justify-center transition-colors border-b ${isDark ? "border-white/10" : "border-black/10"} ${hoverClass}`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
           </svg>
         </button>
         <button 
           onClick={(e) => { e.preventDefault(); onDown(); }} 
-          className={`flex-1 px-3 flex items-center justify-center transition-colors ${hoverClass}`}
+          className={`flex-1 px-2.5 flex items-center justify-center transition-colors ${hoverClass}`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
         </button>

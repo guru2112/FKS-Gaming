@@ -430,18 +430,18 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                         <td className="px-3 py-3 whitespace-nowrap">
                           <button
                             onClick={() => handleTogglePayment(b._id, isPaid ? "partial" : "paid")}
-                            disabled={updatingId === b._id}
-                            className={`px-2 py-1.5 text-[8px] font-black uppercase tracking-wide rounded-md border transition-all disabled:opacity-60 ${
+                            disabled={updatingId === b._id || (b.status !== "active" && b.status !== "completed")}
+                            className={`px-2 py-1.5 text-[8px] font-black uppercase tracking-wide rounded-md border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                               isPaid
                                 ? "bg-green-500/10 text-green-700 border-green-500/30 hover:bg-green-500/20"
                                 : "bg-red-500/10 text-red-700 border-red-500/30 hover:bg-red-500/20"
                             }`}
                           >
-                            {isPaid ? "Paid" : "Pending"}
+                            {isPaid ? "Paid" : "Unpaid"}
                           </button>
                         </td>
                         <td className="px-3 py-3 whitespace-nowrap text-right">
-                          {remaining > 0 && (
+                          {remaining > 0 && (b.status === "active" || b.status === "completed") && (
                             <button
                               onClick={() => openAddPayment(b)}
                               className="max-w-full px-2 py-1.5 text-[8px] font-black uppercase tracking-wide rounded-md bg-[#ff6b35]/10 text-[#ff6b35] border border-[#ff6b35]/30 hover:bg-[#ff6b35] hover:text-white transition-all"

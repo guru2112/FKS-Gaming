@@ -11,8 +11,9 @@ import MediaTab from "@/components/MediaTab";
 import ScannerTab from "@/components/ScannerTab"; 
 import LiveTab from "@/components/LiveTab"; 
 import NotificationsTab from "@/components/NotificationsTab";
+import AnalyticsTab from "@/components/AnalyticsTab";
 
-type Tab = "overview" | "scanner" | "live" | "users" | "bookings" | "combos" | "media" | "notifications"; 
+type Tab = "overview" | "scanner" | "live" | "users" | "bookings" | "combos" | "media" | "notifications" | "analytics";
 
 function Card({ title, value }: { title: string, value: number }) {
   return (
@@ -39,6 +40,7 @@ export default function AdminPage() {
     { key: "combos", label: "Combos" },
     { key: "media", label: "Media" },
     { key: "notifications", label: "Broadcasts" },
+    { key: "analytics", label: "Analytics" },
   ];
 
   const handleLogout = () => {
@@ -50,10 +52,10 @@ export default function AdminPage() {
     <div className="min-h-screen bg-[#F3EFEC] text-[#1A1A1A] p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 selection:bg-[#ff6b35] selection:text-white">
 
       <div className="max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+        <div className={`grid grid-cols-1 ${tab === "analytics" ? "" : "lg:grid-cols-[280px_1fr]"} gap-6`}>
 
           {/* ================= SIDEBAR ================= */}
-          <aside className="hidden lg:flex flex-col rounded-3xl border border-black/5 bg-[#F3EFEC] shadow-lg overflow-hidden sticky top-6 h-[calc(100vh-3rem)] self-start">
+          <aside className={`${tab === "analytics" ? "hidden" : "hidden lg:flex"} flex-col rounded-3xl border border-black/5 bg-[#F3EFEC] shadow-lg overflow-hidden sticky top-6 h-[calc(100vh-3rem)] self-start`}>
             <div className="px-6 pt-10 pb-6">
               <Link href="/admin" className="font-display flex flex-col">
                 <div className="text-3xl font-black italic tracking-wider drop-shadow-sm">
@@ -81,7 +83,6 @@ export default function AdminPage() {
                   </button>
                 );
               })}
-
             </nav>
 
             <div className="p-6 bg-white/50 border-t border-black/5">
@@ -98,14 +99,11 @@ export default function AdminPage() {
           <div className="space-y-6">
 
             {/* ================= HEADER ================= */}
+            {tab !== "analytics" && (
             <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div className="flex items-start justify-between w-full sm:w-auto">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#ff6b35]">Admin Dashboard</p>
-                  <h1 className="text-4xl font-display font-black text-[#1A1A1A] mt-1 uppercase tracking-tight">Command Center</h1>
-                  <p className="mt-2 text-xs font-bold tracking-[0.18em] uppercase text-slate-500 hidden sm:block">
-                    <span className="text-[#ff6b35]">JKS Arena</span> • Manage bookings, sessions and media
-                  </p>
+                  <h1 className="text-4xl font-display font-black text-[#1A1A1A] mt-1 uppercase tracking-tight">Admin Command Center</h1>
                 </div>
                 {/* Mobile Menu Toggle (Alternative to bottom nav "Menu" button, kept for redundancy) */}
                 <button 
@@ -127,6 +125,7 @@ export default function AdminPage() {
                 </button>
               </div>
             </header>
+            )}
 
             {/* ================= TAB CONTENT ================= */}
             <main className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -153,6 +152,7 @@ export default function AdminPage() {
           {tab === "combos" && <CombosTab combos={combos} />} 
           {tab === "media" && <MediaTab />}
           {tab === "notifications" && <NotificationsTab />}
+          {tab === "analytics" && <AnalyticsTab bookings={bookings} users={users} onBack={() => setTab("overview")} />}
         </main>
 
           </div>
