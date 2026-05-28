@@ -118,7 +118,7 @@ export default function AdminPage() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
-                  onClick={refresh}
+                  onClick={() => refresh(true)}
                   className="w-full sm:w-auto bg-white/70 border border-black/5 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-[#ff6b35] hover:border-[#ff6b35]/20 transition-all shadow-sm"
                 >
                   ↻ Refresh
