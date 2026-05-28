@@ -97,9 +97,8 @@ export default function Header({
         </div>
 
         {/* PROFILE DROPDOWN */}
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
-            ref={dropdownRef}
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="group flex items-center gap-2 rounded-xl px-2 py-1.5 border border-white/10 bg-white/5 transition-all"
           >
