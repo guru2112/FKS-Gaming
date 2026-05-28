@@ -9,6 +9,7 @@ import { API_BASE_URL, api, fetchProfile, type Profile } from "@/lib/auth";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import DurationPicker from "@/components/DurationPicker";
+import GameMultiSelect from "@/components/GameMultiSelect";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
 const DEVICE_LABELS: Record<string, string> = { PS1: "Console 1", PS2: "Console 2", PS3: "Console 3", SIM1: "Simulator" };
@@ -62,6 +63,7 @@ function BookSlotContent() {
     players: 1,
     userName: "",
     userPhone: "",
+    games: [] as string[],
     companions: [] as Companion[],
   });
 
@@ -208,6 +210,7 @@ function BookSlotContent() {
         players: formData.players,
         userName: formData.userName,
         contactNumber: formData.userPhone,
+        game: formData.games.join(", "),
       };
       await api.post("/api/bookings", payload);
       setShowConfetti(true);
@@ -641,9 +644,17 @@ function BookSlotContent() {
                       </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 mb-6">
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Start Time</label>
                       <input type="time" required value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} className="w-full bg-white/80 border border-[#1A1A1A]/10 focus:border-[#ff6b35] focus:shadow-[0_0_20px_rgba(255,107,53,0.25)] rounded-xl px-5 py-4 text-[#1A1A1A] font-bold focus:outline-none transition-all duration-300" />
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#ff6b35]/80 mb-2 px-1">Select Games (Optional)</label>
+                      <GameMultiSelect 
+                        selectedGames={formData.games}
+                        onChange={(games) => setFormData({ ...formData, games })}
+                      />
                     </div>
                   </div>
                 )}

@@ -160,6 +160,12 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
                  <span className="text-slate-500">Console</span>
                  <span className="text-[#ff6b35] font-black">{pendingBooking.device}</span>
                </div>
+               {pendingBooking.game && (
+                 <div className="flex justify-between items-center border-b border-black/5 pb-3">
+                   <span className="text-slate-500">Games</span>
+                   <span className="text-slate-900 truncate max-w-[150px]">{pendingBooking.game}</span>
+                 </div>
+               )}
                <div className="flex justify-between items-center">
                  <span className="text-slate-500">Duration</span>
                  <span className="text-slate-900">{pendingBooking.durationHours} Hours</span>
@@ -207,10 +213,16 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
                  <span className="text-slate-500">Player</span>
                  <span className="text-slate-900">{scanResult.data.userName}</span>
                </div>
-               <div className="flex justify-between items-center">
+               <div className="flex justify-between items-center border-b border-black/5 pb-3">
                  <span className="text-slate-500">Console</span>
                  <span className="text-[#ff6b35] font-black">{scanResult.data.device}</span>
                </div>
+               {scanResult.data.game && (
+                 <div className="flex justify-between items-center">
+                   <span className="text-slate-500">Games</span>
+                   <span className="text-slate-900 truncate max-w-[150px]">{scanResult.data.game}</span>
+                 </div>
+               )}
             </div>
           )}
 

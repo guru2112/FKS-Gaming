@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import DurationPicker from "@/components/DurationPicker";
+import GameMultiSelect from "@/components/GameMultiSelect";
 import { api } from "@/lib/apiClient";
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"] as const;
@@ -37,6 +38,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
   const [phone, setPhone] = useState("");
   const [players, setPlayers] = useState(1);
   const [duration, setDuration] = useState<number | null>(null);
+  const [games, setGames] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +63,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
         customerName: name.trim(),
         phoneNumber: phone.trim(),
         device,
-        game: "",
+        game: games.join(", "),
         players,
         companions: [],
         inTime: now.toISOString(),
@@ -76,6 +78,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
       setPhone("");
       setPlayers(1);
       setDuration(1);
+      setGames([]);
       setError(null);
       onStarted();
     } catch (e: any) {
@@ -182,6 +185,15 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
             theme="light" 
           />
         </div>
+      </div>
+
+      {/* Games Selection */}
+      <div className="mb-5">
+        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games (Optional)</label>
+        <GameMultiSelect 
+          selectedGames={games}
+          onChange={setGames}
+        />
       </div>
 
       {/* Price Estimate */}
