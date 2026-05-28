@@ -145,9 +145,17 @@ function BookSlotContent() {
     }
   }
 
+  const getAdjustedStartDateTime = () => {
+    const d = new Date(`${formData.date}T${formData.time}`);
+    if (parseInt(formData.time.split(":")[0], 10) < 11) {
+      d.setDate(d.getDate() + 1);
+    }
+    return d;
+  };
+
   // ── Availability check ────────────────────────────────────────────
   const checkAvailability = () => {
-    const selectedStart = new Date(`${formData.date}T${formData.time}`).getTime();
+    const selectedStart = getAdjustedStartDateTime().getTime();
     const selectedEnd = selectedStart + formData.durationHours * 3600000;
     const buffer = 20 * 60 * 1000;
     const deviceBookings = schedule.filter((b) => b.device === formData.device);
@@ -185,6 +193,18 @@ function BookSlotContent() {
         return setError("ForzaHorizon-5, F1-25, and SnowRunner require the Simulator device. Please change your console selection to Simulator or remove the driving games.");
       }
 
+      const [hStr, mStr] = formData.time.split(":");
+      const hours = parseInt(hStr, 10);
+      const startMins = hours * 60 + parseInt(mStr, 10);
+      
+      const normalizedStart = hours < 11 ? startMins + 24 * 60 : startMins;
+      const normalizedEnd = normalizedStart + formData.durationHours * 60;
+
+      // Arena is open 11:00 AM (660 mins) to 1:00 AM next day (1500 mins)
+      if (normalizedStart < 660 || normalizedEnd > 1500) {
+        return setError("Slots are only available between 11:00 AM and 1:00 AM. Adjust your start time or duration.");
+      }
+
       if (!checkAvailability()) return;
     }
     goStep(step + 1);
@@ -216,7 +236,7 @@ function BookSlotContent() {
     setShowConfirmModal(false);
     setIsLoading(true);
     try {
-      const startDateTime = new Date(`${formData.date}T${formData.time}`);
+      const startDateTime = getAdjustedStartDateTime();
       const payload = {
         device: formData.device,
         slotStart: startDateTime.toISOString(),
