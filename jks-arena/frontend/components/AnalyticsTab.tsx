@@ -535,58 +535,98 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
 
         {/* Device Usage */}
         <ChartCard title="Device Usage" icon={Monitor}>
-          <div className="flex flex-col h-full">
-            <div className="flex-1 min-h-0 relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={data.deviceData} innerRadius="50%" outerRadius="78%" paddingAngle={4} dataKey="value" stroke="none">
-                    {data.deviceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                  </Pie>
-                  <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: any) => [`${Number(v)} hrs`, String(name)]} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-lg font-black text-[#1A1A1A] leading-none font-display">{data.deviceData.length}</span>
-                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Devices</span>
+          <div className="flex flex-col h-full justify-between pb-2">
+            <div className="flex items-center justify-between mt-2 px-2">
+              <div className="relative w-28 h-28 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={data.deviceData} innerRadius="65%" outerRadius="100%" paddingAngle={2} dataKey="value" stroke="none">
+                      {data.deviceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                    </Pie>
+                    <RechartsTooltip contentStyle={tooltipStyle} formatter={(v: any, name: any) => [`${Number(v)} hrs`, String(name)]} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-xl font-black text-[#1A1A1A] leading-none font-display">{data.deviceData.length}</span>
+                  <span className="text-[6px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Devices</span>
+                </div>
+              </div>
+              <div className="flex-1 ml-6 flex flex-col gap-2">
+                {data.deviceData.map((d, i) => {
+                  const percent = data.kpis.gamingHours > 0 ? ((d.value / data.kpis.gamingHours) * 100).toFixed(1) : "0.0";
+                  return (
+                  <div key={i} className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.fill }} />
+                      <span className="text-[9px] font-bold text-[#1A1A1A]">{d.name}</span>
+                    </div>
+                    <span className="text-[9px] font-medium text-slate-500">{percent}%</span>
+                  </div>
+                )})}
               </div>
             </div>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 px-2 pb-2">
-              {data.deviceData.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: d.fill }} />
-                  <div className="leading-none">
-                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">{d.name}</p>
-                    <p className="text-[11px] font-black text-[#1A1A1A]">{d.value}h</p>
-                  </div>
-                </div>
-              ))}
+            
+            <div className="grid grid-cols-2 gap-4 mt-5 pt-3 border-t border-slate-100 px-2">
+               <div>
+                 <p className="text-[9px] font-medium text-slate-500 mb-0.5">Total Gaming Hours</p>
+                 <p className="text-xs font-black text-[#1A1A1A]">{data.kpis.gamingHours}H</p>
+               </div>
+               <div>
+                 <p className="text-[9px] font-medium text-slate-500 mb-0.5">Most Used</p>
+                 <p className="text-xs font-black text-[#1A1A1A]">
+                   {data.deviceData.length > 0 ? data.deviceData.reduce((prev, current) => (prev.value > current.value) ? prev : current).name : "N/A"}
+                 </p>
+               </div>
             </div>
           </div>
         </ChartCard>
 
         {/* Booking Source */}
         <ChartCard title="Booking Source" icon={Globe}>
-          <div className="flex flex-col h-full">
-            <div className="flex-1 min-h-0 relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={data.bookingSourceData} outerRadius="78%" dataKey="value" stroke="white" strokeWidth={3}>
-                    {data.bookingSourceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                  </Pie>
-                  <RechartsTooltip contentStyle={tooltipStyle} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-5 px-2 pb-2">
-              {data.bookingSourceData.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: d.fill }} />
-                  <div className="leading-none">
-                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">{d.name}</p>
-                    <p className="text-[11px] font-black text-[#1A1A1A]">{d.value}</p>
-                  </div>
+          <div className="flex flex-col h-full justify-between pb-2">
+            <div className="flex items-center justify-between mt-2 px-2">
+              <div className="relative w-28 h-28 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={data.bookingSourceData} innerRadius="65%" outerRadius="100%" paddingAngle={2} dataKey="value" stroke="none">
+                      {data.bookingSourceData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                    </Pie>
+                    <RechartsTooltip contentStyle={tooltipStyle} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-xl font-black text-[#1A1A1A] leading-none font-display">{data.kpis.bookings}</span>
+                  <span className="text-[6px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Bookings</span>
                 </div>
-              ))}
+              </div>
+              <div className="flex-1 ml-6 flex flex-col gap-2">
+                {data.bookingSourceData.map((d, i) => {
+                  const percent = data.kpis.bookings > 0 ? Math.round((d.value / data.kpis.bookings) * 100) : 0;
+                  return (
+                  <div key={i} className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.fill }} />
+                      <span className="text-[9px] font-bold text-[#1A1A1A]">{d.name}</span>
+                    </div>
+                    <span className="text-[9px] font-black text-slate-500">{d.value} <span className="font-medium">({percent}%)</span></span>
+                  </div>
+                )})}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-5 pt-3 border-t border-slate-100 px-2">
+               <div>
+                 <p className="text-[9px] font-medium text-slate-500 mb-0.5">Walk-in</p>
+                 <p className="text-xs font-black text-[#1A1A1A]">
+                   {data.kpis.bookings > 0 ? Math.round((data.bookingSourceData.find(d => d.name === "Walk-in")?.value || 0) / data.kpis.bookings * 100) : 0}%
+                 </p>
+               </div>
+               <div>
+                 <p className="text-[9px] font-medium text-slate-500 mb-0.5">Website</p>
+                 <p className="text-xs font-black text-[#1A1A1A]">
+                   {data.kpis.bookings > 0 ? Math.round((data.bookingSourceData.find(d => d.name === "Website")?.value || 0) / data.kpis.bookings * 100) : 0}%
+                 </p>
+               </div>
             </div>
           </div>
         </ChartCard>
