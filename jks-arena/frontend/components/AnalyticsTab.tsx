@@ -539,8 +539,8 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
         {/* Device Usage */}
         <ChartCard title="Device Usage" icon={Monitor}>
           <div className="flex flex-col h-full justify-between pb-2">
-            <div className="flex items-center justify-start gap-5 mt-2 px-2">
-              <div className="relative w-36 h-36 shrink-0">
+            <div className="flex items-center justify-center gap-6 mt-2 px-2">
+              <div className="relative w-40 h-40 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={data.deviceData} innerRadius="65%" outerRadius="100%" paddingAngle={2} dataKey="value" stroke="none">
@@ -550,11 +550,11 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-xl font-black text-[#1A1A1A] leading-none font-display">{data.deviceData.length}</span>
-                  <span className="text-[6px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Devices</span>
+                  <span className="text-2xl font-black text-[#1A1A1A] leading-none font-display">{data.deviceData.length}</span>
+                  <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">Total Devices</span>
                 </div>
               </div>
-              <div className="flex-1 flex flex-col gap-2">
+              <div className="flex flex-col gap-2 shrink-0 min-w-[100px]">
                 {data.deviceData.map((d, i) => {
                   const percent = data.kpis.gamingHours > 0 ? ((d.value / data.kpis.gamingHours) * 100).toFixed(1) : "0.0";
                   return (
@@ -569,14 +569,14 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mt-5 pt-3 border-t border-slate-100 px-2">
+            <div className="flex justify-around items-center mt-5 pt-3 border-t border-slate-100 px-2 text-center">
                <div>
                  <p className="text-[9px] font-medium text-slate-500 mb-0.5">Total Gaming Hours</p>
-                 <p className="text-xs font-black text-[#1A1A1A]">{Number(data.kpis.gamingHours.toFixed(2))}H</p>
+                 <p className="text-sm font-black text-[#1A1A1A]">{Number(data.kpis.gamingHours.toFixed(2))}H</p>
                </div>
                <div>
                  <p className="text-[9px] font-medium text-slate-500 mb-0.5">Most Used</p>
-                 <p className="text-xs font-black text-[#1A1A1A]">
+                 <p className="text-sm font-black text-[#1A1A1A]">
                    {data.deviceData.length > 0 ? data.deviceData.reduce((prev, current) => (prev.value > current.value) ? prev : current).name : "N/A"}
                  </p>
                </div>
@@ -587,8 +587,8 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
         {/* Booking Source */}
         <ChartCard title="Booking Source" icon={Globe}>
           <div className="flex flex-col h-full justify-between pb-2">
-            <div className="flex items-center justify-start gap-5 mt-2 px-2">
-              <div className="relative w-36 h-36 shrink-0">
+            <div className="flex items-center justify-center gap-6 mt-2 px-2">
+              <div className="relative w-40 h-40 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={data.bookingSourceData} innerRadius="65%" outerRadius="100%" paddingAngle={2} dataKey="value" stroke="none">
@@ -598,11 +598,11 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-xl font-black text-[#1A1A1A] leading-none font-display">{data.kpis.bookings}</span>
-                  <span className="text-[6px] font-bold text-slate-400 uppercase tracking-wider mt-1">Total Bookings</span>
+                  <span className="text-2xl font-black text-[#1A1A1A] leading-none font-display">{data.kpis.bookings}</span>
+                  <span className="text-[7px] font-bold text-slate-400 uppercase tracking-wider mt-1.5">Total Bookings</span>
                 </div>
               </div>
-              <div className="flex-1 flex flex-col gap-2">
+              <div className="flex flex-col gap-2 shrink-0 min-w-[100px]">
                 {data.bookingSourceData.map((d, i) => {
                   const percent = data.kpis.bookings > 0 ? Math.round((d.value / data.kpis.bookings) * 100) : 0;
                   return (
@@ -617,16 +617,16 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mt-5 pt-3 border-t border-slate-100 px-2">
+            <div className="flex justify-around items-center mt-5 pt-3 border-t border-slate-100 px-2 text-center">
                <div>
                  <p className="text-[9px] font-medium text-slate-500 mb-0.5">Walk-in</p>
-                 <p className="text-xs font-black text-[#1A1A1A]">
+                 <p className="text-sm font-black text-[#1A1A1A]">
                    {data.kpis.bookings > 0 ? Math.round((data.bookingSourceData.find(d => d.name === "Walk-in")?.value || 0) / data.kpis.bookings * 100) : 0}%
                  </p>
                </div>
                <div>
                  <p className="text-[9px] font-medium text-slate-500 mb-0.5">Website</p>
-                 <p className="text-xs font-black text-[#1A1A1A]">
+                 <p className="text-sm font-black text-[#1A1A1A]">
                    {data.kpis.bookings > 0 ? Math.round((data.bookingSourceData.find(d => d.name === "Website")?.value || 0) / data.kpis.bookings * 100) : 0}%
                  </p>
                </div>

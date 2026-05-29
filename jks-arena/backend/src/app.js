@@ -18,6 +18,8 @@ const pushRoutes = require("./routes/push");
 const userRoutes = require("./routes/user");
 const reviewRoutes = require("./routes/reviews");
 const gamesRoutes = require("./routes/games");
+const aiRoutes = require("./routes/ai");
+
 
 const { errorHandler } = require("./middleware/errorHandler");
 
@@ -181,6 +183,10 @@ app.use("/api/media", mediaRoutes);
 
 // Games
 app.use("/api/games", gamesRoutes);
+
+// AI Chat
+app.use("/api/ai", aiRoutes);
+
 
 // Notifications
 app.use("/api/notifications", notificationRoutes);

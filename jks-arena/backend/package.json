@@ -8,6 +8,8 @@
     "start": "node src/server.js"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.80",
+    "ai": "^6.0.193",
     "axios": "^1.16.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.10.0",
@@ -26,7 +28,8 @@
     "nodemailer": "^8.0.7",
     "pdfkit": "^0.15.0",
     "playwright": "^1.60.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
