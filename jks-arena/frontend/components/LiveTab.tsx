@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/apiClient";
 import QuickStartWalkIn from "@/components/QuickStartWalkIn";
 import RescheduleModal from "@/components/dashboard/RescheduleModal";
+import ExtendSessionModal from "@/components/dashboard/ExtendSessionModal";
 import { formatDuration } from "@/lib/utils/formatDuration";
 
 
@@ -13,18 +14,11 @@ function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
 }
 
-const EXTEND_OPTIONS = [
-  { label: "+30 min", minutes: 30 },
-  { label: "+1 hour", minutes: 60 },
-  { label: "+2 hours", minutes: 120 },
-];
-
 export default function LiveTab() {
   const [liveBookings, setLiveBookings] = useState<any[]>([]);
   const [todayBookings, setTodayBookings] = useState<any[]>([]);
   const [now, setNow] = useState(new Date().getTime());
-  const [extendOpen, setExtendOpen] = useState<string | null>(null);
-  const [extending, setExtending] = useState(false);
+  const [extendSessionModal, setExtendSessionModal] = useState<any | null>(null);
   const [reschedulingBooking, setReschedulingBooking] = useState<any | null>(null);
 
   const fetchLiveRigs = useCallback(async () => {
@@ -75,20 +69,6 @@ export default function LiveTab() {
     }
   };
 
-  const handleExtend = async (id: string, minutes: number) => {
-    setExtending(true);
-    try {
-      await api.patch(`/api/admin/extend-session/${id}`, { extraMinutes: minutes });
-      setExtendOpen(null);
-      void fetchLiveRigs();
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || "Failed to extend session.";
-      alert(msg);
-    } finally {
-      setExtending(false);
-    }
-  };
-
   const getRemainingTime = (slotEnd: string) => {
     const endTime = new Date(slotEnd).getTime();
     const diff = endTime - now;
@@ -135,8 +115,6 @@ export default function LiveTab() {
 
           // Rig is Active
           const time = getRemainingTime(activeSession.slotEnd);
-          const isDropdownOpen = extendOpen === activeSession._id;
-          const rate = activeSession.perHeadRate || 50;
 
           let cardColor = "bg-white/80 border-black/5";
           let timerColor = "text-[#1A1A1A]";
@@ -184,31 +162,12 @@ export default function LiveTab() {
               {/* Extend Time Section */}
               <div className="mt-3 relative">
                 <button
-                  onClick={() => setExtendOpen(isDropdownOpen ? null : activeSession._id)}
+                  onClick={() => setExtendSessionModal(activeSession)}
                   style={clipPathStyle}
                   className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-[0_0_10px_rgba(0,0,0,0.15)]"
                 >
                   Extend Time
                 </button>
-
-                {isDropdownOpen && (
-                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-white/95 backdrop-blur-sm border border-black/10 rounded-2xl p-2 shadow-lg z-10">
-                    {EXTEND_OPTIONS.map((opt) => {
-                      const cost = Math.round(activeSession.players * rate * (opt.minutes / 60));
-                      return (
-                        <button
-                          key={opt.minutes}
-                          disabled={extending}
-                          onClick={() => handleExtend(activeSession._id, opt.minutes)}
-                          className="w-full flex items-center justify-between px-4 py-3 text-xs font-bold text-slate-700 hover:bg-[#ff6b35]/10 hover:text-[#ff6b35] rounded-xl transition-colors disabled:opacity-50"
-                        >
-                          <span className="uppercase tracking-wider">{opt.label}</span>
-                          <span className="font-display text-sm">₹{cost}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
 
               <button
@@ -315,6 +274,18 @@ export default function LiveTab() {
             setReschedulingBooking(null);
             fetchTodayBookings();
             fetchLiveRigs();
+          }}
+        />
+      )}
+
+      {extendSessionModal && (
+        <ExtendSessionModal
+          session={extendSessionModal}
+          onClose={() => setExtendSessionModal(null)}
+          onSuccess={() => {
+            setExtendSessionModal(null);
+            fetchLiveRigs();
+            fetchTodayBookings();
           }}
         />
       )}

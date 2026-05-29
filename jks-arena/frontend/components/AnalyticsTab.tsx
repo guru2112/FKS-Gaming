@@ -526,22 +526,38 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
         <ChartCard title="Most Played" icon={Gamepad2}>
           <div className="flex flex-col h-full px-3 pb-2 overflow-hidden">
             <div className="space-y-2.5 overflow-y-auto flex-1 pr-1">
-              {data.topGames.map((game, i) => (
-                <div key={i} className="group/game">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-5 h-5 rounded-lg flex shrink-0 items-center justify-center font-black text-[10px] ${i === 0 ? "bg-[#ff6b35] text-white shadow-md shadow-[#ff6b35]/30" : "bg-[#F3EFEC] text-[#1A1A1A]/60"}`}>{i + 1}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-bold text-[#1A1A1A] uppercase text-[10px] truncate leading-none">{game.name}</span>
-                        <span className="text-[10px] font-black text-[#ff6b35] shrink-0 ml-2 tabular-nums">{game.hours}h</span>
+              {data.topGames.map((game, i) => {
+                const shades = [
+                  { bg: "#d84a1b", text: "#ffffff" },
+                  { bg: "#ff6b35", text: "#ffffff" },
+                  { bg: "#ff8c61", text: "#ffffff" },
+                  { bg: "#ffa382", text: "#1a1a1a" },
+                  { bg: "#ffc2a6", text: "#1a1a1a" },
+                ];
+                const shade = shades[i] || shades[shades.length - 1];
+
+                return (
+                  <div key={i} className="group/game">
+                    <div className="flex items-center gap-2.5">
+                      <div 
+                        className="w-5 h-5 rounded-lg flex shrink-0 items-center justify-center font-black text-[10px] shadow-sm"
+                        style={{ backgroundColor: shade.bg, color: shade.text }}
+                      >
+                        {i + 1}
                       </div>
-                      <div className="h-1 w-full bg-[#F3EFEC] rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full transition-all duration-700 ${i === 0 ? "bg-gradient-to-r from-[#ff6b35] to-[#ff8c61]" : "bg-[#1A1A1A]/15"}`} style={{ width: `${game.popularity}%` }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-bold text-[#1A1A1A] uppercase text-[10px] truncate leading-none">{game.name}</span>
+                          <span className="text-[10px] font-black shrink-0 ml-2 tabular-nums" style={{ color: shade.bg }}>{game.hours}h</span>
+                        </div>
+                        <div className="h-1 w-full bg-[#F3EFEC] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${game.popularity}%`, backgroundColor: shade.bg }} />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </ChartCard>
