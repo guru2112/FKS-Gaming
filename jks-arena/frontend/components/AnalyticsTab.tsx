@@ -214,7 +214,10 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
     // Peak Hours
     const hoursMap: Record<number, number> = {};
     currentBookings.forEach((b) => { const h = new Date(b.slotStart || b.inTime || new Date()).getHours(); if (!isNaN(h)) { hoursMap[h] = (hoursMap[h] || 0) + 1; } });
-    const peakHoursData = [10, 12, 14, 16, 18, 20, 22].map((h) => ({ time: `${h > 12 ? h - 12 : h}${h >= 12 ? "PM" : "AM"}`, users: hoursMap[h] || 0 }));
+    const peakHoursData = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1].map((h) => ({
+      time: h === 0 ? "12AM" : h === 12 ? "12PM" : h < 12 ? `${h}AM` : `${h - 12}PM`,
+      users: hoursMap[h] || 0
+    }));
 
     // Revenue Timeline
     const revenueMap: Record<string, { value: number; timestamp: number }> = {};
