@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 interface UpcomingHeroCardProps {
   booking?: any;
@@ -90,7 +92,7 @@ export default function UpcomingHeroCard({ booking, onCancel, onReschedule, isCa
             <div className="space-y-3 mb-8">
               <div className="flex items-center gap-3 text-[#1A1A1A]">
                 <svg className="w-5 h-5 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span className="text-base font-black">{new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({booking.durationHours} Hours)</span>
+                <span className="text-base font-black">{new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({formatDuration(booking.durationHours)})</span>
               </div>
               <div className="flex items-center gap-3 text-[#1A1A1A]">
                 <svg className="w-5 h-5 text-[#ff6b35]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth={2.5}></rect><line x1="16" y1="2" x2="16" y2="6" strokeWidth={2.5}></line><line x1="8" y1="2" x2="8" y2="6" strokeWidth={2.5}></line><line x1="3" y1="10" x2="21" y2="10" strokeWidth={2.5}></line></svg>
@@ -216,7 +218,7 @@ export default function UpcomingHeroCard({ booking, onCancel, onReschedule, isCa
                 <DetailRow label="Slot" value={booking.device} />
                 <DetailRow label="Date" value={new Date(booking.slotStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} />
                 <DetailRow label="Start Time" value={new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
-                <DetailRow label="Duration" value={`${booking.durationHours} Hour${booking.durationHours > 1 ? 's' : ''}`} />
+                <DetailRow label="Duration" value={`${formatDuration(booking.durationHours)}`} />
                 <DetailRow label="End Time" value={new Date(new Date(booking.slotStart).getTime() + booking.durationHours * 3600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
                 <DetailRow label="Status" value={booking.status || 'active'} />
                 <DetailRow label="Booked By" value={bookerName} />

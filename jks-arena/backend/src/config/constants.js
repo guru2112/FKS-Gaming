@@ -1,8 +1,8 @@
 const DEVICE_RATES = {
-  PS1: 60,
-  PS2: 60,
-  PS3: 60,
-  SIM1: 100,
+  PS1: 50,
+  PS2: 50,
+  PS3: 50,
+  SIM1: 120,
 };
 
 module.exports = {

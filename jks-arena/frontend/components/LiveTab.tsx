@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/apiClient";
 import QuickStartWalkIn from "@/components/QuickStartWalkIn";
 import RescheduleModal from "@/components/dashboard/RescheduleModal";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
 
@@ -134,7 +136,7 @@ export default function LiveTab() {
           // Rig is Active
           const time = getRemainingTime(activeSession.slotEnd);
           const isDropdownOpen = extendOpen === activeSession._id;
-          const rate = activeSession.perHeadRate || 60;
+          const rate = activeSession.perHeadRate || 50;
 
           let cardColor = "bg-white/80 border-black/5";
           let timerColor = "text-[#1A1A1A]";
@@ -167,7 +169,7 @@ export default function LiveTab() {
                 </div>
 
                 <h3 className="font-bold text-[#1A1A1A] text-base line-clamp-1">{activeSession.userName}</h3>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-0.5">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {activeSession.durationHours} Hr Session</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-0.5">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {formatDuration(activeSession.durationHours)} Session</p>
               </div>
 
               <div className="mt-4 text-center">
@@ -285,7 +287,7 @@ export default function LiveTab() {
                           <p className="text-xs font-bold text-slate-600">{b.userContact}</p>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <p className="text-xs font-bold text-slate-600">{b.durationHours} hr</p>
+                          <p className="text-xs font-bold text-slate-600">{formatDuration(b.durationHours)}</p>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <button

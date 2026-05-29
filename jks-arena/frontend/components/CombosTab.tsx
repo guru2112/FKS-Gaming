@@ -1,3 +1,4 @@
+import { formatDuration } from "@/lib/utils/formatDuration";
 export default function CombosTab({ combos }: any) {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[450px] overflow-y-auto custom-scrollbar pr-2 pb-4">
@@ -15,7 +16,7 @@ export default function CombosTab({ combos }: any) {
           <div className="flex justify-between mt-4">
             <span className="text-orange-500 font-bold">₹{c.price}</span>
             <span className="text-xs text-gray-500">
-              {c.durationHours} hrs
+              {formatDuration(c.durationHours)}
             </span>
           </div>
         </div>

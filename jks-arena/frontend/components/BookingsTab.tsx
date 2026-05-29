@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { api } from "@/lib/apiClient";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 interface BookingsTabProps {
   bookings: any[];
@@ -300,7 +302,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <p className="text-xs font-bold text-[#ff6b35]">{formatTime(inTime)} → {formatTime(outTime)}</p>
-                          <p className="text-[10px] font-bold text-slate-500 mt-0.5">{b.durationHours} Hr • {b.players} Px</p>
+                          <p className="text-[10px] font-bold text-slate-500 mt-0.5">{formatDuration(b.durationHours)} • {b.players} Px</p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-800 shadow-sm border border-black/5 group-hover:border-[#ff6b35]/30">
@@ -402,7 +404,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                         </td>
                         <td className="px-3 py-3 whitespace-nowrap overflow-hidden">
                           <p className="truncate text-[11px] font-bold text-[#ff6b35]">{formatTime(inTime)} → {formatTime(outTime)}</p>
-                          <p className="text-[9px] font-bold text-slate-500 mt-0.5">{b.durationHours} Hr</p>
+                          <p className="text-[9px] font-bold text-slate-500 mt-0.5">{formatDuration(b.durationHours)}</p>
                         </td>
                         <td className="px-3 py-3 whitespace-nowrap">
                           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-800 shadow-sm border border-black/5">
@@ -543,7 +545,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                 <span className="text-slate-900 text-right">
                   {formatDate(selectedBooking.inTime || selectedBooking.slotStart)}<br />
                   <span className="text-[#ff6b35]">{formatTime(selectedBooking.inTime || selectedBooking.slotStart)} → {formatTime(selectedBooking.outTime || selectedBooking.slotEnd)}</span>
-                  <br /><span className="text-slate-600">({selectedBooking.durationHours} Hours)</span>
+                  <br /><span className="text-slate-600">({formatDuration(selectedBooking.durationHours)})</span>
                 </span>
               </div>
               <div className="flex justify-between border-b border-black/5 pb-3">

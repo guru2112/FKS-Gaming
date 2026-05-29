@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 interface RecentSessionsTableProps {
   bookings: any[];
@@ -99,7 +101,7 @@ export default function RecentSessionsTable({ bookings, onReschedule }: RecentSe
                     {new Date(booking.slotStart).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - {new Date(booking.slotEnd).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td className="px-6 py-5">
-                    {booking.durationHours} Hour{booking.durationHours > 1 ? 's' : ''}
+                    {formatDuration(booking.durationHours)}
                   </td>
                   <td className="px-6 py-5">
                     ₹{booking.totalPrice?.toFixed(2) || "0.00"}
@@ -195,7 +197,7 @@ export default function RecentSessionsTable({ bookings, onReschedule }: RecentSe
                   { label: "Date", value: new Date(viewBooking.slotStart).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', weekday: 'short' }) },
                   { label: "Time", value: `${new Date(viewBooking.slotStart).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${new Date(viewBooking.slotEnd).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` },
                   { label: "Arena", value: viewBooking.device },
-                  { label: "Duration", value: `${viewBooking.durationHours} hour(s)` },
+                  { label: "Duration", value: `${formatDuration(viewBooking.durationHours)}` },
                   { label: "Players", value: viewBooking.players },
                   ...(viewBooking.game ? [{ label: "Game", value: viewBooking.game }] : []),
                   { label: "Amount", value: `₹${viewBooking.totalPrice?.toFixed(2) || '0.00'}` },

@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import DurationPicker from "@/components/DurationPicker";
 import GameMultiSelect from "@/components/GameMultiSelect";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"];
 const DEVICE_LABELS: Record<string, string> = { PS1: "Console 1", PS2: "Console 2", PS3: "Console 3", SIM1: "Simulator" };
@@ -835,11 +837,11 @@ function BookSlotContent() {
                 </div>
                 <div className="flex justify-between items-center pb-4 border-b border-black/10">
                   <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Duration</span>
-                  <span className="text-sm font-black text-[#1A1A1A]">x {formData.durationHours} hr</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">x {formatDuration(formData.durationHours)}</span>
                 </div>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-sm font-black text-[#ff6b35] uppercase tracking-wider">Total Amount</span>
-                  <span className="text-3xl font-display font-black text-[#ff6b35]">₹{formData.players * (formData.device === "SIM1" ? 100 : 60) * formData.durationHours}</span>
+                  <span className="text-3xl font-display font-black text-[#ff6b35]">₹{formData.players * (formData.device === "SIM1" ? 120 : 50) * formData.durationHours}</span>
                 </div>
               </div>
 

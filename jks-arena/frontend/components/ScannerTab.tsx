@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { api } from "@/lib/apiClient";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 interface ScannerTabProps {
   bookings?: any[];
@@ -168,7 +170,7 @@ export default function ScannerTab({ bookings, onRefresh }: ScannerTabProps) {
                )}
                <div className="flex justify-between items-center">
                  <span className="text-slate-500">Duration</span>
-                 <span className="text-slate-900">{pendingBooking.durationHours} Hours</span>
+                 <span className="text-slate-900">{formatDuration(pendingBooking.durationHours)}</span>
                </div>
             </div>
           ) : (

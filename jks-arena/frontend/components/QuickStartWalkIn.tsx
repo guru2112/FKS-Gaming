@@ -5,14 +5,16 @@ import { Loader2 } from "lucide-react";
 import DurationPicker from "@/components/DurationPicker";
 import GameMultiSelect from "@/components/GameMultiSelect";
 import { api } from "@/lib/apiClient";
+import { formatDuration } from "@/lib/utils/formatDuration";
+
 
 const DEVICES = ["PS1", "PS2", "PS3", "SIM1"] as const;
 
 const DEVICE_RATES: Record<string, number> = {
-  PS1: 60,
-  PS2: 60,
-  PS3: 60,
-  SIM1: 100,
+  PS1: 50,
+  PS2: 50,
+  PS3: 50,
+  SIM1: 120,
 };
 
 const DURATION_OPTIONS = [
@@ -42,7 +44,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const selectedRate = device ? DEVICE_RATES[device] || 60 : 60;
+  const selectedRate = device ? DEVICE_RATES[device] || 50 : 50;
   const effectiveHours = duration === 0 ? 1 : (duration || 0);
   const estimatedCost = players * selectedRate * effectiveHours;
 
@@ -192,7 +194,7 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
       {device && (
         <div className="mb-5 rounded-2xl bg-[#ff6b35]/5 border border-[#ff6b35]/15 px-4 py-3 flex items-center justify-between">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            {players} player{players > 1 ? "s" : ""} × ₹{selectedRate}/hr × {duration}hr
+            {players} player{players > 1 ? "s" : ""} × ₹{selectedRate}/hr × {formatDuration(duration)}
           </span>
           <span className="font-display text-xl font-black text-[#ff6b35]">₹{estimatedCost}</span>
         </div>

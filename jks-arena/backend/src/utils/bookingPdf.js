@@ -54,7 +54,7 @@ function buildBookingPdf({ booking, user, qrPng }) {
     doc.fillColor("#111827").fontSize(12).font("Helvetica").text(booking.players.toString(), 70, 455);
 
     doc.fillColor("#9CA3AF").fontSize(10).font("Helvetica-Bold").text("DURATION", 70, 490);
-    doc.fillColor("#111827").fontSize(12).font("Helvetica").text(`${booking.durationHours} Hour(s)`, 70, 505);
+    doc.fillColor("#111827").fontSize(12).font("Helvetica").text(`${formatDuration(booking.durationHours)}`, 70, 505);
 
     // Details Right Column
     doc.fillColor("#9CA3AF").fontSize(10).font("Helvetica-Bold").text("SLOT START", 230, 290);

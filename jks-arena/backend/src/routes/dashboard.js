@@ -539,7 +539,7 @@ router.post(
           "🎮 Booking Confirmed!",
 
         message:
-          `Your ${booking.durationHours} hour session on ${booking.device} is confirmed! Get ready to play.`,
+          `Your ${formatDuration(booking.durationHours)} session on ${booking.device} is confirmed! Get ready to play.`,
 
         type:
           "booking",
@@ -665,7 +665,7 @@ router.post(
                         </tr>
                         <tr>
                           <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a;"><strong>Duration</strong></td>
-                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${booking.durationHours} Hour(s)</td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #2a2a2a; text-align: right; color: #ffffff;">${formatDuration(booking.durationHours)}</td>
                         </tr>
                         <tr>
                           <td style="padding: 15px 0 5px 0;"><strong>Total Price</strong></td>
@@ -901,7 +901,7 @@ router.patch(
       booking.device = device;
 
       if (booking.perHeadRate) {
-        const newRate = DEVICE_RATES[device] || 60;
+        const newRate = DEVICE_RATES[device] || 50;
         booking.perHeadRate = newRate;
         const rawTotal = Number(booking.players || 1) * newRate * booking.durationHours;
         booking.totalPrice = Math.round(rawTotal);

@@ -35,7 +35,7 @@ export function buildBookingPdf({ booking, user, qrPng }) {
     doc.text(`Game: ${booking.game || "TBD"}`);
     doc.text(`Device: ${booking.device}`);
     doc.text(`Players: ${booking.players}`);
-    doc.text(`Duration: ${booking.durationHours} hour(s)`);
+    doc.text(`Duration: ${formatDuration(booking.durationHours)}`);
     doc.text(`Slot start: ${formatDate(booking.slotStart)}`);
     doc.text(`Slot end: ${formatDate(booking.slotEnd)}`);
     doc.text(`Total price: Rs ${booking.totalPrice}`);

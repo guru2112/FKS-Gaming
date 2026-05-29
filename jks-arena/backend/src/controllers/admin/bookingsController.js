@@ -392,7 +392,7 @@ exports.rescheduleBooking = async (req, res, next) => {
     booking.device = device;
     
     if (booking.perHeadRate) {
-      const newRate = DEVICE_RATES[device] || 60;
+      const newRate = DEVICE_RATES[device] || 50;
       booking.perHeadRate = newRate;
       const rawTotal = Number(booking.players || 1) * newRate * booking.durationHours;
       booking.totalPrice = Math.round(rawTotal);
@@ -431,7 +431,7 @@ exports.rescheduleBooking = async (req, res, next) => {
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                   <span style="color: #64748b; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Duration</span>
-                  <span style="color: #0f172a; font-weight: bold;">${booking.durationHours} Hour(s)</span>
+                  <span style="color: #0f172a; font-weight: bold;">${formatDuration(booking.durationHours)}</span>
                 </div>
               </div>
               <p style="color: #666; font-size: 14px; text-align: center;">Your original QR Pass will still work for this new time.</p>
