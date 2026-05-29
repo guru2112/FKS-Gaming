@@ -212,12 +212,26 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
     const bookingSourceData = [{ name: "Walk-in", value: walkIn, fill: "#ff6b35" }, { name: "Website", value: online, fill: "#2D3748" }];
 
     // Peak Hours
-    const hoursMap: Record<number, number> = {};
-    currentBookings.forEach((b) => { const h = new Date(b.slotStart || b.inTime || new Date()).getHours(); if (!isNaN(h)) { hoursMap[h] = (hoursMap[h] || 0) + 1; } });
-    const peakHoursData = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1].map((h) => ({
-      time: h === 0 ? "12AM" : h === 12 ? "12PM" : h < 12 ? `${h}AM` : `${h - 12}PM`,
-      users: hoursMap[h] || 0
-    }));
+    const hoursDataMap: Record<number, { bookings: number, hours: number }> = {};
+    currentBookings.forEach((b) => { 
+      if (b.status === "completed" || b.status === "active") {
+        const h = new Date(b.slotStart || b.inTime || new Date()).getHours(); 
+        if (!isNaN(h)) { 
+          if (!hoursDataMap[h]) hoursDataMap[h] = { bookings: 0, hours: 0 };
+          hoursDataMap[h].bookings += 1;
+          hoursDataMap[h].hours += (b.durationHours || 1);
+        } 
+      }
+    });
+    const peakHoursData = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1].map((h) => {
+      const data = hoursDataMap[h] || { bookings: 0, hours: 0 };
+      return {
+        time: h === 0 ? "12AM" : h === 12 ? "12PM" : h < 12 ? `${h}AM` : `${h - 12}PM`,
+        users: data.bookings,
+        bookings: data.bookings,
+        gamingHours: Number(data.hours.toFixed(2))
+      };
+    });
 
     // Revenue Timeline
     const revenueMap: Record<string, { value: number; timestamp: number }> = {};
@@ -648,7 +662,30 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.04)" />
                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "#94a3b8" }} dy={4} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "#94a3b8" }} />
-                <RechartsTooltip cursor={{ fill: "rgba(255, 107, 53, 0.04)", radius: 8 }} contentStyle={tooltipStyle} />
+                <RechartsTooltip 
+                  cursor={{ fill: "rgba(255, 107, 53, 0.04)", radius: 8 }} 
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-white/95 backdrop-blur-md p-3 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#1A1A1A]/5">
+                          <p className="font-black text-[#1A1A1A] text-[10px] mb-2 uppercase">{data.time}</p>
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-[#ff6b35]" />
+                              <p className="text-[10px] text-slate-500 font-medium">Bookings: <span className="font-bold text-[#1A1A1A]">{data.bookings}</span></p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-[#2D3748]" />
+                              <p className="text-[10px] text-slate-500 font-medium">Gaming Hours: <span className="font-bold text-[#1A1A1A]">{data.gamingHours}h</span></p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
                 <Bar dataKey="users" name="Active Gamers" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

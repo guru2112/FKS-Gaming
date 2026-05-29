@@ -7,6 +7,7 @@ import {
 
 import { Toaster } from "sonner";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import AIChatWidget from "@/components/AIChatWidget";
 
 import "./globals.css";
 
@@ -105,6 +106,7 @@ export default function RootLayout({
           }}
         />
 
+        <AIChatWidget />
       </body>
 
     </html>
