@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { api } from "@/lib/apiClient";
 import QuickStartWalkIn from "@/components/QuickStartWalkIn";
 import RescheduleModal from "@/components/dashboard/RescheduleModal";
 import ExtendSessionModal from "@/components/dashboard/ExtendSessionModal";
+import PaymentsTable from "@/components/PaymentsTable";
 import { formatDuration } from "@/lib/utils/formatDuration";
 
 
@@ -43,6 +45,22 @@ export default function LiveTab({ onBack }: LiveTabProps) {
     }
   }, []);
 
+  const [paymentDate, setPaymentDate] = useState(new Date());
+  const [paymentBookings, setPaymentBookings] = useState<any[]>([]);
+
+  const fetchPaymentBookings = useCallback(async (date: Date) => {
+    try {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      const data = await api.get(`/api/admin/sessions?date=${dateStr}`) as { sessions: any[] };
+      if (data.sessions) setPaymentBookings(data.sessions);
+    } catch (err) {
+      console.error("Failed to fetch payment bookings:", err);
+    }
+  }, []);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       void fetchLiveRigs();
@@ -57,6 +75,15 @@ export default function LiveTab({ onBack }: LiveTabProps) {
       clearInterval(interval);
     };
   }, [fetchLiveRigs, fetchTodayBookings]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => void fetchPaymentBookings(paymentDate), 0);
+    const interval = setInterval(() => void fetchPaymentBookings(paymentDate), 30000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [fetchPaymentBookings, paymentDate]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date().getTime()), 1000);
@@ -116,14 +143,15 @@ export default function LiveTab({ onBack }: LiveTabProps) {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
         {DEVICES.map((device) => {
           const activeSession = liveBookings.find((b) => b.device === device);
 
           if (!activeSession) {
             // Rig is Empty (Dark Theme)
             return (
-              <div key={device} className="rounded-2xl border border-dashed border-slate-200 bg-white/70 backdrop-blur-sm p-4 flex flex-col items-center justify-center min-h-[180px] shadow-sm">
+              <div key={device} className="rounded-2xl border border-dashed border-slate-200 bg-white/70 backdrop-blur-sm p-4 lg:p-3 flex flex-col items-center justify-center min-h-[160px] lg:min-h-0 lg:h-[115px] shadow-sm">
                 <p className="text-lg font-black text-slate-700 uppercase tracking-widest">{device}</p>
                 <p className="text-[10px] font-bold text-green-600 uppercase tracking-widest mt-1">Available</p>
               </div>
@@ -151,74 +179,77 @@ export default function LiveTab({ onBack }: LiveTabProps) {
           }
 
           return (
-            <div key={device} className={`rounded-2xl border p-4 flex flex-col justify-between min-h-[180px] transition-colors shadow-sm ${cardColor}`}>
-              <div>
-                <div className="flex justify-between items-start mb-3">
-                  <span className="px-2 py-1 bg-black/5 text-slate-700 text-[9px] font-black uppercase tracking-widest rounded-lg">
+            <div key={device} className={`rounded-2xl border p-4 lg:p-3 flex flex-col justify-between min-h-[160px] lg:min-h-0 lg:h-[115px] transition-colors shadow-sm ${cardColor}`}>
+              {/* Top Row: Device Name + User Details + Pulsing Dot */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-1.5 bg-black/5 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-lg shrink-0">
                     {device}
                   </span>
-                  <span className="flex h-3 w-3 relative">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${ringGlow}`}></span>
-                    <span className={`relative inline-flex rounded-full h-3 w-3 ${ringColor}`}></span>
-                  </span>
+                  <div>
+                    <h3 className="font-bold text-[#1A1A1A] text-sm line-clamp-1">{activeSession.userName}</h3>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-0.5">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {formatDuration(activeSession.durationHours)}</p>
+                  </div>
+                </div>
+                <span className="flex h-3 w-3 relative shrink-0 mt-1">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${ringGlow}`}></span>
+                  <span className={`relative inline-flex rounded-full h-3 w-3 ${ringColor}`}></span>
+                </span>
+              </div>
+
+              {/* Bottom Row: Timer (Left) + Buttons (Right) */}
+              <div className="flex items-end justify-between gap-4">
+                <div className="text-left">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-0.5">
+                    {time.isExpired ? "Time Up!" : "Time Remaining"}
+                  </p>
+                  <p className={`font-display text-3xl tabular-nums tracking-tight drop-shadow-sm leading-none ${timerColor}`}>
+                    {time.text}
+                  </p>
                 </div>
 
-                <h3 className="font-bold text-[#1A1A1A] text-base line-clamp-1">{activeSession.userName}</h3>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mt-0.5">{activeSession.players} Player{activeSession.players > 1 ? 's' : ''} • {formatDuration(activeSession.durationHours)} Session</p>
+                <div className="flex flex-col gap-1.5 shrink-0 min-w-[120px]">
+                  <button
+                    onClick={() => setExtendSessionModal(activeSession)}
+                    style={clipPathStyle}
+                    className="w-full py-1.5 px-3 text-[9px] font-black uppercase tracking-widest bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm"
+                  >
+                    Extend Time
+                  </button>
+                  <button
+                    onClick={() => handleEndSession(activeSession._id)}
+                    style={clipPathStyle}
+                    className={`w-full py-1.5 px-3 text-[9px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                      time.isExpired
+                        ? "bg-red-600 text-white hover:bg-red-700"
+                        : "bg-[#ff6b35] text-white hover:brightness-95"
+                    }`}
+                  >
+                    End Session
+                  </button>
+                </div>
               </div>
-
-              <div className="mt-4 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-1">
-                  {time.isExpired ? "Time Up!" : "Time Remaining"}
-                </p>
-                <p className={`font-display text-3xl tabular-nums tracking-tight drop-shadow-md ${timerColor}`}>
-                  {time.text}
-                </p>
-              </div>
-
-              {/* Extend Time Section */}
-              <div className="mt-3 relative">
-                <button
-                  onClick={() => setExtendSessionModal(activeSession)}
-                  style={clipPathStyle}
-                  className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-[0_0_10px_rgba(0,0,0,0.15)]"
-                >
-                  Extend Time
-                </button>
-              </div>
-
-              <button
-                onClick={() => handleEndSession(activeSession._id)}
-                style={clipPathStyle}
-                className={`mt-2 w-full py-3 text-[10px] font-black uppercase tracking-widest transition-all ${
-                  time.isExpired
-                    ? "bg-red-600 text-white hover:bg-red-700 shadow-[0_0_15px_rgba(239,68,68,0.25)]"
-                    : "bg-[#ff6b35] text-white hover:brightness-95 shadow-[0_0_15px_rgba(255,107,53,0.20)]"
-                }`}
-              >
-                End Session
-              </button>
             </div>
           );
         })}
-      </div>
-
-      {/* Walk-In Form + Today's Slots side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Quick Walk-In Form */}
-        <div className="lg:col-span-4">
-          <QuickStartWalkIn occupiedDevices={occupiedDevices} onStarted={() => { fetchLiveRigs(); fetchTodayBookings(); }} />
         </div>
 
+        {/* Quick Walk-In Form */}
+        <div className="lg:col-span-7">
+          <QuickStartWalkIn occupiedDevices={occupiedDevices} onStarted={() => { fetchLiveRigs(); fetchTodayBookings(); }} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Today's Slots Table */}
-        <div className="lg:col-span-8 bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden flex flex-col">
+        <div className="lg:col-span-5 bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden flex flex-col">
           <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between shrink-0">
             <div>
               <h3 className="font-display text-lg font-black uppercase text-[#1A1A1A] tracking-wide">Today&apos;s Slots</h3>
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{todayBookings.length} booking{todayBookings.length !== 1 ? "s" : ""}</p>
             </div>
           </div>
-          <div className="overflow-auto scrollbar-hide flex-1" style={{ maxHeight: 460 }}>
+          <div className="overflow-auto scrollbar-hide flex-1" style={{ maxHeight: 650 }}>
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-black/5 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50">
@@ -234,7 +265,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
               </thead>
               <tbody className="text-xs text-slate-700">
                 {todayBookings.filter(b => b.status === "upcoming" || b.status === "active").length === 0 ? (
-                  <tr><td colSpan={6} className="px-6 py-16 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No active or upcoming bookings.</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-16 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No active or upcoming bookings.</td></tr>
                 ) : (
                   todayBookings
                     .filter(b => b.status === "upcoming" || b.status === "active")
@@ -279,6 +310,42 @@ export default function LiveTab({ onBack }: LiveTabProps) {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Upcoming Bookings / Payments Table */}
+        <div className="lg:col-span-7 bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden flex flex-col">
+          <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between shrink-0">
+            <div>
+              <h3 className="font-display text-lg font-black uppercase text-[#1A1A1A] tracking-wide">Payments</h3>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{paymentBookings.length} booking{paymentBookings.length !== 1 ? "s" : ""}</p>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setPaymentDate(new Date(paymentDate.getTime() - 86400000))}
+                className="p-1.5 bg-white border border-black/5 hover:bg-slate-50 rounded-lg text-slate-500 hover:text-[#ff6b35] transition-colors shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-black/5 shadow-sm min-w-[130px] justify-center">
+                <Calendar className="w-3.5 h-3.5 text-[#ff6b35]" />
+                <span className="text-xs font-bold text-slate-700">
+                  {paymentDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+              
+              <button 
+                onClick={() => setPaymentDate(new Date(paymentDate.getTime() + 86400000))}
+                className="p-1.5 bg-white border border-black/5 hover:bg-slate-50 rounded-lg text-slate-500 hover:text-[#ff6b35] transition-colors shadow-sm"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <PaymentsTable bookings={paymentBookings} onRefresh={() => fetchPaymentBookings(paymentDate)} maxHeight={650} showDateColumn={false} />
           </div>
         </div>
       </div>

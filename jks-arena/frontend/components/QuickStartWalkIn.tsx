@@ -106,14 +106,14 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
         </div>
       )}
 
-      {/* Device & Games Selection */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div>
+      {/* Combined Grid for Responsive Layout */}
+      <div className="grid grid-cols-12 gap-3 mb-5">
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3 order-1 lg:order-1">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Device</label>
           <select 
             value={device || ""} 
             onChange={(e) => setDevice(e.target.value)}
-            className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 rounded-xl px-5 py-4 text-sm text-[#1A1A1A] font-bold outline-none focus:border-[#ff6b35] transition-all duration-300 cursor-pointer"
+            className="w-full appearance-none bg-white/80 border border-[#1A1A1A]/10 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] font-bold outline-none focus:border-[#ff6b35] transition-all duration-300 cursor-pointer"
           >
             <option value="" disabled>Select Device</option>
             {DEVICES.map(d => (
@@ -124,61 +124,57 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
           </select>
         </div>
 
-        <div>
+        <div className="col-span-12 sm:col-span-4 lg:col-span-6 order-2 lg:order-2">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Select Games</label>
           <GameMultiSelect 
             selectedGames={games}
             onChange={setGames}
           />
         </div>
-      </div>
 
-      {/* Name + Phone */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div>
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3 order-3 lg:order-6">
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Players</label>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPlayers(Math.max(1, players - 1))}
+              className="w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-xl bg-slate-50 border border-black/5 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
+            >
+              −
+            </button>
+            <span className="font-display text-xl font-black text-[#1A1A1A] tabular-nums w-6 text-center">{players}</span>
+            <button
+              onClick={() => setPlayers(Math.min(4, players + 1))}
+              className="w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-xl bg-slate-50 border border-black/5 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
+            >
+              +
+            </button>
+          </div>
+          <div className="mt-2 text-[8px] text-[#ff6b35] font-bold leading-tight">
+            Max 4 players
+          </div>
+        </div>
+
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3 order-4 lg:order-4">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Name</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full bg-white border border-black/5 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] outline-none focus:border-[#ff6b35] placeholder:text-slate-300"
-            placeholder="Customer name"
+            placeholder="Name"
           />
         </div>
-        <div>
+
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3 order-5 lg:order-5">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Phone</label>
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="w-full bg-white border border-black/5 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] outline-none focus:border-[#ff6b35] placeholder:text-slate-300"
-            placeholder="Phone number"
+            placeholder="Phone"
           />
         </div>
-      </div>
 
-      {/* Players + Duration */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div>
-          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Players</label>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setPlayers(Math.max(1, players - 1))}
-              className="w-10 h-10 rounded-xl bg-slate-50 border border-black/5 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
-            >
-              −
-            </button>
-            <span className="font-display text-2xl font-black text-[#1A1A1A] tabular-nums w-8 text-center">{players}</span>
-            <button
-              onClick={() => setPlayers(Math.min(4, players + 1))}
-              className="w-10 h-10 rounded-xl bg-slate-50 border border-black/5 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
-            >
-              +
-            </button>
-          </div>
-          <div className="mt-2 text-[9px] text-[#ff6b35] font-bold">
-            Note: For a single console you can only select up to 4 players.
-          </div>
-        </div>
-        <div>
+        <div className="col-span-12 sm:col-span-4 lg:col-span-3 order-6 lg:order-3">
           <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Duration</label>
           <DurationPicker 
             value={duration ?? 1} 
@@ -186,9 +182,20 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
             theme="light" 
           />
         </div>
+
+        {/* Desktop Start Button */}
+        <div className="hidden lg:flex col-span-12 lg:col-span-3 order-7 flex-col">
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 opacity-0 select-none">Action</label>
+          <button
+            onClick={handleStart}
+            disabled={saving}
+            style={clipPathStyle}
+            className="w-full h-10 md:h-12 mt-0.5 text-xs font-black uppercase tracking-widest bg-[#1A1A1A] text-white hover:bg-[#ff6b35] transition-all shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:shadow-[0_0_20px_rgba(255,107,53,0.25)] disabled:opacity-60 flex items-center justify-center"
+          >
+            {saving ? "Starting…" : "▶ Start Now"}
+          </button>
+        </div>
       </div>
-
-
 
       {/* Price Estimate */}
       {device && (
@@ -220,12 +227,12 @@ export default function QuickStartWalkIn({ occupiedDevices, onStarted }: QuickSt
         </div>
       )}
 
-      {/* Start Button */}
+      {/* Mobile Start Button */}
       <button
         onClick={handleStart}
         disabled={saving}
         style={clipPathStyle}
-        className="w-full py-4 text-sm font-black uppercase tracking-widest bg-[#1A1A1A] text-white hover:bg-[#ff6b35] transition-all shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:shadow-[0_0_20px_rgba(255,107,53,0.25)] disabled:opacity-60"
+        className="lg:hidden w-full py-4 text-sm font-black uppercase tracking-widest bg-[#1A1A1A] text-white hover:bg-[#ff6b35] transition-all shadow-[0_0_15px_rgba(0,0,0,0.10)] hover:shadow-[0_0_20px_rgba(255,107,53,0.25)] disabled:opacity-60"
       >
         {saving ? "Starting…" : "▶ Start Now"}
       </button>
