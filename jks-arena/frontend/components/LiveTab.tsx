@@ -14,7 +14,11 @@ function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
 }
 
-export default function LiveTab() {
+interface LiveTabProps {
+  onBack?: () => void;
+}
+
+export default function LiveTab({ onBack }: LiveTabProps) {
   const [liveBookings, setLiveBookings] = useState<any[]>([]);
   const [todayBookings, setTodayBookings] = useState<any[]>([]);
   const [now, setNow] = useState(new Date().getTime());
@@ -92,8 +96,21 @@ export default function LiveTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-2xl font-black uppercase text-[#1A1A1A] tracking-wide">Live Arena Monitor</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button 
+              onClick={onBack}
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-black/10 text-slate-600 hover:text-[#ff6b35] hover:border-[#ff6b35]/30 transition-all shadow-sm"
+              title="Back to Dashboard"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+          )}
+          <h2 className="font-display text-2xl font-black uppercase text-[#1A1A1A] tracking-wide">Live Arena Monitor</h2>
+        </div>
         <button onClick={fetchLiveRigs} className="text-[10px] font-black text-slate-600 hover:text-[#ff6b35] uppercase tracking-widest flex items-center gap-2 transition-colors">
           <span>↻ Refresh</span>
         </button>
