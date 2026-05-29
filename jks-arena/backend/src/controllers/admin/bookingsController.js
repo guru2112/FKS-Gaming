@@ -131,7 +131,8 @@ exports.startOfflineSession = async (req, res, next) => {
     const paymentStatus = paidAmount >= totalPrice ? "paid" : "partial";
 
     const isCompletedImmediately = end.getTime() <= now.getTime();
-    const isScheduled = start.getTime() > now.getTime();
+    // Allow 5 minutes tolerance for client clock skew
+    const isScheduled = start.getTime() > now.getTime() + 5 * 60 * 1000;
     const sessionStatus = isCompletedImmediately ? "completed" : isScheduled ? "scheduled" : "active";
     const legacyStatus = isCompletedImmediately ? "completed" : isScheduled ? "upcoming" : "active";
     const booking = await Booking.create({
