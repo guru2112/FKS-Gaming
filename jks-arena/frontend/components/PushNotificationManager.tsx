@@ -115,6 +115,7 @@ export default function PushNotificationManager() {
               // Refresh the in-app notification bell
               if (document.visibilityState === "visible") {
                 window.dispatchEvent(new Event("refresh-notifications"));
+                return; // Skip showing a system notification if already active on the site
               }
 
               const title =
