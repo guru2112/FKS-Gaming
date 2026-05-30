@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/apiClient";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,7 +36,7 @@ export default function UserRescheduleModal({ booking, onClose, onSuccess }: Use
     }
   }, [booking]);
 
-  const checkAvailability = async () => {
+  const checkAvailability = useCallback(async () => {
     if (!date || !time || !durationHours) return;
     setChecking(true);
     try {
@@ -59,14 +59,14 @@ export default function UserRescheduleModal({ booking, onClose, onSuccess }: Use
     } finally {
       setChecking(false);
     }
-  };
+  }, [date, time, durationHours, booking._id, selectedDevice]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       checkAvailability();
     }, 500);
     return () => clearTimeout(timer);
-  }, [date, time, durationHours]);
+  }, [checkAvailability]);
 
   const handleReschedule = async () => {
     if (deviceStatus[selectedDevice] === "busy") {

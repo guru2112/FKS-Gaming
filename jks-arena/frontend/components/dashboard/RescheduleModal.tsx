@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "@/lib/apiClient";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,7 +37,7 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
     }
   }, [booking]);
 
-  const checkAvailability = async () => {
+  const checkAvailability = useCallback(async () => {
     if (!date || !time || !durationHours) return;
     setChecking(true);
     try {
@@ -62,7 +62,7 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
     } finally {
       setChecking(false);
     }
-  };
+  }, [date, time, durationHours, booking._id, selectedDevice]);
 
   // Auto-check when dependencies change
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
       checkAvailability();
     }, 500);
     return () => clearTimeout(timer);
-  }, [date, time, durationHours]);
+  }, [checkAvailability]);
 
   const handleReschedule = async () => {
     if (deviceStatus[selectedDevice] === "busy") {

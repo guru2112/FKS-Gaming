@@ -2,10 +2,10 @@
 
 interface UsersTabProps {
   users: any[];
-  onRefresh?: () => void;
+  onRefresh?: (showLoading?: boolean) => Promise<void>;
 }
 
-export default function UsersTab({ users, onRefresh }: UsersTabProps) {
+export default function UsersTab({ users }: UsersTabProps) {
   if (!users || users.length === 0) {
     return <p className="text-slate-500">No users found.</p>;
   }

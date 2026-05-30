@@ -55,10 +55,11 @@ function AuthenticatedLayoutContent({ children }: { children: React.ReactNode })
     }
   }, []);
 
+  const topbarBg = dashboardBg["Topbar"];
   useEffect(() => {
-    const topbarUrl = profile?.topbarUrl || dashboardBg["Topbar"];
+    const topbarUrl = profile?.topbarUrl || topbarBg;
     applyTheme(topbarUrl);
-  }, [profile?.topbarUrl, dashboardBg["Topbar"], applyTheme]);
+  }, [profile?.topbarUrl, topbarBg, applyTheme]);
 
   useEffect(() => {
     const handler = (e: Event) => setThemeBg((e as CustomEvent<string>).detail);

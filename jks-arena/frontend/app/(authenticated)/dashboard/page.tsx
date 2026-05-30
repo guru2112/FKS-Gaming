@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ export default function DashboardPage() {
     };
   }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const token = localStorage.getItem("auth_token");
       if (!token) {
@@ -73,7 +73,7 @@ export default function DashboardPage() {
       console.error(err);
       setError(err instanceof Error ? err.message : "Failed to load dashboard data.");
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     // Initial load
@@ -85,7 +85,7 @@ export default function DashboardPage() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [router]);
+  }, [loadData]);
 
   useEffect(() => {
     if (justBooked) {

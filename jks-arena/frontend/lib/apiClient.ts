@@ -134,7 +134,7 @@ export async function apiRequest<T = unknown>(
       body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
       cache: "no-store",
     });
-  } catch (networkError) {
+  } catch {
     // Network failure (no internet, server down, CORS flight failed)
     throw new ApiError(
       "Network error — could not connect to server. Please check your connection.",

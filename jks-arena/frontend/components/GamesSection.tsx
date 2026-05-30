@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -504,7 +504,7 @@ export default function GamesSection({ title }: { title?: string }) {
   }, []);
 
   // 🔥 Flawless Teleport Logic for Infinite Looping
-  const handleTeleport = () => {
+  const handleTeleport = useCallback(() => {
     const container = scrollContainerRef.current;
     const set1 = set1Ref.current;
     
@@ -520,7 +520,7 @@ export default function GamesSection({ title }: { title?: string }) {
       container.scrollLeft -= singleSetWidth;
       if (isDragging) setScrollLeftPos((prev) => prev - singleSetWidth);
     }
-  };
+  }, [games.length, isDragging]);
 
   // 🔥 Auto-Scroll Animation Engine
   useEffect(() => {
@@ -538,7 +538,7 @@ export default function GamesSection({ title }: { title?: string }) {
 
     animationId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationId);
-  }, [isInteracting, isDragging, games.length]);
+  }, [isInteracting, isDragging, handleTeleport, games.length]);
 
   // Set initial scroll position
   useEffect(() => {

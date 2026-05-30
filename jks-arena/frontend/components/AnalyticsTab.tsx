@@ -47,8 +47,8 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
   const [customRange, setCustomRange] = useState({ start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] });
 
   const data = useMemo(() => {
-    if (!bookings) bookings = [];
-    if (!users) users = [];
+    const currentBookingsList = bookings || [];
+    const currentUsersList = users || [];
 
     const now = new Date();
     let currentStartDate = new Date(0);
@@ -85,7 +85,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
       isAllTime = true;
     }
 
-    const currentBookings = bookings.filter((b) => {
+    const currentBookings = currentBookingsList.filter((b) => {
       const bDate = new Date(b.slotStart || b.createdAt || b.inTime || new Date());
       const matchDate = isAllTime || (bDate >= currentStartDate && bDate <= currentEndDate);
       const matchDevice = deviceFilter === "all" || (b.device && b.device.toLowerCase() === deviceFilter.toLowerCase());
@@ -105,7 +105,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
       return matchDate && matchDevice && matchType && matchPayment;
     });
 
-    const previousBookings = bookings.filter((b) => {
+    const previousBookings = currentBookingsList.filter((b) => {
       const bDate = new Date(b.slotStart || b.createdAt || b.inTime || new Date());
       const matchDate = !isAllTime && bDate >= previousStartDate && bDate < previousEndDate;
       const matchDevice = deviceFilter === "all" || (b.device && b.device.toLowerCase() === deviceFilter.toLowerCase());
@@ -154,8 +154,8 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
     const avgSession = totalBookingsCount ? Math.round((totalGamingHours / totalBookingsCount) * 60) : 0;
     const prevAvgSession = prevBookingsCount ? Math.round((prevGamingHours / prevBookingsCount) * 60) : 0;
 
-    const newCustomers = users.filter((u) => { const d = new Date(u.createdAt || new Date()); return isAllTime || d >= currentStartDate; }).length;
-    const prevCustomers = users.filter((u) => { const d = new Date(u.createdAt || new Date()); return !isAllTime && d >= previousStartDate && d < previousEndDate; }).length;
+    const newCustomers = currentUsersList.filter((u) => { const d = new Date(u.createdAt || new Date()); return isAllTime || d >= currentStartDate; }).length;
+    const prevCustomers = currentUsersList.filter((u) => { const d = new Date(u.createdAt || new Date()); return !isAllTime && d >= previousStartDate && d < previousEndDate; }).length;
 
     const calcTrend = (curr: number, prev: number) => {
       if (isAllTime || prev === 0) return 0;
@@ -170,7 +170,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
       newCustomers: calcTrend(newCustomers, prevCustomers),
     };
 
-    const activeSessionsCount = bookings.filter((b) => b.status === "active").length;
+    const activeSessionsCount = currentBookingsList.filter((b) => b.status === "active").length;
 
     // Device Usage
     const deviceMap: Record<string, number> = {};
@@ -201,7 +201,7 @@ export default function AnalyticsTab({ bookings, users, onBack }: AnalyticsTabPr
       }
     });
     const paymentColors = ["#ff6b35", "#2D3748", "#ff8c61", "#4A5568"];
-    const paymentMethodData = Object.entries(paymentMap).filter(([_, v]) => v > 0).map(([name, value], i) => ({
+    const paymentMethodData = Object.entries(paymentMap).filter(([, v]) => v > 0).map(([name, value], i) => ({
       name: name === "upi" ? "UPI" : name.charAt(0).toUpperCase() + name.slice(1), value, fill: paymentColors[i % paymentColors.length],
     }));
     if (paymentMethodData.length === 0) paymentMethodData.push({ name: "No Data", value: 1, fill: "#e2e8f0" });

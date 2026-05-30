@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-
-import { API_BASE_URL, fetchProfile, type Profile } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { fetchProfile, type Profile } from "@/lib/auth";
 
 import Link from "next/link";
 import HelpSupportSection from "@/components/HelpSupportSection";
 
 export default function HelpSupportPage() {
 
-  const [profile, setProfile] = useState<Profile | null>(() => {
+  const [, setProfile] = useState<Profile | null>(() => {
     if (typeof window === "undefined") return null;
     const savedProfile = localStorage.getItem("profile");
     if (!savedProfile) return null;
@@ -22,17 +21,7 @@ export default function HelpSupportPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  function getInitials(name?: string) {
-    if (!name) return "U";
-    return (
-      name
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() ?? "")
-        .join("") || "U"
-    );
-  }
+
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token") || "";

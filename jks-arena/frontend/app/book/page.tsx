@@ -7,7 +7,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL, api, fetchProfile, type Profile } from "@/lib/auth";
 import { toast } from "sonner";
-import { QRCodeSVG } from "qrcode.react";
+
 import DurationPicker from "@/components/DurationPicker";
 import GameMultiSelect from "@/components/GameMultiSelect";
 import { formatDuration } from "@/lib/utils/formatDuration";
@@ -221,11 +221,7 @@ function BookSlotContent() {
     setFormData({ ...formData, players: count });
   };
 
-  const handleCompanionChange = (index: number, field: keyof Companion, value: string) => {
-    const updated = [...formData.companions];
-    updated[index] = { ...updated[index], [field]: value };
-    setFormData({ ...formData, companions: updated });
-  };
+
 
   // ── Submit ────────────────────────────────────────────────────────
   const handlePreSubmit = () => {

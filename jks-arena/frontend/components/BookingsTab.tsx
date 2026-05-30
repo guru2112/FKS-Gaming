@@ -301,7 +301,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                   sortedBookings.map((b) => {
                     const inTime = b.inTime || b.slotStart;
                     const outTime = b.outTime || b.slotEnd;
-                    const isExtended = b.durationHours > ((new Date(b.slotEnd).getTime() - new Date(b.slotStart).getTime()) / 3600000 + 0.1);
+
                     return (
                       <tr key={b._id} onClick={() => setSelectedBooking(b)} className="border-b border-black/5 hover:bg-slate-50/70 transition-colors cursor-pointer group">
                         <td className="px-6 py-4 whitespace-nowrap">

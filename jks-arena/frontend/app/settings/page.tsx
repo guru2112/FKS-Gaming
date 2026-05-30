@@ -145,18 +145,7 @@ export default function SettingsPage() {
 
     };
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
 
-  const handleLogout = () => {
-
-    localStorage.clear();
-
-    window.location.href =
-      "/login";
-
-  };
 
   // =========================================================
   // INITIALS
@@ -179,41 +168,7 @@ export default function SettingsPage() {
 
   };
 
-  // =========================================================
-  // NAV ITEMS
-  // =========================================================
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-    },
-
-    {
-      name: "Book Slot",
-      href: "/book",
-    },
-
-    {
-      name: "My Sessions",
-      href: "/dashboard#history",
-    },
-
-    {
-      name: "Games Library",
-      href: "/dashboard#games",
-    },
-
-    {
-      name: "Settings",
-      href: "/settings",
-    },
-
-    {
-      name: "Help & Support",
-      href: "/help-support",
-    },
-  ];
 
   // =========================================================
   // LOADER

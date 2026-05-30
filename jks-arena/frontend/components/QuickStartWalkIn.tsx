@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+
 import DurationPicker from "@/components/DurationPicker";
 import GameMultiSelect from "@/components/GameMultiSelect";
 import { api } from "@/lib/apiClient";
@@ -17,17 +17,7 @@ const DEVICE_RATES: Record<string, number> = {
   SIM1: 120,
 };
 
-const DURATION_OPTIONS = [
-  { label: "1 Hr", hours: 1 },
-  { label: "1.5 Hr", hours: 1.5 },
-  { label: "2 Hr", hours: 2 },
-  { label: "2.5 Hr", hours: 2.5 },
-  { label: "3 Hr", hours: 3 },
-  { label: "3.5 Hr", hours: 3.5 },
-  { label: "4 Hr", hours: 4 },
-  { label: "4.5 Hr", hours: 4.5 },
-  { label: "5 Hr", hours: 5 },
-];
+
 
 interface QuickStartWalkInProps {
   occupiedDevices: string[];

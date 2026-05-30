@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { API_BASE_URL } from "@/lib/auth";
 import { type GameDetails, getGameDetails } from "@/components/GamesSection";
@@ -178,7 +178,7 @@ export default function Games() {
   }, []);
 
   // 🔥 Flawless Teleport Logic for Infinite Looping
-  const handleTeleport = () => {
+  const handleTeleport = useCallback(() => {
     const container = scrollContainerRef.current;
     const set1 = set1Ref.current;
     
@@ -199,7 +199,7 @@ export default function Games() {
       // CRITICAL FIX: Update mouse anchor point!
       if (isDragging) setScrollLeftPos((prev) => prev - singleSetWidth);
     }
-  };
+  }, [games.length, isDragging]);
 
   // 🔥 Auto-Scroll Animation Engine
   useEffect(() => {
@@ -219,7 +219,7 @@ export default function Games() {
 
     animationId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationId);
-  }, [isInteracting, isDragging, games.length]);
+  }, [isInteracting, isDragging, handleTeleport, games.length]);
 
   // Set initial scroll position to the exact middle set on load
   useEffect(() => {

@@ -16,7 +16,7 @@ export {
   api,
 } from "./apiClient";
 
-import { api, saveSession, clearSession, getToken } from "./apiClient";
+import { api, saveSession, clearSession } from "./apiClient";
 
 // =========================================================
 // 🔥 AUTH TYPES

@@ -8,7 +8,7 @@ export default function Footer() {
 
       <div className="relative z-10 text-center">
         <div className="flex justify-center gap-6 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mb-6">
-          {["Eat", "Sleep", "Game", "Repeat"].map((word, idx) => {
+          {["Eat", "Sleep", "Game", "Repeat"].map((word) => {
             // Updated to use the Orange brand color for the third word to make it pop
             const isHighlight = word === "Game";
             return (
