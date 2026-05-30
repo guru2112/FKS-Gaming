@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { api } from "@/lib/apiClient";
 import { formatDuration } from "@/lib/utils/formatDuration";
 import EditPaymentModal from "@/components/dashboard/EditPaymentModal";
@@ -32,6 +33,9 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
   const [payMethod, setPayMethod] = useState<"cash" | "online">("cash");
   const [payAmount, setPayAmount] = useState<number | string>(0);
   const [paying, setPaying] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const sortedBookings = useMemo(() => {
     if (!bookings) return [];
@@ -226,8 +230,8 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
         </table>
       </div>
 
-      {addPaymentBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+      {addPaymentBooking && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.25)] relative border border-black/5 overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff6b35] to-transparent"></div>
             <button onClick={() => setAddPaymentBooking(null)} className="absolute top-6 right-6 text-slate-400 hover:text-[#ff6b35] transition-colors">
@@ -282,9 +286,9 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
             </button>
           </div>
         </div>
-      )}
+      , document.body)}
 
-      {editPaymentBooking && (
+      {editPaymentBooking && mounted && createPortal(
         <EditPaymentModal
           booking={editPaymentBooking}
           onClose={() => setEditPaymentBooking(null)}
@@ -293,7 +297,7 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
             if (onRefresh) onRefresh();
           }}
         />
-      )}
+      , document.body)}
     </>
   );
 }
