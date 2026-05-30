@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { api } from "@/lib/apiClient";
 import { formatDuration } from "@/lib/utils/formatDuration";
+import EditPaymentModal from "@/components/dashboard/EditPaymentModal";
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
@@ -22,6 +23,9 @@ interface PaymentsTableProps {
 export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, showDateColumn = true }: PaymentsTableProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Edit Payment modal
+  const [editPaymentBooking, setEditPaymentBooking] = useState<any | null>(null);
 
   // Add Payment modal
   const [addPaymentBooking, setAddPaymentBooking] = useState<any | null>(null);
@@ -95,7 +99,7 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
           {actionError}
         </div>
       )}
-      <div className="overflow-auto scrollbar-hide" style={{ maxHeight }}>
+      <div className="overflow-auto" style={{ maxHeight }}>
         <table className="w-full table-fixed text-left border-collapse min-w-[800px]">
           <colgroup>
             <col className={showDateColumn ? "w-[16%]" : "w-[20%]"} />
@@ -194,13 +198,23 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
                         {isPaid ? "Paid" : "Unpaid"}
                       </button>
                     </td>
-                    <td className="px-2 py-2 whitespace-nowrap text-center">
+                    <td className="px-2 py-2 whitespace-nowrap text-center flex items-center justify-center gap-1">
                       {remaining > 0 && (b.status === "active" || b.status === "completed") && (
                         <button
                           onClick={() => openAddPayment(b)}
-                          className="max-w-full px-1.5 py-1 text-[8px] font-black uppercase tracking-wide rounded-md bg-[#ff6b35]/10 text-[#ff6b35] border border-[#ff6b35]/30 hover:bg-[#ff6b35] hover:text-white transition-all"
+                          className="px-1.5 py-1 text-[8px] font-black uppercase tracking-wide rounded-md bg-[#ff6b35]/10 text-[#ff6b35] border border-[#ff6b35]/30 hover:bg-[#ff6b35] hover:text-white transition-all"
+                          title="Add Payment"
                         >
                           + Pay
+                        </button>
+                      )}
+                      {(b.payments?.length > 0 || b.amountPaid > 0) && (
+                        <button
+                          onClick={() => setEditPaymentBooking(b)}
+                          className="p-1 text-slate-400 hover:text-[#ff6b35] bg-slate-50 hover:bg-[#ff6b35]/10 rounded-md transition-colors"
+                          title="Edit Payment"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                         </button>
                       )}
                     </td>
@@ -268,6 +282,17 @@ export default function PaymentsTable({ bookings, onRefresh, maxHeight = 600, sh
             </button>
           </div>
         </div>
+      )}
+
+      {editPaymentBooking && (
+        <EditPaymentModal
+          booking={editPaymentBooking}
+          onClose={() => setEditPaymentBooking(null)}
+          onSuccess={() => {
+            setEditPaymentBooking(null);
+            if (onRefresh) onRefresh();
+          }}
+        />
       )}
     </>
   );

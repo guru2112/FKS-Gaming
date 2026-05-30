@@ -15,6 +15,7 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [durationHours, setDurationHours] = useState(booking?.durationHours || 1);
+  const [players, setPlayers] = useState(booking?.players || 1);
   const [selectedDevice, setSelectedDevice] = useState(booking?.device);
   
   const [deviceStatus, setDeviceStatus] = useState<Record<string, string>>({});
@@ -83,6 +84,7 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
       await api.patch(`/api/admin/bookings/${booking._id}/reschedule`, {
         slotStart: startIso,
         durationHours,
+        players,
         device: selectedDevice
       });
       toast.success("Booking rescheduled successfully!");
@@ -183,6 +185,26 @@ export default function RescheduleModal({ booking, onClose, onSuccess }: Resched
                 onChange={setDurationHours} 
                 theme="dark" 
               />
+            </div>
+
+            {/* Players */}
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 block">Players</label>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPlayers(Math.max(1, players - 1))}
+                  className="w-10 h-10 shrink-0 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-lg transition-all"
+                >
+                  −
+                </button>
+                <span className="font-display text-xl font-bold text-white tabular-nums w-8 text-center">{players}</span>
+                <button
+                  onClick={() => setPlayers(Math.min(4, players + 1))}
+                  className="w-10 h-10 shrink-0 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-lg transition-all"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             {/* Device Selection */}

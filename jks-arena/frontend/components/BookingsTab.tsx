@@ -15,7 +15,7 @@ type View = "bookings" | "payments";
 const DEVICES = ["ALL", "PS1", "PS2", "PS3", "SIM1"];
 const STATUSES = ["ALL", "upcoming", "active", "completed", "cancelled"];
 
-const TABLE_VISIBLE_ROWS = 7;
+const TABLE_VISIBLE_ROWS = 8;
 const TABLE_ROW_HEIGHT_PX = 56;
 const TABLE_HEADER_HEIGHT_PX = 56;
 
@@ -27,11 +27,16 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 }
 
+import AdminAddBookingModal from "@/components/dashboard/AdminAddBookingModal";
+import EditPaymentModal from "@/components/dashboard/EditPaymentModal";
+
 export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
   const [view, setView] = useState<View>("bookings");
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [addBookingModalOpen, setAddBookingModalOpen] = useState(false);
+  const [editPaymentBooking, setEditPaymentBooking] = useState<any | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -174,6 +179,12 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
               <span>↻ Refresh</span>
             </button>
           )}
+          <button
+            onClick={() => setAddBookingModalOpen(true)}
+            className="ml-2 bg-[#1A1A1A] hover:bg-[#ff6b35] text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm transition-all flex items-center gap-2"
+          >
+            <span>+ New Booking</span>
+          </button>
         </div>
       </div>
 
@@ -268,7 +279,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
       {/* ===== BOOKINGS TABLE ===== */}
       {view === "bookings" && (
         <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden">
-          <div className="overflow-auto scrollbar-hide" style={{ maxHeight: tableMaxHeight }}>
+          <div className="overflow-auto" style={{ maxHeight: tableMaxHeight }}>
             <table className="w-full text-left border-collapse min-w-[1000px]">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-black/5 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50">
@@ -342,7 +353,7 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
       {/* ===== PAYMENTS TABLE ===== */}
       {view === "payments" && (
         <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-black/5 shadow-lg overflow-hidden">
-          <div className="overflow-auto scrollbar-hide" style={{ maxHeight: tableMaxHeight }}>
+          <div className="overflow-auto" style={{ maxHeight: tableMaxHeight }}>
             <table className="w-full table-fixed text-left border-collapse">
               <colgroup>
                 <col className="w-[18%]" />
@@ -442,13 +453,23 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
                             {isPaid ? "Paid" : "Unpaid"}
                           </button>
                         </td>
-                        <td className="px-3 py-3 whitespace-nowrap text-right">
+                        <td className="px-3 py-3 whitespace-nowrap text-right flex items-center justify-end gap-1">
                           {remaining > 0 && (b.status === "active" || b.status === "completed") && (
                             <button
                               onClick={() => openAddPayment(b)}
                               className="max-w-full px-2 py-1.5 text-[8px] font-black uppercase tracking-wide rounded-md bg-[#ff6b35]/10 text-[#ff6b35] border border-[#ff6b35]/30 hover:bg-[#ff6b35] hover:text-white transition-all"
+                              title="Add Payment"
                             >
                               + Payment
+                            </button>
+                          )}
+                          {(b.payments?.length > 0 || b.amountPaid > 0) && (
+                            <button
+                              onClick={() => setEditPaymentBooking(b)}
+                              className="p-1 text-slate-400 hover:text-[#ff6b35] bg-slate-50 hover:bg-[#ff6b35]/10 rounded-md transition-colors"
+                              title="Edit Payment"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                             </button>
                           )}
                         </td>
@@ -581,6 +602,27 @@ export default function BookingsTab({ bookings, onRefresh }: BookingsTabProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {addBookingModalOpen && (
+        <AdminAddBookingModal
+          onClose={() => setAddBookingModalOpen(false)}
+          onSuccess={() => {
+            setAddBookingModalOpen(false);
+            if (onRefresh) onRefresh();
+          }}
+        />
+      )}
+
+      {editPaymentBooking && (
+        <EditPaymentModal
+          booking={editPaymentBooking}
+          onClose={() => setEditPaymentBooking(null)}
+          onSuccess={() => {
+            setEditPaymentBooking(null);
+            if (onRefresh) onRefresh();
+          }}
+        />
       )}
     </div>
   );

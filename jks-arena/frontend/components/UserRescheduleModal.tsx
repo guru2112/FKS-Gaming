@@ -15,6 +15,7 @@ export default function UserRescheduleModal({ booking, onClose, onSuccess }: Use
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [durationHours, setDurationHours] = useState(booking?.durationHours || 1);
+  const [players, setPlayers] = useState(booking?.players || 1);
   const [selectedDevice, setSelectedDevice] = useState(booking?.device);
   
   const [deviceStatus, setDeviceStatus] = useState<Record<string, string>>({});
@@ -79,6 +80,7 @@ export default function UserRescheduleModal({ booking, onClose, onSuccess }: Use
       await api.patch(`/api/bookings/${booking._id}/reschedule`, {
         slotStart: startIso,
         durationHours,
+        players,
         device: selectedDevice
       });
       toast.success("Booking rescheduled successfully!");
@@ -178,6 +180,26 @@ export default function UserRescheduleModal({ booking, onClose, onSuccess }: Use
                 onChange={setDurationHours} 
                 theme="light" 
               />
+            </div>
+
+            {/* Players */}
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block">Players</label>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPlayers(Math.max(1, players - 1))}
+                  className="w-10 h-10 shrink-0 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
+                >
+                  −
+                </button>
+                <span className="font-display text-xl font-black text-[#1A1A1A] tabular-nums w-8 text-center">{players}</span>
+                <button
+                  onClick={() => setPlayers(Math.min(4, players + 1))}
+                  className="w-10 h-10 shrink-0 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             {/* Device Selection */}

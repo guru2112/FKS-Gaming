@@ -266,7 +266,7 @@ exports.scanQr = async (req, res, next) => {
 exports.getLiveBookings = async (req, res, next) => {
   try {
     const liveBookings = await Booking.find({ status: "active" })
-      .select("userName device slotStart slotEnd durationHours players")
+      .select("userName device slotStart slotEnd durationHours players isPaused lastPausedAt")
       .lean();
     res.json({ liveBookings });
   } catch (err) {
@@ -392,6 +392,10 @@ exports.rescheduleBooking = async (req, res, next) => {
     booking.durationHours = Number(durationHours);
     booking.device = device;
     
+    if (req.body.players) {
+      booking.players = Number(req.body.players);
+    }
+    
     if (booking.perHeadRate) {
       const newRate = DEVICE_RATES[device] || 50;
       booking.perHeadRate = newRate;
@@ -494,6 +498,97 @@ exports.extendSession = async (req, res, next) => {
     await booking.save();
     
     res.json({ message: "Session extended successfully.", booking });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.editPaymentDetails = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: 'Booking not found.' });
+
+    const { cashAmount, onlineAmount } = req.body;
+    const cash = Number(cashAmount) || 0;
+    const online = Number(onlineAmount) || 0;
+
+    booking.payments = [];
+    if (cash > 0) booking.payments.push({ method: 'cash', amount: cash });
+    if (online > 0) booking.payments.push({ method: 'online', amount: online });
+
+    booking.amountPaid = cash + online;
+    if (cash > 0 && online === 0) booking.paymentMethod = 'cash';
+    else if (online > 0 && cash === 0) booking.paymentMethod = 'online';
+    else if (cash > 0 && online > 0) booking.paymentMethod = 'cash';
+
+    const total = Number(booking.totalPrice || 0);
+    booking.paymentStatus = booking.amountPaid >= total ? 'paid' : 'partial';
+
+    await booking.save();
+    res.json({ message: 'Payment details updated.', booking });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.togglePauseSession = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: 'Booking not found.' });
+    if (booking.status !== 'active') return res.status(400).json({ message: 'Only active sessions can be paused/resumed.' });
+
+    const now = new Date();
+
+    if (!booking.isPaused) {
+      booking.isPaused = true;
+      booking.lastPausedAt = now;
+      await booking.save();
+      res.json({ message: 'Session paused successfully.', booking });
+    } else {
+      const pausedDurationMs = now.getTime() - booking.lastPausedAt.getTime();
+      booking.isPaused = false;
+      booking.lastPausedAt = null;
+
+      booking.slotEnd = new Date(booking.slotEnd.getTime() + pausedDurationMs);
+      booking.outTime = booking.slotEnd;
+      booking.expiryTime = booking.slotEnd;
+
+      await booking.save();
+      res.json({ message: 'Session resumed successfully.', booking });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.editSession = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: 'Booking not found.' });
+
+    const { players, durationHours } = req.body;
+    const newPlayers = Number(players);
+    const newDuration = Number(durationHours);
+
+    if (!newPlayers || newPlayers < 1) return res.status(400).json({ message: 'Invalid number of players.' });
+    if (!newDuration || newDuration <= 0) return res.status(400).json({ message: 'Invalid duration.' });
+
+    const newSlotEnd = new Date(booking.slotStart.getTime() + newDuration * 60 * 60 * 1000);
+
+    booking.players = newPlayers;
+    booking.durationHours = newDuration;
+    booking.slotEnd = newSlotEnd;
+    booking.outTime = newSlotEnd;
+    booking.expiryTime = newSlotEnd;
+
+    if (booking.perHeadRate) {
+      booking.totalPrice = Math.round(newPlayers * booking.perHeadRate * newDuration);
+      const paid = Number(booking.amountPaid || 0);
+      booking.paymentStatus = paid >= booking.totalPrice ? 'paid' : 'partial';
+    }
+
+    await booking.save();
+    res.json({ message: 'Session updated successfully.', booking });
   } catch (err) {
     next(err);
   }

@@ -62,6 +62,8 @@ const bookingSchema = new mongoose.Schema(
     status: { type: String, enum: ["upcoming", "active", "completed", "cancelled", "no-show"], default: "upcoming" },
     actualStartTime: { type: Date }, 
     reminderSent: { type: Boolean, default: false },
+    isPaused: { type: Boolean, default: false },
+    lastPausedAt: { type: Date },
   },
   { timestamps: true }
 );

@@ -30,6 +30,7 @@ router.post("/sessions/start", bookingsController.startOfflineSession);
 
 router.patch("/bookings/:id/payment", bookingsController.updatePaymentMethod);
 router.post("/bookings/:id/payments/add", bookingsController.addPartialPayment);
+router.patch("/bookings/:id/payments/edit", bookingsController.editPaymentDetails);
 
 router.patch("/bookings/:id/reschedule", bookingsController.rescheduleBooking);
 
@@ -38,6 +39,8 @@ router.get("/live", bookingsController.getLiveBookings);
 router.post("/end-session/:id", bookingsController.endSession);
 router.get("/availability-check", bookingsController.checkAvailability);
 router.patch("/extend-session/:id", bookingsController.extendSession);
+router.patch("/sessions/:id/pause", bookingsController.togglePauseSession);
+router.patch("/sessions/:id/edit", bookingsController.editSession);
 
 // ================== COMBOS ==================
 router.get("/combos", combosController.getCombos);

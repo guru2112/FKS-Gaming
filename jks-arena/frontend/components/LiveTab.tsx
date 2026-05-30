@@ -6,6 +6,7 @@ import { api } from "@/lib/apiClient";
 import QuickStartWalkIn from "@/components/QuickStartWalkIn";
 import RescheduleModal from "@/components/dashboard/RescheduleModal";
 import ExtendSessionModal from "@/components/dashboard/ExtendSessionModal";
+import EditLiveSessionModal from "@/components/dashboard/EditLiveSessionModal";
 import PaymentsTable from "@/components/PaymentsTable";
 import { formatDuration } from "@/lib/utils/formatDuration";
 
@@ -26,6 +27,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
   const [now, setNow] = useState(new Date().getTime());
   const [extendSessionModal, setExtendSessionModal] = useState<any | null>(null);
   const [reschedulingBooking, setReschedulingBooking] = useState<any | null>(null);
+  const [editSessionModal, setEditSessionModal] = useState<any | null>(null);
 
   const fetchLiveRigs = useCallback(async () => {
     try {
@@ -100,11 +102,24 @@ export default function LiveTab({ onBack }: LiveTabProps) {
     }
   };
 
-  const getRemainingTime = (slotEnd: string) => {
-    const endTime = new Date(slotEnd).getTime();
-    const diff = endTime - now;
+  const handleTogglePause = async (id: string) => {
+    try {
+      await api.patch(`/api/admin/sessions/${id}/pause`, {});
+      void fetchLiveRigs();
+    } catch (err) {
+      console.error("Failed to toggle pause:", err);
+    }
+  };
 
-    if (diff <= 0) return { text: "00:00:00", isExpired: true, minutesLeft: 0 };
+  const getRemainingTime = (booking: any) => {
+    let effectiveNow = now;
+    if (booking.isPaused && booking.lastPausedAt) {
+      effectiveNow = new Date(booking.lastPausedAt).getTime();
+    }
+    const endTime = new Date(booking.slotEnd).getTime();
+    const diff = endTime - effectiveNow;
+
+    if (diff <= 0) return { text: "00:00:00", isExpired: true, minutesLeft: 0, isPaused: booking.isPaused };
 
     const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -114,9 +129,9 @@ export default function LiveTab({ onBack }: LiveTabProps) {
       text: `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`,
       isExpired: false,
       minutesLeft: Math.floor(diff / (1000 * 60)),
+      isPaused: booking.isPaused
     };
   };
-
   const clipPathStyle = { clipPath: "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)" };
 
   const occupiedDevices = liveBookings.map((b) => b.device);
@@ -144,7 +159,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
         {DEVICES.map((device) => {
           const activeSession = liveBookings.find((b) => b.device === device);
 
@@ -159,14 +174,19 @@ export default function LiveTab({ onBack }: LiveTabProps) {
           }
 
           // Rig is Active
-          const time = getRemainingTime(activeSession.slotEnd);
+          const time = getRemainingTime(activeSession);
 
           let cardColor = "bg-white/80 border-black/5";
           let timerColor = "text-[#1A1A1A]";
           let ringColor = "bg-green-500";
           let ringGlow = "bg-green-400";
 
-          if (time.isExpired) {
+          if (activeSession.isPaused) {
+            cardColor = "bg-slate-100 border-slate-300 shadow-none";
+            timerColor = "text-slate-500";
+            ringColor = "bg-amber-500";
+            ringGlow = "bg-amber-400";
+          } else if (time.isExpired) {
             cardColor = "bg-red-500/10 border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.10)]";
             timerColor = "text-red-600";
             ringColor = "bg-red-500";
@@ -201,32 +221,55 @@ export default function LiveTab({ onBack }: LiveTabProps) {
               <div className="flex items-end justify-between gap-4">
                 <div className="text-left">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-0.5">
-                    {time.isExpired ? "Time Up!" : "Time Remaining"}
+                    {activeSession.isPaused ? "PAUSED" : time.isExpired ? "Time Up!" : "Time Remaining"}
                   </p>
                   <p className={`font-display text-3xl tabular-nums tracking-tight drop-shadow-sm leading-none ${timerColor}`}>
                     {time.text}
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-1.5 shrink-0 min-w-[120px]">
-                  <button
-                    onClick={() => setExtendSessionModal(activeSession)}
-                    style={clipPathStyle}
-                    className="w-full py-1.5 px-3 text-[9px] font-black uppercase tracking-widest bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm"
-                  >
-                    Extend Time
-                  </button>
-                  <button
-                    onClick={() => handleEndSession(activeSession._id)}
-                    style={clipPathStyle}
-                    className={`w-full py-1.5 px-3 text-[9px] font-black uppercase tracking-widest transition-all shadow-sm ${
-                      time.isExpired
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-[#ff6b35] text-white hover:brightness-95"
-                    }`}
-                  >
-                    End Session
-                  </button>
+                <div className="flex flex-col gap-1.5 shrink-0 min-w-[140px]">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setExtendSessionModal(activeSession)}
+                      style={clipPathStyle}
+                      className="flex-1 py-1.5 px-3 text-[9px] font-black uppercase tracking-widest bg-slate-800 text-white hover:bg-slate-900 transition-all shadow-sm"
+                      title="Extend Session"
+                    >
+                      Extend
+                    </button>
+                    <button
+                      onClick={() => setEditSessionModal(activeSession)}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 bg-transparent transition-colors shrink-0"
+                      title="Edit Session"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleEndSession(activeSession._id)}
+                      style={clipPathStyle}
+                      className={`flex-1 py-1.5 px-3 text-[9px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                        time.isExpired
+                          ? "bg-red-600 text-white hover:bg-red-700"
+                          : "bg-[#ff6b35] text-white hover:brightness-95"
+                      }`}
+                    >
+                      End Session
+                    </button>
+                    <button
+                      onClick={() => handleTogglePause(activeSession._id)}
+                      className="p-1.5 text-slate-400 hover:text-amber-600 bg-transparent transition-colors shrink-0"
+                      title={activeSession.isPaused ? "Resume Session" : "Pause Session"}
+                    >
+                      {activeSession.isPaused ? (
+                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      ) : (
+                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -235,7 +278,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
         </div>
 
         {/* Quick Walk-In Form */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-6">
           <QuickStartWalkIn occupiedDevices={occupiedDevices} onStarted={() => { fetchLiveRigs(); fetchTodayBookings(); }} />
         </div>
       </div>
@@ -249,7 +292,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-0.5">{todayBookings.length} booking{todayBookings.length !== 1 ? "s" : ""}</p>
             </div>
           </div>
-          <div className="overflow-auto scrollbar-hide flex-1" style={{ maxHeight: 650 }}>
+          <div className="overflow-auto flex-1" style={{ maxHeight: 504 }}>
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-black/5 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50">
@@ -345,7 +388,7 @@ export default function LiveTab({ onBack }: LiveTabProps) {
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
-            <PaymentsTable bookings={paymentBookings} onRefresh={() => fetchPaymentBookings(paymentDate)} maxHeight={650} showDateColumn={false} />
+            <PaymentsTable bookings={paymentBookings} onRefresh={() => fetchPaymentBookings(paymentDate)} maxHeight={504} showDateColumn={false} />
           </div>
         </div>
       </div>
@@ -368,6 +411,18 @@ export default function LiveTab({ onBack }: LiveTabProps) {
           onClose={() => setExtendSessionModal(null)}
           onSuccess={() => {
             setExtendSessionModal(null);
+            fetchLiveRigs();
+            fetchTodayBookings();
+          }}
+        />
+      )}
+
+      {editSessionModal && (
+        <EditLiveSessionModal
+          session={editSessionModal}
+          onClose={() => setEditSessionModal(null)}
+          onSuccess={() => {
+            setEditSessionModal(null);
             fetchLiveRigs();
             fetchTodayBookings();
           }}
